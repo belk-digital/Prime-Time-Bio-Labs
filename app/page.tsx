@@ -105,10 +105,10 @@ export default function Home() {
         ${isVisible ? 'translate-y-0' : '-translate-y-[150%]'} 
         ${isScrolled ? 'py-4' : 'py-0'}`}
       >
-        <nav className={`gsap-nav w-full flex items-center justify-between transition-all duration-500 ${
+        <nav className={`gsap-nav flex items-center justify-between transition-all duration-500 ${
           isScrolled 
-            ? 'w-[96%] bg-[#0a0a0a]/60 backdrop-blur-lg border border-white/10 rounded-2xl px-6 py-2 shadow-2xl' 
-            : 'px-4 py-6 md:px-8 lg:px-12 border-b border-white/5 bg-transparent'
+            ? 'w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] bg-[#0a0a0a]/60 backdrop-blur-lg border border-white/10 rounded-2xl px-6 py-2 shadow-2xl' 
+            : 'w-full px-4 py-6 md:px-8 lg:px-12 border-b border-white/5 bg-transparent'
         }`}>
           <div className="flex items-center">
           <img src="/primtime-biolabs-logo.svg" alt="Primetime Biolabs" className={`w-auto transition-all duration-500 ${isScrolled ? 'h-10 md:h-12' : 'h-16 md:h-24'}`} />
