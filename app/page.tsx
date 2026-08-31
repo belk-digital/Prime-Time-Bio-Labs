@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import PrecisionSection from "@/components/PrecisionSection";
+import BestSellersSection from "@/components/BestSellersSection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -154,15 +155,11 @@ export default function Home() {
       <section className="relative h-screen bg-[#0a0a0a] text-gray-200 overflow-hidden flex flex-col pt-24 md:pt-32">
       {/* User uploaded background image */}
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
+        <img 
+          src="/bg.png" 
+          alt="Background" 
           className="absolute inset-0 w-full h-full object-cover object-center opacity-60 mix-blend-luminosity" 
-        >
-          <source src="/bg-video.mp4" type="video/mp4" />
-        </video>
+        />
         {/* Top Overlay for Navigation visibility */}
         <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/90 to-transparent" />
         
@@ -277,6 +274,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Best Sellers Section */}
+      <BestSellersSection />
 
       {/* Precision Section */}
       <PrecisionSection />
