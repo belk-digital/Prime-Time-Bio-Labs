@@ -55,28 +55,34 @@ export default function BestSellersSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.from(".product-card", {
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 75%",
-      },
-      y: 50,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: "power3.out",
-    });
+    gsap.fromTo(".product-card", 
+      { y: 50, opacity: 0 },
+      {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 75%",
+        },
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power3.out",
+      }
+    );
     
-    gsap.from(".bs-title", {
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 80%",
-      },
-      y: 30,
-      opacity: 0,
-      duration: 1,
-      ease: "power2.out",
-    });
+    gsap.fromTo(".bs-title", 
+      { y: 30, opacity: 0 },
+      {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        },
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: "power2.out",
+      }
+    );
   }, { scope: sectionRef });
 
   return (
