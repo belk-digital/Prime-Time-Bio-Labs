@@ -95,7 +95,9 @@ export default function Footer() {
         {/* Middle Section (Copyright) */}
         <div className="footer-stagger flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 mb-16">
           <p>&copy; {new Date().getFullYear()} Primetime Biolabs All rights reserved.</p>
-          <p className="mt-4 md:mt-0">Design by Belk Digital - Powered by Next.js</p>
+          <p className="mt-4 md:mt-0">
+            Design by <a href="https://belkdigital.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Belk Digital</a>
+          </p>
         </div>
       </div>
 
