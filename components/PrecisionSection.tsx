@@ -37,22 +37,14 @@ export default function PrecisionSection() {
         ease: "none"
       }, 0);
 
-      // 1. Fade in heading first
-      tl.to(headingRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 2,
-        ease: "power2.out"
-      });
-
-      // 2. Fade in tags sequentially (slower and more spaced out)
+      // 1. Fade in tags sequentially (spaced out based on scroll)
       tagsRef.current.forEach((tag) => {
         tl.to(tag, {
           opacity: 1,
           scale: 1,
-          duration: 1.5,
+          duration: 2,
           ease: "back.out(1.2)"
-        }, "-=0.8");
+        }, "+=0.5"); // Positive offset means wait before the next one starts
       });
       
       // 3. Add empty space at the end so it holds the final state before unpinning
@@ -75,7 +67,7 @@ export default function PrecisionSection() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img 
           ref={bgRef}
-          src="/peptide-sillouhette.png" 
+          src="/sillouhette-bg.png" 
           alt="Peptide Silhouette" 
           className="absolute inset-0 w-full h-full object-cover object-center opacity-100 md:opacity-0" 
         />
@@ -144,7 +136,7 @@ export default function PrecisionSection() {
             style={{ ...tag.style, transform: "scale(0.8)" }}
           >
             <div className="w-1.5 h-1.5 bg-[#555] rounded-sm" />
-            <span className="text-sm font-medium text-gray-300 whitespace-nowrap">{tag.text}</span>
+            <span className="text-sm font-bold tracking-wider uppercase text-gray-300 whitespace-nowrap">{tag.text}</span>
           </div>
         ))}
       </div>
@@ -158,7 +150,7 @@ export default function PrecisionSection() {
             style={{ ...tag.mobileStyle, transform: "scale(0.85)" }}
           >
             <div className="w-1 h-1 bg-[#555] rounded-sm" />
-            <span className="text-[10px] font-medium text-gray-300 whitespace-nowrap">{tag.text}</span>
+            <span className="text-[10px] font-bold tracking-wider uppercase text-gray-300 whitespace-nowrap">{tag.text}</span>
           </div>
         ))}
       </div>
@@ -167,7 +159,7 @@ export default function PrecisionSection() {
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-3xl mx-auto mt-20 md:mt-0">
         <h2 
           ref={headingRef}
-          className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-8 md:mb-6 leading-tight uppercase opacity-100 md:opacity-0 translate-y-0 md:translate-y-10"
+          className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-8 md:mb-6 leading-tight uppercase"
         >
           Precision in Every Peptide.
         </h2>

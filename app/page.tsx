@@ -12,6 +12,8 @@ import QualitySection from "@/components/QualitySection";
 import FAQSection from "@/components/FAQSection";
 import CategoriesSection from "@/components/CategoriesSection";
 import BlogSection from "@/components/BlogSection";
+import CTASection from "@/components/CTASection";
+import Footer from "@/components/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -287,14 +289,24 @@ export default function Home() {
       {/* Precision Section */}
       <PrecisionSection />
 
+
+
       {/* Quality & Standards Section */}
       <QualitySection />
+
+
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Blog Section */}
       <BlogSection />
 
-      {/* FAQ Section */}
-      <FAQSection />
+      {/* CTA Section */}
+      <CTASection />
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 }
