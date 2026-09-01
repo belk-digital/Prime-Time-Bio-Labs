@@ -8,6 +8,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import PrecisionSection from "@/components/PrecisionSection";
 import BestSellersSection from "@/components/BestSellersSection";
+import QualitySection from "@/components/QualitySection";
+import FAQSection from "@/components/FAQSection";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -274,6 +276,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Quality & Standards Section */}
+      <QualitySection />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Best Sellers Section */}
       <BestSellersSection />
