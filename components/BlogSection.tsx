@@ -27,15 +27,15 @@ const blogPosts = [
 
 const BlogSection = () => {
   return (
-    <section className="bg-gray-50 py-24 px-6 md:px-12 lg:px-24">
+    <section className="bg-gray-50 py-12 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
           <div>
-            <div className="inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-indigo-600 bg-indigo-100 border border-indigo-200 rounded uppercase">
+            <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-widest text-indigo-600 bg-indigo-100 border border-indigo-200 rounded uppercase">
               Blog
             </div>
-            <h2 className="text-4xl md:text-5xl font-michroma font-bold text-gray-900 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-michroma font-bold text-gray-900 tracking-wider uppercase">
               Latest in Peptide Synthesis
             </h2>
           </div>
@@ -48,8 +48,8 @@ const BlogSection = () => {
         {/* Blog Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post) => (
-            <div key={post.id} className="group cursor-pointer flex flex-col group">
-              <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-6 bg-gray-200">
+            <div key={post.id} className="group cursor-pointer flex flex-col">
+              <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-4 bg-gray-200">
                 <img 
                   src={post.image} 
                   alt={post.title} 
@@ -58,12 +58,12 @@ const BlogSection = () => {
                 <div className="absolute inset-0 border border-black/5 rounded-2xl pointer-events-none"></div>
               </div>
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 text-xs font-medium tracking-widest text-gray-500 uppercase mb-3">
+                <div className="flex items-center gap-2 text-xs font-medium tracking-widest text-gray-500 uppercase mb-2">
                   <span>{post.tag}</span>
                   <span>•</span>
                   <span>{post.date}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 leading-tight group-hover:text-indigo-600 transition-colors">
+                <h3 className="text-lg md:text-xl font-inter font-bold text-gray-900 leading-snug group-hover:text-indigo-600 transition-colors">
                   {post.title}
                 </h3>
               </div>

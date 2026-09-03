@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import PrecisionSection from "@/components/PrecisionSection";
+import GenomicsSection from "@/components/GenomicsSection";
 import BestSellersSection from "@/components/BestSellersSection";
 import QualitySection from "@/components/QualitySection";
 import FAQSection from "@/components/FAQSection";
@@ -294,13 +295,17 @@ export default function Home() {
       {/* Quality & Standards Section */}
       <QualitySection />
 
+      {/* Genomics Section */}
+      <GenomicsSection />
 
+
+      {/* Blog Section */}
+      <BlogSection />
 
       {/* FAQ Section */}
       <FAQSection />
 
-      {/* Blog Section */}
-      <BlogSection />
+
 
       {/* CTA Section */}
       <CTASection />

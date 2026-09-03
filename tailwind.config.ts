@@ -15,6 +15,7 @@ const config: Config = {
       fontFamily: {
         futuristic: ["var(--font-futuristic)", "sans-serif"],
         michroma: ["var(--font-michroma)", "sans-serif"],
+        inter: ["var(--font-inter)", "sans-serif"],
       },
     },
   },

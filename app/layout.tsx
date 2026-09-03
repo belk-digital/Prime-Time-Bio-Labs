@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syncopate, Michroma } from "next/font/google";
+import { Syncopate, Michroma, Inter } from "next/font/google";
 import "./globals.css";
 
 const futuristicFont = Syncopate({
@@ -14,6 +14,11 @@ const michromaFont = Michroma({
   variable: "--font-michroma",
 });
 
+const interFont = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
 export const metadata: Metadata = {
   title: "PrimeTime BioLabs",
   description: "Peptide solutions for clarity, precision, and efficiency.",
@@ -26,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${futuristicFont.variable} ${michromaFont.variable} font-futuristic antialiased bg-black text-white`}>
+      <body className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}>
         {children}
       </body>
     </html>
