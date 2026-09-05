@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,20 +9,31 @@ import { ArrowRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const categories = [
-  { name: "GLP-1 & Metabolic", image: "/images/categories/glp1.jpg" },
-  { name: "Healing & Recovery", image: "/images/categories/healing.jpg" },
-  { name: "Peptide Bundles", image: "/images/categories/bundles.jpg" },
-  { name: "Nasal Sprays", image: "/images/categories/spray.jpg" },
-  { name: "Cosmetic & Skin", image: "/images/categories/skin.jpg" },
-  { name: "Sexual & Hormonal", image: "/images/categories/hormonal.jpg" },
-  { name: "Growth Hormone Secretagogue", image: "/images/categories/growth.jpg" },
-  { name: "Cognitive & Nootropic", image: "/images/categories/brain.jpg" },
-  { name: "Longevity & Anti-Aging", image: "/images/categories/longevity.jpg" },
-];
+export interface CategoryCardData {
+  id: string | number;
+  name: string;
+  slug: string;
+  image: string;
+}
 
-export default function CategoriesSection() {
+import { CATEGORY_IMAGE_MAP } from "@/lib/categoryImages";
+
+const FALLBACK_CATEGORIES: CategoryCardData[] = Object.entries(CATEGORY_IMAGE_MAP).map(
+  ([name, image], index) => ({
+    id: index + 1,
+    name,
+    slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+    image,
+  })
+);
+
+interface CategoriesSectionProps {
+  categories?: CategoryCardData[];
+}
+
+export default function CategoriesSection({ categories }: CategoriesSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const items = categories && categories.length > 0 ? categories : FALLBACK_CATEGORIES;
 
   useGSAP(() => {
     gsap.fromTo(".category-heading",
@@ -67,22 +79,23 @@ export default function CategoriesSection() {
               Browse our comprehensive selection of high-purity research compounds categorized by scientific application.
             </p>
           </div>
-          <button className="mt-6 md:mt-0 flex items-center gap-2 text-sm uppercase tracking-widest text-indigo-600 font-bold hover:text-indigo-800 transition-colors group">
+          <Link href="/shop" className="mt-6 md:mt-0 flex items-center gap-2 text-sm uppercase tracking-widest text-indigo-600 font-bold hover:text-indigo-800 transition-colors group">
             View All Categories
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category, index) => (
-            <div 
-              key={index} 
+          {items.map((category) => (
+            <Link
+              href={`/shop?category=${category.slug}`}
+              key={category.id}
               className="category-card group cursor-pointer bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-indigo-100 transition-all duration-300 overflow-hidden flex items-center p-4 pr-6 gap-4"
             >
               <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-gray-50">
-                <img 
-                  src={category.image} 
-                  alt={category.name} 
+                <img
+                  src={category.image}
+                  alt={category.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
@@ -92,7 +105,7 @@ export default function CategoriesSection() {
                 </h3>
                 <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

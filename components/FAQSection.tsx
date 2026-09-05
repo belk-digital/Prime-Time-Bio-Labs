@@ -27,7 +27,11 @@ const faqs = [
   }
 ];
 
-export default function FAQSection() {
+interface FAQSectionProps {
+  hideHeading?: boolean;
+}
+
+export default function FAQSection({ hideHeading = false }: FAQSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -65,14 +69,16 @@ export default function FAQSection() {
   return (
     <section ref={sectionRef} className="py-24 px-6 md:px-12 lg:px-24 bg-black text-white overflow-hidden border-t border-white/5">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16 faq-heading">
-          <h2 className="text-3xl md:text-5xl font-michroma font-bold uppercase tracking-wider mb-6">
-            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">Questions</span>
-          </h2>
-          <p className="text-gray-400 text-base md:text-lg">
-            Find answers to common questions about our products, testing standards, and research policies.
-          </p>
-        </div>
+        {!hideHeading && (
+          <div className="text-center mb-16 faq-heading">
+            <h2 className="text-3xl md:text-5xl font-michroma font-bold uppercase tracking-wider mb-6">
+              Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">Questions</span>
+            </h2>
+            <p className="text-gray-400 text-base md:text-lg">
+              Find answers to common questions about our products, testing standards, and research policies.
+            </p>
+          </div>
+        )}
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (

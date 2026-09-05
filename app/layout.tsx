@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Syncopate, Michroma, Inter } from "next/font/google";
 import "./globals.css";
+import CartDrawer from "@/components/cart/CartDrawer";
+import SessionProvider from "@/components/providers/SessionProvider";
+import AgeGate from "@/components/AgeGate";
+import SiteHeader from "@/components/nav/SiteHeader";
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 
 const futuristicFont = Syncopate({
   subsets: ["latin"],
@@ -32,7 +37,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}>
-        {children}
+        <SmoothScrollProvider>
+          <SessionProvider>
+            <AgeGate />
+            <SiteHeader />
+            {children}
+            <CartDrawer />
+          </SessionProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

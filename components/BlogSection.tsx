@@ -1,31 +1,50 @@
 import React from 'react';
+import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 
-const blogPosts = [
+export interface BlogPostCardData {
+  id: string | number;
+  tag: string;
+  date: string;
+  title: string;
+  image: string;
+  slug: string;
+}
+
+const FALLBACK_BLOG_POSTS: BlogPostCardData[] = [
   {
     id: 1,
     tag: "RESEARCH",
     date: "MARCH 6, 2026",
     title: "Breakthroughs in Peptide Synthesis for Next-Gen Therapeutics",
-    image: "/blog-1.jpg", 
+    image: "/blog-1.jpg",
+    slug: "breakthroughs-in-peptide-synthesis",
   },
   {
     id: 2,
     tag: "TIPS",
     date: "MARCH 6, 2026",
     title: "Best Practices for Maintaining Peptide Stability in Storage",
-    image: "/blog-2.jpg", 
+    image: "/blog-2.jpg",
+    slug: "peptide-stability-storage-best-practices",
   },
   {
     id: 3,
     tag: "SCIENCE",
     date: "MARCH 6, 2026",
     title: "Understanding the Role of GLP-1 Agonists in Metabolic Research",
-    image: "/blog-3.jpg", 
+    image: "/blog-3.jpg",
+    slug: "glp1-agonists-in-metabolic-research",
   }
 ];
 
-const BlogSection = () => {
+interface BlogSectionProps {
+  posts?: BlogPostCardData[];
+}
+
+const BlogSection = ({ posts }: BlogSectionProps) => {
+  const items = posts && posts.length > 0 ? posts : FALLBACK_BLOG_POSTS;
+
   return (
     <section className="bg-gray-50 py-12 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
@@ -39,20 +58,20 @@ const BlogSection = () => {
               Latest in Peptide Synthesis
             </h2>
           </div>
-          <button className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg w-fit">
+          <Link href="/blog" className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg w-fit">
             See More
             <ChevronRight className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
 
         {/* Blog Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
-            <div key={post.id} className="group cursor-pointer flex flex-col">
+          {items.map((post) => (
+            <Link href={`/blog/${post.slug}`} key={post.id} className="group cursor-pointer flex flex-col">
               <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-4 bg-gray-200">
-                <img 
-                  src={post.image} 
-                  alt={post.title} 
+                <img
+                  src={post.image}
+                  alt={post.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
                 />
                 <div className="absolute inset-0 border border-black/5 rounded-2xl pointer-events-none"></div>
@@ -67,7 +86,7 @@ const BlogSection = () => {
                   {post.title}
                 </h3>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
