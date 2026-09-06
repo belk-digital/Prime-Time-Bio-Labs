@@ -1,4 +1,6 @@
 import { config } from "dotenv";
+import fs from "fs";
+import path from "path";
 config({ path: ".env" });
 config({ path: ".env.local" });
 
@@ -30,6 +32,45 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+function buildVariants(skuPrefix: string, dosageOptions: string[], price: number) {
+  return dosageOptions.map((dosage, index) => ({
+    sku: `${skuPrefix}-${slugify(dosage).toUpperCase()}`,
+    isKit: false,
+    price,
+    stock: 200 - index * 20,
+    options: [{ key: "Dosage", value: dosage }],
+  }));
+}
+
+function buildTabsContent(name: string, categoryName: string) {
+  return {
+    productDetailsDescription: `${name} is supplied as a lyophilized powder in a sealed, light-protected vial, synthesized to research-grade standards with a printed lot number for full batch traceability. Each unit ships with handling and reconstitution guidance for laboratory use.`,
+    researchFocusDescription: `${name} is under active investigation within ${categoryName.toLowerCase()} research, with published literature exploring its receptor activity and downstream signaling pathways across in-vitro and pre-clinical models.`,
+    qualityPurityDescription: `Every batch of ${name} is verified via third-party HPLC and mass spectrometry testing to confirm purity, with a Certificate of Analysis available for the specific lot number shipped.`,
+    complianceNoticeDescription: `${name} is sold strictly for laboratory research use. It is not a drug, food, or cosmetic, has not been evaluated by the FDA, and is not intended for human or animal consumption.`,
+  };
+}
+
+function buildFaqs(name: string) {
+  return [
+    {
+      question: `How should ${name} be stored?`,
+      answer:
+        "Store the lyophilized vial in a freezer at -20°C, protected from light. Once reconstituted, keep refrigerated at 2-8°C and use within the timeframe noted on the Certificate of Analysis.",
+    },
+    {
+      question: `Is a Certificate of Analysis included with ${name}?`,
+      answer:
+        "Yes. Every batch is third-party tested and a COA matching the lot number on your vial is available for download from your account after purchase.",
+    },
+    {
+      question: "What is the minimum order requirement?",
+      answer:
+        "There is no minimum order quantity. Bulk pricing is available on select bundles for qualified research institutions — contact us for details.",
+    },
+  ];
+}
+
 const products = [
   {
     name: "Retatrutide",
@@ -39,10 +80,8 @@ const products = [
     price: 149.99,
     categoryName: "GLP-1 & Metabolic",
     isBestSeller: true,
-    hasVariants: true,
-    variants: [
-      { sku: "RETA-10MG-1V", isKit: false, price: 149.99, stock: 200, options: [{ key: "Size", value: "10mg" }] },
-    ],
+    dosageOptions: ["5MG", "10MG", "15MG"],
+    coaPurity: 99,
   },
   {
     name: "Tirzepatide",
@@ -52,10 +91,8 @@ const products = [
     price: 129.99,
     categoryName: "GLP-1 & Metabolic",
     isBestSeller: true,
-    hasVariants: true,
-    variants: [
-      { sku: "TIRZ-10MG-1V", isKit: false, price: 129.99, stock: 200, options: [{ key: "Size", value: "10mg" }] },
-    ],
+    dosageOptions: ["5MG", "10MG", "15MG"],
+    coaPurity: 99.9,
   },
   {
     name: "Semaglutide",
@@ -65,10 +102,8 @@ const products = [
     price: 99.99,
     categoryName: "GLP-1 & Metabolic",
     isBestSeller: true,
-    hasVariants: true,
-    variants: [
-      { sku: "SEMA-5MG-1V", isKit: false, price: 99.99, stock: 200, options: [{ key: "Size", value: "5mg" }] },
-    ],
+    dosageOptions: ["2MG", "5MG", "10MG"],
+    coaPurity: 99.5,
   },
   {
     name: "BPC-157",
@@ -78,10 +113,8 @@ const products = [
     price: 79.99,
     categoryName: "Healing & Recovery",
     isBestSeller: true,
-    hasVariants: true,
-    variants: [
-      { sku: "BPC157-5MG-1V", isKit: false, price: 79.99, stock: 200, options: [{ key: "Size", value: "5mg" }] },
-    ],
+    dosageOptions: ["5MG", "10MG"],
+    coaPurity: 99,
   },
   {
     name: "TB-500",
@@ -90,10 +123,9 @@ const products = [
       "TB-500 is a synthetic fraction of thymosin beta-4, present in virtually all human and animal cells, researched for its potential to promote healing and reduce inflammation.",
     price: 84.99,
     categoryName: "Healing & Recovery",
-    hasVariants: true,
-    variants: [
-      { sku: "TB500-5MG-1V", isKit: false, price: 84.99, stock: 200, options: [{ key: "Size", value: "5mg" }] },
-    ],
+    isBestSeller: false,
+    dosageOptions: ["5MG", "10MG"],
+    coaPurity: 99,
   },
   {
     name: "CJC-1295 / Ipamorelin Blend",
@@ -102,10 +134,9 @@ const products = [
       "A synergistic blend of CJC-1295 (without DAC) and Ipamorelin, studied together for amplified pulsatile growth hormone release in research models.",
     price: 89.99,
     categoryName: "Growth Hormone Secretagogue",
-    hasVariants: true,
-    variants: [
-      { sku: "CJCIPA-1V", isKit: false, price: 89.99, stock: 200, options: [{ key: "Size", value: "5mg/5mg" }] },
-    ],
+    isBestSeller: false,
+    dosageOptions: ["5/5MG", "10/10MG"],
+    coaPurity: 99,
   },
   {
     name: "Selank Nasal Spray",
@@ -114,7 +145,9 @@ const products = [
       "Selank is a synthetic peptide analog studied for its anxiolytic and nootropic properties in a convenient nasal spray research format.",
     price: 64.99,
     categoryName: "Nasal Sprays",
-    hasVariants: false,
+    isBestSeller: false,
+    dosageOptions: ["10ML"],
+    coaPurity: 99,
   },
   {
     name: "Epithalon",
@@ -123,7 +156,9 @@ const products = [
       "Epithalon is a synthetic tetrapeptide studied for its potential role in telomerase activation and longevity research.",
     price: 74.99,
     categoryName: "Longevity & Anti-Aging",
-    hasVariants: false,
+    isBestSeller: false,
+    dosageOptions: ["10MG", "20MG"],
+    coaPurity: 99,
   },
 ];
 
@@ -203,17 +238,48 @@ async function seed() {
     }
   }
 
+  // Product placeholder image — uploaded once to Media, reused across every seeded product.
+  let placeholderImageId: string | number | null = null;
+  const existingMedia = await payload.find({
+    collection: "media",
+    where: { alt: { equals: "Peptide vial placeholder" } },
+    limit: 1,
+  });
+  if (existingMedia.docs.length > 0) {
+    placeholderImageId = existingMedia.docs[0].id;
+    console.log("Placeholder product image already exists in Media.");
+  } else {
+    const imagePath = path.resolve(process.cwd(), "public/product-card-image.png");
+    const fileBuffer = fs.readFileSync(imagePath);
+    const createdMedia = await payload.create({
+      collection: "media",
+      data: { alt: "Peptide vial placeholder" },
+      file: {
+        data: fileBuffer,
+        mimetype: "image/png",
+        name: "product-placeholder.png",
+        size: fileBuffer.length,
+      },
+    });
+    placeholderImageId = createdMedia.id;
+    console.log("Uploaded placeholder product image to Media.");
+  }
+
+  // Remove any previously seeded products so the catalog reflects the current mock data only.
+  const existingProducts = await payload.find({ collection: "products", limit: 1000 });
+  for (const doc of existingProducts.docs) {
+    await payload.delete({ collection: "products", id: doc.id });
+  }
+  if (existingProducts.docs.length > 0) {
+    console.log(`Removed ${existingProducts.docs.length} existing product(s).`);
+  }
+
   // Products
   for (const product of products) {
-    const existing = await payload.find({
-      collection: "products",
-      where: { slug: { equals: product.slug } },
-    });
-    if (existing.docs.length > 0) {
-      console.log(`Product already exists: ${product.name}`);
-      continue;
-    }
     const categoryId = categoryIdByName.get(product.categoryName);
+    const skuPrefix = slugify(product.name).toUpperCase().slice(0, 12);
+    const tabsContent = buildTabsContent(product.name, product.categoryName);
+
     await payload.create({
       collection: "products",
       data: {
@@ -225,10 +291,15 @@ async function seed() {
         status: "active",
         isVisible: true,
         isBestSeller: !!product.isBestSeller,
-        hasVariants: product.hasVariants,
+        hasVariants: true,
         categories: categoryId ? [categoryId] : [],
-        variants: product.hasVariants ? product.variants : undefined,
-        sku: product.hasVariants ? undefined : slugify(product.name).toUpperCase(),
+        variants: buildVariants(skuPrefix, product.dosageOptions, product.price),
+        images: placeholderImageId ? [{ image: placeholderImageId }] : [],
+        ...tabsContent,
+        coaBatchNumber: `PTB-${skuPrefix}-0925`,
+        coaPurity: product.coaPurity,
+        coaAnalyzedDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+        faqs: buildFaqs(product.name),
       } as any,
     });
     console.log(`Created product: ${product.name}`);

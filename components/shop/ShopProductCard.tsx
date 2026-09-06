@@ -4,31 +4,32 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/cart/store";
+import type { ShopMockProduct } from "@/lib/shopCardProduct";
 
-export interface ShopMockProduct {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  dosageOptions: string[];
-  purity: string;
-  type: string;
-  price: number;
-  image: string;
-  featured: boolean;
-  category: string;
-}
+export type { ShopMockProduct };
 
-export default function ShopProductCard({ product }: { product: ShopMockProduct }) {
+export default function ShopProductCard({
+  product,
+  variant = "dark",
+}: {
+  product: ShopMockProduct;
+  variant?: "dark" | "light";
+}) {
   const [selectedDosage, setSelectedDosage] = useState(product.dosageOptions[0]);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
+  const isLight = variant === "light";
+
   return (
-    <div className="product-card group relative bg-[#1c1c1e] rounded-[28px] p-3 flex flex-col hover:-translate-y-1 transition-transform duration-500">
+    <div
+      className={`product-card group relative rounded-2xl p-3 flex flex-col hover:-translate-y-1 transition-transform duration-500 ${
+        isLight ? "bg-white border border-black/5 shadow-sm" : "bg-[#1c1c1e]"
+      }`}
+    >
       <Link href={`/product/${product.slug}`} className="block">
         {/* Image panel */}
-        <div className="relative aspect-square rounded-[20px] bg-[#F5F5F5] overflow-hidden">
+        <div className="relative aspect-square rounded-xl bg-[#F5F5F5] overflow-hidden">
           {product.featured && (
             <span className="absolute top-3 left-3 z-10 px-2.5 py-1 text-[9px] uppercase tracking-widest font-bold text-white bg-black/80 rounded-full">
               Featured
@@ -58,15 +59,35 @@ export default function ShopProductCard({ product }: { product: ShopMockProduct 
       {/* Info */}
       <div className="px-2 pt-4 pb-1">
         <Link href={`/product/${product.slug}`} className="block">
-          <h3 className="text-[15px] font-medium text-white truncate">{product.name}</h3>
-          <p className="text-sm text-gray-400 truncate">{product.type}</p>
+          <h3
+            className={`font-michroma uppercase text-[15px] font-semibold truncate mb-1.5 ${
+              isLight ? "text-gray-900" : "text-white"
+            }`}
+          >
+            {product.name}
+          </h3>
+          <p className={`font-inter text-sm truncate ${isLight ? "text-gray-500" : "text-gray-400"}`}>
+            {product.type}
+          </p>
         </Link>
 
-        <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mt-2">{product.description}</p>
+        <p
+          className={`font-inter text-xs leading-relaxed line-clamp-2 mt-2 ${
+            isLight ? "text-gray-400" : "text-gray-500"
+          }`}
+        >
+          {product.description}
+        </p>
 
         {/* Dosage selection */}
         <div className="mt-3">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">Dosage</p>
+          <p
+            className={`text-[9px] font-bold uppercase tracking-widest mb-1.5 ${
+              isLight ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
+            Dosage
+          </p>
           <div className="flex flex-wrap gap-1.5">
             {product.dosageOptions.map((dosage) => (
               <button
@@ -76,10 +97,14 @@ export default function ShopProductCard({ product }: { product: ShopMockProduct 
                   e.preventDefault();
                   setSelectedDosage(dosage);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border transition-colors ${
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-michroma font-medium border transition-colors ${
                   selectedDosage === dosage
-                    ? "bg-white border-white text-black"
-                    : "bg-transparent border-white/15 text-gray-400 hover:border-white/40"
+                    ? isLight
+                      ? "bg-gray-900 border-gray-900 text-white"
+                      : "bg-white border-white text-black"
+                    : isLight
+                      ? "bg-transparent border-black/10 text-gray-500 hover:border-black/30"
+                      : "bg-transparent border-white/15 text-gray-400 hover:border-white/40"
                 }`}
               >
                 {dosage}
@@ -90,7 +115,9 @@ export default function ShopProductCard({ product }: { product: ShopMockProduct 
 
         {/* Price row */}
         <div className="flex items-center justify-between mt-4">
-          <span className="text-2xl font-semibold text-white">${product.price.toFixed(0)}</span>
+          <span className={`text-2xl font-semibold ${isLight ? "text-gray-900" : "text-white"}`}>
+            ${product.price.toFixed(0)}
+          </span>
           <button
             type="button"
             onClick={() =>
@@ -103,7 +130,11 @@ export default function ShopProductCard({ product }: { product: ShopMockProduct 
               )
             }
             aria-label={`Add ${product.name} (${selectedDosage}) to cart`}
-            className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-black hover:bg-gray-200 transition-colors shrink-0"
+            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
+              isLight
+                ? "bg-gray-900 text-white hover:bg-gray-700"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
           >
             <ShoppingBag className="w-4 h-4" />
           </button>

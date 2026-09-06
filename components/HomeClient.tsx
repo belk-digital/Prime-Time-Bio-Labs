@@ -8,18 +8,19 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PrecisionSection from "@/components/PrecisionSection";
 import GenomicsSection from "@/components/GenomicsSection";
-import BestSellersSection, { type ProductCardData } from "@/components/BestSellersSection";
+import BestSellersSection from "@/components/BestSellersSection";
 import QualitySection from "@/components/QualitySection";
 import FAQSection from "@/components/FAQSection";
 import CategoriesSection, { type CategoryCardData } from "@/components/CategoriesSection";
 import BlogSection, { type BlogPostCardData } from "@/components/BlogSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import type { ShopMockProduct } from "@/lib/shopCardProduct";
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface HomeClientProps {
-  products: ProductCardData[];
+  products: ShopMockProduct[];
   categories: CategoryCardData[];
   posts: BlogPostCardData[];
 }
@@ -125,13 +126,13 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
             <div className="gsap-hero hidden md:flex w-full md:w-[440px]">
               <div className="p-4 bg-[#111111]/80 border border-white/10 rounded-2xl backdrop-blur-md shadow-2xl flex flex-row items-stretch gap-5 group w-full">
                 {/* Left side: Image */}
-                <div className="w-2/5 rounded-xl bg-gradient-to-br from-white/5 to-transparent flex items-center justify-center relative p-3">
-                  <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+                <div className="w-2/5 aspect-square rounded-xl overflow-hidden relative shrink-0">
                   <img
-                    src="/product-retatrutide.png"
+                    src="/product-card-image.png"
                     alt="Retatrutide"
-                    className="h-32 object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500 relative z-10"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+                  <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
 
                 {/* Right side: Details */}

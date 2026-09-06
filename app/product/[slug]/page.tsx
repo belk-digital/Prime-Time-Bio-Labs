@@ -2,8 +2,8 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { notFound } from "next/navigation";
 import ProductClient from "@/components/product/ProductClient";
+import { toShopCardProduct } from "@/lib/shopCardProduct";
 import type { ShopProduct } from "@/lib/types/shop";
-import { getPayloadUser } from "@/lib/auth/getPayloadUser";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +47,7 @@ export default async function ProductPage({
           ],
         },
         limit: 4,
-        depth: 1,
+        depth: 2,
       });
       relatedProducts = (relatedResult.docs ?? []) as unknown as ShopProduct[];
     } catch (err) {
@@ -55,31 +55,11 @@ export default async function ProductPage({
     }
   }
 
-  let isWishlisted = false;
-  try {
-    const user = await getPayloadUser();
-    if (user) {
-      const wishlistResult = await payload.find({
-        collection: "wishlists",
-        where: { user: { equals: user.id } },
-        limit: 1,
-        overrideAccess: true,
-      });
-      const items = wishlistResult.docs?.[0]?.items ?? [];
-      isWishlisted = items.some((item) => {
-        const itemProductId = typeof item.product === "object" ? item.product?.id : item.product;
-        return String(itemProductId) === String(product.id);
-      });
-    }
-  } catch (err) {
-    console.error("Failed to load wishlist state:", err);
-  }
-
   return (
     <ProductClient
       product={product}
-      relatedProducts={relatedProducts}
-      isWishlisted={isWishlisted}
+      cardProduct={toShopCardProduct(product)}
+      relatedProducts={relatedProducts.map(toShopCardProduct)}
     />
   );
 }

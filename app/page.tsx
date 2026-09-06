@@ -1,31 +1,16 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 import HomeClient from "@/components/HomeClient";
-import type { ProductCardData } from "@/components/BestSellersSection";
 import type { CategoryCardData } from "@/components/CategoriesSection";
 import { getCategoryImage } from "@/lib/categoryImages";
 import type { BlogPostCardData } from "@/components/BlogSection";
+import { toShopCardProduct, type ShopMockProduct } from "@/lib/shopCardProduct";
+import type { ShopProduct } from "@/lib/types/shop";
 
-const FALLBACK_PRODUCT_IMAGE = "/product-retatrutide.png";
 const FALLBACK_BLOG_IMAGE = "/blog-1.jpg";
 
 interface MediaRef {
   url?: string | null;
-}
-
-interface ProductImageEntry {
-  image?: MediaRef | string | number | null;
-}
-
-interface ProductDoc {
-  id: string | number;
-  name: string;
-  slug?: string | null;
-  price?: number | null;
-  salePrice?: number | null;
-  images?: ProductImageEntry[] | null;
-  categories?: ({ name?: string | null } | string | number)[] | null;
-  isBestSeller?: boolean | null;
 }
 
 interface CategoryDoc {
@@ -43,42 +28,6 @@ interface BlogPostDoc {
   category?: string | null;
   publishedAt?: string | null;
   featuredImage?: MediaRef | string | number | null;
-}
-
-function formatPrice(price?: number | null, salePrice?: number | null): string {
-  const effective = typeof salePrice === "number" ? salePrice : price;
-  if (typeof effective !== "number") return "$0.00";
-  return `$${effective.toFixed(2)}`;
-}
-
-function getProductImageUrl(product: ProductDoc): string {
-  const firstImage = product.images?.[0]?.image;
-  if (firstImage && typeof firstImage === "object" && "url" in firstImage && firstImage.url) {
-    return firstImage.url;
-  }
-  return FALLBACK_PRODUCT_IMAGE;
-}
-
-function getProductCategoryLabel(product: ProductDoc): string {
-  const first = product.categories?.[0];
-  if (first && typeof first === "object" && "name" in first && first.name) {
-    return first.name;
-  }
-  return "Research Grade Peptide";
-}
-
-function mapProduct(product: ProductDoc): ProductCardData {
-  return {
-    id: product.id,
-    name: product.name,
-    dosage: "",
-    purity: "99%+ Purity",
-    type: getProductCategoryLabel(product),
-    price: formatPrice(product.price, product.salePrice),
-    image: getProductImageUrl(product),
-    featured: !!product.isBestSeller,
-    slug: product.slug || String(product.id),
-  };
 }
 
 function mapCategory(category: CategoryDoc): CategoryCardData {
@@ -119,7 +68,7 @@ function mapBlogPost(post: BlogPostDoc): BlogPostCardData {
 }
 
 export default async function Home() {
-  let products: ProductCardData[] = [];
+  let products: ShopMockProduct[] = [];
   let categories: CategoryCardData[] = [];
   let posts: BlogPostCardData[] = [];
 
@@ -134,6 +83,7 @@ export default async function Home() {
           status: { equals: "active" },
         },
         limit: 4,
+        depth: 2,
         overrideAccess: true,
       }),
       payload.find({
@@ -151,7 +101,7 @@ export default async function Home() {
       }),
     ]);
 
-    products = (productsResult.docs as ProductDoc[]).map(mapProduct);
+    products = (productsResult.docs as unknown as ShopProduct[]).map(toShopCardProduct);
     categories = (categoriesResult.docs as CategoryDoc[]).map(mapCategory);
     posts = (postsResult.docs as BlogPostDoc[]).map(mapBlogPost);
   } catch (error) {

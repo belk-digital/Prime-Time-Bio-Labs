@@ -7,35 +7,10 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FlaskConical, ShieldCheck, Sparkles } from "lucide-react";
 import Footer from "@/components/Footer";
-import ShopProductCard, { type ShopMockProduct } from "@/components/shop/ShopProductCard";
+import ShopProductCard from "@/components/shop/ShopProductCard";
+import type { ShopMockProduct } from "@/lib/shopCardProduct";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const PLACEHOLDER_IMAGE = "/product-card-image.png";
-
-// Placeholder catalog for the shop redesign — real product data will be wired back in later.
-const MOCK_PRODUCTS: ShopMockProduct[] = [
-  { id: "1", name: "Retatrutide", slug: "retatrutide", description: "Triple GIP/GLP-1/glucagon receptor agonist studied for its effects on metabolic pathways and body composition.", dosageOptions: ["5MG", "10MG", "15MG"], purity: "99%+ Purity", type: "Research Grade Peptide", price: 149.99, image: PLACEHOLDER_IMAGE, featured: true, category: "GLP-1 & Metabolic" },
-  { id: "2", name: "Tirzepatide", slug: "tirzepatide", description: "Dual GIP and GLP-1 receptor agonist researched for synergistic effects on glucose homeostasis.", dosageOptions: ["5MG", "10MG", "15MG"], purity: "99.9% Purity", type: "Research Grade Peptide", price: 129.99, image: PLACEHOLDER_IMAGE, featured: false, category: "GLP-1 & Metabolic" },
-  { id: "3", name: "Semaglutide", slug: "semaglutide", description: "GLP-1 receptor agonist widely studied for glycemic control and weight management research.", dosageOptions: ["2MG", "5MG", "10MG"], purity: "99.5% Purity", type: "Research Grade Peptide", price: 99.99, image: PLACEHOLDER_IMAGE, featured: false, category: "GLP-1 & Metabolic" },
-  { id: "4", name: "BPC-157", slug: "bpc-157", description: "Synthetic peptide derived from a protective stomach protein, studied for tissue repair and gut healing.", dosageOptions: ["5MG", "10MG"], purity: "99%+ Purity", type: "Healing Peptide", price: 79.99, image: PLACEHOLDER_IMAGE, featured: false, category: "Healing & Recovery" },
-  { id: "5", name: "TB-500", slug: "tb-500", description: "Synthetic fraction of thymosin beta-4, researched for its potential to promote healing and reduce inflammation.", dosageOptions: ["5MG", "10MG"], purity: "99%+ Purity", type: "Healing Peptide", price: 84.99, image: PLACEHOLDER_IMAGE, featured: false, category: "Healing & Recovery" },
-  { id: "6", name: "CJC-1295 / Ipamorelin", slug: "cjc-1295-ipamorelin-blend", description: "Blend of CJC-1295 and Ipamorelin studied together for amplified pulsatile growth hormone release.", dosageOptions: ["5/5MG", "10/10MG"], purity: "99%+ Purity", type: "Growth Hormone Secretagogue", price: 89.99, image: PLACEHOLDER_IMAGE, featured: false, category: "Growth Hormone Secretagogue" },
-  { id: "7", name: "Selank Nasal Spray", slug: "selank-nasal-spray", description: "Synthetic peptide analog studied for anxiolytic and nootropic properties in a nasal spray format.", dosageOptions: ["10ML"], purity: "99%+ Purity", type: "Nasal Spray", price: 64.99, image: PLACEHOLDER_IMAGE, featured: false, category: "Nasal Sprays" },
-  { id: "8", name: "Epithalon", slug: "epithalon", description: "Synthetic tetrapeptide studied for its potential role in telomerase activation and longevity research.", dosageOptions: ["10MG", "20MG"], purity: "99%+ Purity", type: "Longevity Peptide", price: 74.99, image: PLACEHOLDER_IMAGE, featured: false, category: "Longevity & Anti-Aging" },
-];
-
-const CATEGORIES = [
-  "GLP-1 & Metabolic",
-  "Healing & Recovery",
-  "Peptide Bundles",
-  "Nasal Sprays",
-  "Cosmetic & Skin",
-  "Sexual & Hormonal",
-  "Growth Hormone Secretagogue",
-  "Cognitive & Nootropic",
-  "Longevity & Anti-Aging",
-];
 
 const STATS = [
   { value: "99%", label: "Purity Guarantee", icon: ShieldCheck },
@@ -43,7 +18,13 @@ const STATS = [
   { value: "100%", label: "Batches COA-Verified", icon: FlaskConical },
 ];
 
-function ShopClientInner() {
+function ShopClientInner({
+  products,
+  categories,
+}: {
+  products: ShopMockProduct[];
+  categories: string[];
+}) {
   const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -55,9 +36,9 @@ function ShopClientInner() {
   }, [searchParams]);
 
   const filteredProducts = useMemo(() => {
-    if (!activeCategory) return MOCK_PRODUCTS;
-    return MOCK_PRODUCTS.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
+    if (!activeCategory) return products;
+    return products.filter((p) => p.category === activeCategory);
+  }, [products, activeCategory]);
 
   useGSAP(
     () => {
@@ -147,7 +128,7 @@ function ShopClientInner() {
             >
               All
             </button>
-            {CATEGORIES.map((category) => {
+            {categories.map((category) => {
               const isActive = activeCategory === category;
               return (
                 <button
@@ -190,10 +171,16 @@ function ShopClientInner() {
   );
 }
 
-export default function ShopClient() {
+export default function ShopClient({
+  products,
+  categories,
+}: {
+  products: ShopMockProduct[];
+  categories: string[];
+}) {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#FAFAFA]" />}>
-      <ShopClientInner />
+      <ShopClientInner products={products} categories={categories} />
     </Suspense>
   );
 }
