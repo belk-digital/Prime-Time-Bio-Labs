@@ -22,9 +22,9 @@ export interface AddressItem {
 }
 
 const inputClass =
-  "w-full px-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors";
+  "font-inter w-full px-4 py-3 bg-gray-50 border border-black/10 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors";
 const labelClass =
-  "block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2";
+  "font-inter block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2";
 
 export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -79,18 +79,18 @@ export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-5xl font-michroma uppercase font-bold tracking-wider text-white">
+          <h1 className="font-michroma text-3xl md:text-5xl uppercase font-bold tracking-wider text-gray-900">
             Addresses
           </h1>
-          <p className="text-gray-400 mt-3 max-w-lg text-sm font-light">
+          <p className="font-inter text-gray-500 mt-3 max-w-lg text-sm">
             Manage the shipping and billing addresses on your account.
           </p>
         </div>
         <button
           onClick={openForNew}
-          className="w-fit flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase tracking-widest transition-colors"
+          className="font-inter w-fit flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase tracking-widest transition-colors shadow-[0_8px_20px_rgba(79,70,229,0.25)]"
         >
           <Plus className="w-4 h-4" />
           Add Address
@@ -99,10 +99,10 @@ export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
 
       {message && (
         <div
-          className={`px-4 py-3 rounded-xl text-sm border ${
+          className={`font-inter px-4 py-3 rounded-xl text-sm border ${
             message.type === "success"
-              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-              : "bg-red-500/10 border-red-500/30 text-red-300"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+              : "bg-red-50 border-red-200 text-red-600"
           }`}
         >
           {message.text}
@@ -121,16 +121,16 @@ export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
             <form
               action={handleSubmit}
               key={editingId || "new"}
-              className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col gap-6"
+              className="bg-white border border-black/5 rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-sm"
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-michroma uppercase tracking-wider text-white">
+                <h2 className="font-michroma text-lg uppercase tracking-wider text-gray-900">
                   {editingId ? "Edit Address" : "New Address"}
                 </h2>
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="text-gray-500 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-gray-900 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -178,15 +178,15 @@ export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
                   <input name="phone" type="tel" required defaultValue={editingAddress?.phone} className={inputClass} />
                 </div>
                 <input type="hidden" name="label" defaultValue={editingAddress?.label} />
-                <div className="sm:col-span-2 flex items-center gap-3 pt-2 border-t border-white/10">
+                <div className="sm:col-span-2 flex items-center gap-3 pt-2 border-t border-black/5">
                   <input
                     type="checkbox"
                     id="isDefault"
                     name="isDefault"
                     defaultChecked={editingAddress?.isDefault}
-                    className="w-4 h-4 rounded bg-white/5 border-white/20 accent-indigo-500"
+                    className="w-4 h-4 rounded border-black/20 accent-indigo-600"
                   />
-                  <label htmlFor="isDefault" className="text-sm text-gray-300">
+                  <label htmlFor="isDefault" className="font-inter text-sm text-gray-600">
                     Set as default address
                   </label>
                 </div>
@@ -196,14 +196,14 @@ export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-widest transition-colors"
+                  className="font-inter px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-widest transition-colors"
                 >
                   {isPending ? "Saving..." : "Save Address"}
                 </button>
                 <button
                   type="button"
                   onClick={closeForm}
-                  className="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                  className="font-inter px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   Cancel
                 </button>
@@ -214,66 +214,68 @@ export function AddressesClient({ addresses }: { addresses: AddressItem[] }) {
       </AnimatePresence>
 
       {addresses.length > 0 ? (
-        <div className="flex flex-col divide-y divide-white/5">
-          {addresses.map((address) => (
-            <div
-              key={address.id}
-              className="group flex flex-col md:flex-row md:items-start justify-between py-6 gap-4"
-            >
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 shrink-0">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col text-sm text-gray-400 leading-relaxed">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="text-white font-medium">
-                      {address.firstName} {address.lastName}
-                    </span>
-                    {address.isDefault && (
-                      <span className="text-[9px] font-bold uppercase tracking-widest bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 rounded-full">
-                        Default
-                      </span>
-                    )}
+        <div className="bg-white border border-black/5 rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div className="flex flex-col divide-y divide-gray-100">
+            {addresses.map((address) => (
+              <div
+                key={address.id}
+                className="group flex flex-col md:flex-row md:items-start justify-between py-6 gap-4"
+              >
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-gray-50 border border-black/5 flex items-center justify-center text-gray-400 shrink-0">
+                    <MapPin className="w-4 h-4" />
                   </div>
-                  {address.company && <span>{address.company}</span>}
-                  <span>{address.line1}</span>
-                  {address.line2 && <span>{address.line2}</span>}
-                  <span>
-                    {address.city}, {address.state} {address.postalCode}
-                  </span>
-                  <span>{address.country}</span>
-                  <span className="text-gray-500 mt-2">{address.phone}</span>
+                  <div className="font-inter flex flex-col text-sm text-gray-500 leading-relaxed">
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-gray-900 font-semibold">
+                        {address.firstName} {address.lastName}
+                      </span>
+                      {address.isDefault && (
+                        <span className="text-[9px] font-bold uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full">
+                          Default
+                        </span>
+                      )}
+                    </div>
+                    {address.company && <span>{address.company}</span>}
+                    <span>{address.line1}</span>
+                    {address.line2 && <span>{address.line2}</span>}
+                    <span>
+                      {address.city}, {address.state} {address.postalCode}
+                    </span>
+                    <span>{address.country}</span>
+                    <span className="text-gray-400 mt-2">{address.phone}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 shrink-0">
+                  <button
+                    disabled={isPending}
+                    onClick={() => openForEdit(address.id)}
+                    className="font-inter flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                    Edit
+                  </button>
+                  <button
+                    disabled={isPending}
+                    onClick={() => handleDelete(address.id)}
+                    className="font-inter flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-500/80 hover:text-red-500 transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Delete
+                  </button>
                 </div>
               </div>
-
-              <div className="flex items-center gap-4 shrink-0">
-                <button
-                  disabled={isPending}
-                  onClick={() => openForEdit(address.id)}
-                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors disabled:opacity-50"
-                >
-                  <Edit2 className="w-3 h-3" />
-                  Edit
-                </button>
-                <button
-                  disabled={isPending}
-                  onClick={() => handleDelete(address.id)}
-                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-400/80 hover:text-red-400 transition-colors disabled:opacity-50"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center text-center py-20 bg-white/[0.02] border border-white/10 rounded-2xl">
-          <MapPin className="w-10 h-10 text-gray-600 mb-5" strokeWidth={1} />
-          <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-2">
+        <div className="flex flex-col items-center justify-center text-center py-20 bg-white border border-black/5 rounded-2xl shadow-sm">
+          <MapPin className="w-10 h-10 text-gray-300 mb-5" strokeWidth={1} />
+          <h2 className="font-michroma text-xl uppercase tracking-wider text-gray-900 mb-2">
             No addresses yet
           </h2>
-          <p className="text-gray-500 font-light max-w-sm text-sm">
+          <p className="font-inter text-gray-500 max-w-sm text-sm">
             Add a shipping or billing address to speed up checkout next time.
           </p>
         </div>

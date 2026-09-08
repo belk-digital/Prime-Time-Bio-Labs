@@ -20,13 +20,13 @@ export function MobileNav({ userName }: MobileNavProps) {
       ?.label ?? "Account";
 
   return (
-    <div className="lg:hidden sticky top-24 md:top-28 z-40 bg-[#0b0b0b]/95 backdrop-blur-md border-b border-white/10">
+    <div className="lg:hidden sticky top-0 z-40 bg-black/95 backdrop-blur-md">
       <div className="flex items-center justify-between px-4 py-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+          <p className="font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500">
             {userName}
           </p>
-          <h2 className="text-lg font-michroma uppercase tracking-wider text-white">
+          <h2 className="font-michroma text-lg uppercase tracking-wider text-white">
             {current}
           </h2>
         </div>
@@ -49,10 +49,10 @@ export function MobileNav({ userName }: MobileNavProps) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium uppercase tracking-wide transition-all ${
+                className={`font-michroma flex items-center gap-3 px-4 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${
                   active
-                    ? "bg-indigo-600/20 border border-indigo-500/40 text-white"
-                    : "border border-transparent text-gray-400 hover:text-white hover:bg-white/5"
+                    ? "bg-indigo-600 text-white"
+                    : "text-gray-500 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -62,7 +62,7 @@ export function MobileNav({ userName }: MobileNavProps) {
           })}
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium uppercase tracking-wide text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent transition-all"
+            className="font-michroma flex items-center gap-3 px-4 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             Sign Out

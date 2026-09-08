@@ -177,9 +177,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((product) => {
-                const productImage = product.images?.[0]?.image;
-                const productImageUrl =
-                  productImage && typeof productImage === "object" ? productImage.url ?? undefined : undefined;
+                // TEMPORARY: local media storage isn't reachable on Vercel yet (R2 not
+                // connected), so serve the shared placeholder instead of the stored URL.
+                void product.images;
+                const productImageUrl = "/product-card-image.png";
                 const price = product.salePrice ?? product.price;
                 return (
                   <Link

@@ -8,7 +8,7 @@ import { ChevronDown } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const faqs = [
+const DEFAULT_FAQS = [
   {
     question: "What is the purity of your research peptides?",
     answer: "All our peptides undergo strict third-party HPLC and MS testing to guarantee a minimum purity of 99%. We provide Certificates of Analysis (COA) for every batch to verify these standards."
@@ -29,9 +29,12 @@ const faqs = [
 
 interface FAQSectionProps {
   hideHeading?: boolean;
+  title?: React.ReactNode;
+  subtitle?: string;
+  faqs?: { question: string; answer: string }[];
 }
 
-export default function FAQSection({ hideHeading = false }: FAQSectionProps) {
+export default function FAQSection({ hideHeading = false, title, subtitle, faqs = DEFAULT_FAQS }: FAQSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -72,10 +75,14 @@ export default function FAQSection({ hideHeading = false }: FAQSectionProps) {
         {!hideHeading && (
           <div className="text-center mb-16 faq-heading">
             <h2 className="text-3xl md:text-5xl font-michroma font-bold uppercase tracking-wider mb-6">
-              Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">Questions</span>
+              {title ?? (
+                <>
+                  Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">Questions</span>
+                </>
+              )}
             </h2>
             <p className="text-gray-400 text-base md:text-lg">
-              Find answers to common questions about our products, testing standards, and research policies.
+              {subtitle ?? "Find answers to common questions about our products, testing standards, and research policies."}
             </p>
           </div>
         )}

@@ -34,14 +34,13 @@ export function WishlistClient({ items }: { items: WishlistItemData[] }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-5xl font-michroma uppercase font-bold tracking-wider text-white">
+          <h1 className="font-michroma text-3xl md:text-5xl uppercase font-bold tracking-wider text-gray-900">
             Wishlist
           </h1>
-          <p className="text-gray-400 mt-3 max-w-lg text-sm font-light">
-            {displayItems.length} item{displayItems.length === 1 ? "" : "s"}{" "}
-            saved for later.
+          <p className="font-inter text-gray-500 mt-3 max-w-lg text-sm">
+            {displayItems.length} item{displayItems.length === 1 ? "" : "s"} saved for later.
           </p>
         </div>
       </div>
@@ -51,18 +50,18 @@ export function WishlistClient({ items }: { items: WishlistItemData[] }) {
           {displayItems.map((item) => (
             <div
               key={item.variantSku}
-              className="group relative bg-white/[0.02] border border-white/10 rounded-2xl p-5 hover:bg-white/[0.04] transition-all flex flex-col"
+              className="group relative bg-white border border-black/5 rounded-2xl p-5 hover:shadow-lg transition-all flex flex-col shadow-sm"
             >
               <button
                 disabled={isPending}
                 onClick={() => handleRemove(item.variantSku)}
-                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-500/20 hover:border-red-500/30 transition-colors disabled:opacity-50"
+                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white border border-black/5 flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors disabled:opacity-50 shadow-sm"
                 aria-label="Remove from wishlist"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="relative h-40 mb-5 flex items-center justify-center bg-white/[0.02] rounded-xl overflow-hidden">
+              <div className="relative h-40 mb-5 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
                 {item.image ? (
                   <img
                     src={item.image}
@@ -70,7 +69,7 @@ export function WishlistClient({ items }: { items: WishlistItemData[] }) {
                     className="h-full w-full object-contain p-4"
                   />
                 ) : (
-                  <Heart className="w-8 h-8 text-gray-700" />
+                  <Heart className="w-8 h-8 text-gray-300" />
                 )}
               </div>
 
@@ -78,26 +77,26 @@ export function WishlistClient({ items }: { items: WishlistItemData[] }) {
                 {item.slug ? (
                   <Link
                     href={`/product/${item.slug}`}
-                    className="text-base font-medium text-white group-hover:text-indigo-400 transition-colors"
+                    className="font-inter text-base font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors"
                   >
                     {item.name}
                   </Link>
                 ) : (
-                  <span className="text-base font-medium text-white">
+                  <span className="font-inter text-base font-semibold text-gray-900">
                     {item.name}
                   </span>
                 )}
-                <span className="text-xs text-gray-500 mt-1">
+                <span className="font-inter text-xs text-gray-400 mt-1">
                   Qty {item.quantity}
                 </span>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                  <span className="text-lg font-light text-white">
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-black/5">
+                  <span className="font-inter text-lg font-bold text-gray-900">
                     ${item.price.toFixed(2)}
                   </span>
                   {item.slug && (
                     <Link
                       href={`/product/${item.slug}`}
-                      className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-indigo-600 transition-colors"
+                      className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white hover:bg-indigo-700 transition-colors"
                     >
                       <ShoppingBag className="w-4 h-4" />
                     </Link>
@@ -108,17 +107,17 @@ export function WishlistClient({ items }: { items: WishlistItemData[] }) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center text-center py-20 bg-white/[0.02] border border-white/10 rounded-2xl">
-          <Heart className="w-10 h-10 text-gray-600 mb-5" strokeWidth={1} />
-          <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-2">
+        <div className="flex flex-col items-center justify-center text-center py-20 bg-white border border-black/5 rounded-2xl shadow-sm">
+          <Heart className="w-10 h-10 text-gray-300 mb-5" strokeWidth={1} />
+          <h2 className="font-michroma text-xl uppercase tracking-wider text-gray-900 mb-2">
             Your wishlist is empty
           </h2>
-          <p className="text-gray-500 font-light max-w-sm mb-8 text-sm">
+          <p className="font-inter text-gray-500 max-w-sm mb-8 text-sm">
             Save products you love and find them here anytime.
           </p>
           <Link
-            href="/"
-            className="px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase tracking-widest transition-colors"
+            href="/shop"
+            className="font-inter px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase tracking-widest transition-colors shadow-[0_8px_20px_rgba(79,70,229,0.25)]"
           >
             Start Browsing
           </Link>

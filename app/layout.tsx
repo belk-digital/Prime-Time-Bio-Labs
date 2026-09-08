@@ -5,6 +5,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import SessionProvider from "@/components/providers/SessionProvider";
 import AgeGate from "@/components/AgeGate";
 import SiteHeader from "@/components/nav/SiteHeader";
+import HeaderVisibility from "@/components/nav/HeaderVisibility";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 
 const futuristicFont = Syncopate({
@@ -40,7 +41,9 @@ export default function RootLayout({
         <SmoothScrollProvider>
           <SessionProvider>
             <AgeGate />
-            <SiteHeader />
+            <HeaderVisibility>
+              <SiteHeader />
+            </HeaderVisibility>
             {children}
             <CartDrawer />
           </SessionProvider>

@@ -34,14 +34,9 @@ export default async function WishlistPage() {
           ? item.product
           : null;
 
-      let imageUrl: string | null = null;
-      if (
-        product?.images?.length &&
-        typeof product.images[0].image === "object" &&
-        product.images[0].image !== null
-      ) {
-        imageUrl = product.images[0].image.url || null;
-      }
+      // TEMPORARY: local media storage isn't reachable on Vercel yet (R2 not connected),
+      // so serve the shared placeholder instead of the stored URL.
+      const imageUrl = product ? "/product-card-image.png" : null;
 
       items.push({
         variantSku: item.variantSku,

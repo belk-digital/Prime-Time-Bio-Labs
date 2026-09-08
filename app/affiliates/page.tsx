@@ -1,16 +1,36 @@
 import Link from "next/link";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { BadgePercent, Clock, DollarSign, LineChart, LogIn } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  ArrowUpRight,
+  BadgePercent,
+  BarChart3,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  FileText,
+  Link2,
+  LineChart,
+  LogIn,
+  ShieldCheck,
+  TrendingUp,
+  XCircle,
+} from "lucide-react";
 import { getPayloadUser } from "@/lib/auth/getPayloadUser";
 import { getAffiliateForUser } from "@/lib/affiliate/getAffiliateForUser";
 import type { AffiliateSettings } from "@/lib/types/affiliate";
 import ApplyForm from "@/components/affiliates/ApplyForm";
+import AffiliateBenefitsSection from "@/components/affiliates/AffiliateBenefitsSection";
+import AboutPageAnimator from "@/components/about/AboutPageAnimator";
+import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Affiliate Program | Primetime Biolabs",
-  description: "Partner with Primetime Biolabs and earn commission promoting research-grade peptides.",
+  description:
+    "Partner with Primetime Biolabs and earn commission promoting research-grade peptides, with real-time tracking and monthly payouts.",
 };
 
 export const dynamic = "force-dynamic";
@@ -34,135 +54,584 @@ async function getAffiliateSettings(): Promise<AffiliateSettings> {
   }
 }
 
+const processSteps = [
+  {
+    number: "01",
+    title: "Join The Program",
+    description:
+      "Apply and get approved to join the affiliate program — there's no cost and no minimum audience size required.",
+  },
+  {
+    number: "02",
+    title: "Get Your Links",
+    description:
+      "Access your unique referral link and personal discount code from your affiliate dashboard as soon as you're approved.",
+  },
+  {
+    number: "03",
+    title: "Share Your Content",
+    description:
+      "Promote through your blog, social media, email list, or wherever your audience already spends time, following our content standards.",
+  },
+  {
+    number: "04",
+    title: "Earn Commissions",
+    description:
+      "Get paid every month for every qualifying referral, tracked automatically through your link and discount code.",
+  },
+];
+
+const purposeFeatures = [
+  {
+    icon: TrendingUp,
+    title: "Commission On Every Sale",
+    description: "Earn on every qualified referral you send our way, paid out monthly.",
+  },
+  {
+    icon: BadgePercent,
+    title: "A Discount For Your Audience",
+    description: "Referred customers get a discount, making your link an easy recommendation.",
+  },
+  {
+    icon: LineChart,
+    title: "Real-Time Tracking",
+    description: "Watch clicks, conversions, and pending commissions update live in your dashboard.",
+  },
+  {
+    icon: DollarSign,
+    title: "Reliable Monthly Payouts",
+    description: "Approved commissions are paid out on a predictable monthly schedule.",
+  },
+];
+
+const prohibitedPractices = [
+  "No medical, dosing, or human-use claims about any research peptide in affiliate content",
+  "No bodybuilding, athletic-performance, or weight-loss outcome framing",
+  "No bidding on “Primetime Biolabs” brand terms in paid search advertising",
+  "No unauthorized use of the Primetime Biolabs logo, trademark, or brand assets",
+  "No guaranteed-outcome, cure, or treatment claims of any kind",
+];
+
+const contentStandards = [
+  "Maintain a research-focused, scientific tone consistent with our own RUO positioning",
+  "Disclose the affiliate relationship clearly, consistent with FTC guidance",
+  "Link only to current, approved product and category pages",
+  "Keep all messaging consistent with “Research Use Only, not for human consumption” labeling",
+  "Use only approved marketing assets and creatives provided through the affiliate dashboard",
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      name: "Primetime Biolabs Affiliate Program",
+      description:
+        "Earn commission promoting Primetime Biolabs research-grade peptides, with real-time tracking and monthly payouts.",
+      provider: { "@type": "Organization", name: "Primetime Biolabs" },
+    },
+  ],
+};
+
 export default async function AffiliatesPage() {
   const [user, settings] = await Promise.all([getPayloadUser(), getAffiliateSettings()]);
   const affiliate = user ? await getAffiliateForUser(user.id) : null;
 
-  const commissionLabel =
-    settings.defaultCommissionType === "percentage"
-      ? `${settings.defaultCommissionRate}%`
-      : `$${settings.defaultCommissionRate}`;
+  const isPercentage = settings.defaultCommissionType === "percentage";
+  const commissionLabel = isPercentage
+    ? `${settings.defaultCommissionRate}%`
+    : `$${settings.defaultCommissionRate}`;
+
+  const exampleOrder = 200;
+  const exampleCommission = isPercentage
+    ? (exampleOrder * settings.defaultCommissionRate) / 100
+    : settings.defaultCommissionRate;
+
+  const avgOrder = 150;
+  const perReferralCommission = isPercentage ? (avgOrder * settings.defaultCommissionRate) / 100 : settings.defaultCommissionRate;
+
+  const faqs = [
+    {
+      question: "How does the affiliate program work?",
+      answer: `You apply, get approved, and receive a unique referral link and discount code from your dashboard. When someone orders using either one within the ${settings.defaultCookieDurationDays}-day cookie window, you earn a ${commissionLabel} commission.`,
+    },
+    {
+      question: "How do I get paid as an affiliate?",
+      answer: `Approved commissions are paid out monthly once you cross the $${settings.defaultMinimumPayoutThreshold} minimum payout threshold, using whichever payout method you set in your affiliate dashboard.`,
+    },
+    {
+      question: "When do I receive my commissions?",
+      answer: `Commissions are marked pending for ${settings.defaultPendingPeriodDays} days after a sale (to account for returns), then approved and included in the next monthly payout.`,
+    },
+    {
+      question: "Can beginners join this affiliate program?",
+      answer:
+        "Yes. There's no minimum audience size or prior affiliate experience required to apply — the application is reviewed for fit with our content standards, not follower count.",
+    },
+    {
+      question: "How are referrals tracked?",
+      answer:
+        "Referrals are tracked two ways at once — through your unique link and through your personal discount code — so a sale is credited to you whether the customer clicks through or types the code in directly.",
+    },
+    {
+      question: "What is cookie duration and why does it matter?",
+      answer: `Cookie duration is how long a referral click stays credited to you after someone visits through your link. Ours is ${settings.defaultCookieDurationDays} days, meaning a purchase made within that window still counts as your referral.`,
+    },
+    {
+      question: "Are there any costs to join the affiliate program?",
+      answer:
+        "No. The affiliate program is free to join, with no application fee, subscription cost, or minimum spend required to start earning commission.",
+    },
+    {
+      question: "What marketing methods can I use?",
+      answer:
+        "Blogs, email newsletters, and social media are all permitted, provided your content follows our content standards — research-focused, RUO-consistent language rather than medical or dosing claims.",
+    },
+    {
+      question: "Can I use my own discount code?",
+      answer:
+        "Yes. Every approved affiliate receives a personal discount code that customers can apply directly at checkout, in addition to their unique referral link.",
+    },
+    {
+      question: "What happens if someone uses another affiliate's code after clicking my link?",
+      answer:
+        "Our dual tracking system credits the touchpoint actually used at checkout — if a different affiliate's code is applied at purchase, that affiliate receives the commission for that order.",
+    },
+  ];
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
-      {/* Hero */}
-      <section className="relative bg-[#0a0a0a] text-gray-200 overflow-hidden pt-40 pb-24 px-6 md:px-12 lg:px-24">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <div className="inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded uppercase">
-            Affiliate Program
-          </div>
-          <h1 className="text-4xl md:text-6xl font-michroma uppercase font-bold tracking-wider text-white leading-[1.2] mb-6">
-            Partner With <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Primetime</span>
-          </h1>
-          <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">
-            Earn commission introducing researchers and labs to the highest purity peptides on the market. Apply below to get your own referral link and coupon code.
-          </p>
-        </div>
+    <main className="min-h-screen bg-white pt-32 md:pt-40">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-        {/* Stat cards */}
-        <div className="relative z-10 max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16">
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 text-center backdrop-blur-md">
-            <BadgePercent className="w-8 h-8 text-indigo-400 mx-auto mb-4" />
-            <div className="text-3xl font-michroma font-bold text-white mb-1">{commissionLabel}</div>
-            <p className="text-xs uppercase tracking-widest text-gray-400">Commission Rate</p>
+      <AboutPageAnimator>
+        {/* Header */}
+        <section className="px-6 md:px-12 lg:px-24 pb-16 text-center">
+          <div className="max-w-2xl mx-auto">
+            <h1 className="about-fade text-4xl md:text-5xl font-michroma font-bold text-gray-900 leading-tight mb-6">
+              Partner with{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                Primetime Biolabs
+              </span>
+            </h1>
+            <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed mb-8">
+              Earn commission introducing researchers and labs to the highest purity peptides on the market — with
+              real-time tracking and monthly payouts.
+            </p>
+            <Link
+              href="#apply"
+              className="about-fade font-inter inline-flex items-center gap-2 pl-6 pr-2 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+            >
+              Apply Now
+              <span className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+                <ArrowUpRight className="w-4 h-4" />
+              </span>
+            </Link>
           </div>
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 text-center backdrop-blur-md">
-            <Clock className="w-8 h-8 text-indigo-400 mx-auto mb-4" />
-            <div className="text-3xl font-michroma font-bold text-white mb-1">{settings.defaultCookieDurationDays}d</div>
-            <p className="text-xs uppercase tracking-widest text-gray-400">Cookie Duration</p>
-          </div>
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 text-center backdrop-blur-md">
-            <DollarSign className="w-8 h-8 text-indigo-400 mx-auto mb-4" />
-            <div className="text-3xl font-michroma font-bold text-white mb-1">${settings.defaultMinimumPayoutThreshold}</div>
-            <p className="text-xs uppercase tracking-widest text-gray-400">Minimum Payout</p>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* How it works */}
-      <section className="bg-gray-50 py-20 px-6 md:px-12 lg:px-24">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center mb-20">
-          <div>
-            <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-4 font-michroma">1</div>
-            <h3 className="font-michroma uppercase tracking-wide text-gray-900 mb-2">Apply</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Submit your application below with a bit about your audience and promotion plans.</p>
+        {/* Banner */}
+        <section className="pb-24">
+          <div className="about-fade w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto rounded-3xl overflow-hidden">
+            <img
+              src="/cta-banner.png"
+              alt="Primetime Biolabs affiliate program"
+              className="w-full h-[280px] md:h-[420px] object-cover"
+            />
           </div>
-          <div>
-            <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-4 font-michroma">2</div>
-            <h3 className="font-michroma uppercase tracking-wide text-gray-900 mb-2">Share</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Once approved, share your unique referral link or coupon code with your audience.</p>
-          </div>
-          <div>
-            <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-4 font-michroma">3</div>
-            <h3 className="font-michroma uppercase tracking-wide text-gray-900 mb-2">Earn</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">Track clicks and conversions in your dashboard and get paid once you hit the payout threshold.</p>
-          </div>
-        </div>
+        </section>
 
-        {/* Apply / status panel */}
-        <div className="max-w-xl mx-auto">
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-10 shadow-2xl">
-            {!user && (
-              <div className="text-center">
-                <LogIn className="w-10 h-10 text-indigo-400 mx-auto mb-4" />
-                <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-3">Log In To Apply</h2>
-                <p className="text-gray-400 text-sm mb-6">
-                  Create a free account or log in to submit your affiliate application.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link
-                    href="/login?callbackUrl=/affiliates"
-                    className="px-6 py-3 text-sm font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors"
+        {/* Purpose */}
+        <section className="relative bg-black pt-24 overflow-hidden">
+          <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+            <div className="about-stagger flex flex-col gap-5 pb-10 lg:pb-24 order-2 lg:order-1">
+              {purposeFeatures.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <div
+                    key={feature.title}
+                    className="about-stagger-item border border-white/10 bg-white/[0.02] rounded-2xl p-6 hover:bg-white/[0.04] transition-colors"
                   >
-                    Log In
-                  </Link>
-                  <Link
-                    href="/register?callbackUrl=/affiliates"
-                    className="px-6 py-3 text-sm font-bold uppercase tracking-widest text-gray-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors"
-                  >
-                    Create Account
-                  </Link>
+                    <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center mb-4">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <h3 className="font-inter font-semibold text-white mb-1">{feature.title}</h3>
+                    <p className="font-inter text-gray-400 text-sm leading-relaxed">{feature.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="relative min-h-[420px] lg:min-h-full order-1 lg:order-2">
+              <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-white mb-3">
+                Earn Passive Income Promoting Research Peptides
+              </h2>
+              <p className="about-fade font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-8 max-w-md">
+                Our affiliate program is built for content creators, bloggers, and scientific-community voices who
+                want a straightforward, well-tested way to earn from an audience already interested in
+                research-grade peptides.
+              </p>
+              <img
+                src="/gloves-holding-vial.png"
+                alt="Researcher handling a research peptide vial"
+                className="about-fade absolute bottom-0 -right-4 md:-right-8 lg:-right-12 w-[85%] md:w-[75%] h-[300px] md:h-[380px] object-cover object-center"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Why partner with us */}
+        <AffiliateBenefitsSection />
+
+        {/* How it works */}
+        <section className="py-24">
+          <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
+            <div className="max-w-2xl mb-14">
+              <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
+                Simple 4-Step Process To Start Earning
+              </h2>
+              <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed">
+                Our affiliate program is designed with your success in mind — a straightforward way to earn from
+                every referral, with no technical setup required.
+              </p>
+            </div>
+
+            <div className="about-stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+              {processSteps.map((step) => (
+                <div key={step.number} className="about-stagger-item border border-gray-200 rounded-2xl p-6">
+                  <span className="text-3xl font-michroma font-bold text-indigo-100 block mb-4">{step.number}</span>
+                  <h3 className="font-inter font-semibold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="font-inter text-gray-500 text-sm leading-relaxed">{step.description}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="about-fade rounded-3xl overflow-hidden">
+              <img
+                src="/shop-banner-image.png"
+                alt="Primetime Biolabs research peptides"
+                className="w-full h-[240px] md:h-[360px] object-cover"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Commission structure */}
+        <section className="bg-gray-50 py-24">
+          <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
+            <div className="about-fade bg-black rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-16 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/20 blur-[150px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4" />
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none translate-y-1/3 -translate-x-1/4" />
+
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-px bg-indigo-400" />
+                    <span className="font-inter text-xs uppercase tracking-[0.2em] text-indigo-400 font-bold">
+                      Commission Structure
+                    </span>
+                  </div>
+                  <h2 className="font-michroma text-3xl md:text-5xl font-bold text-white mb-6 uppercase leading-[1.1]">
+                    Industry-Leading Payouts
+                  </h2>
+                  <p className="font-inter text-white/60 text-base md:text-lg mb-10 leading-relaxed max-w-lg">
+                    See how earnings scale with order size at the standard {commissionLabel} commission rate.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                      <span className="font-michroma block text-3xl font-bold text-white mb-2">
+                        {settings.defaultCookieDurationDays}-Day
+                      </span>
+                      <span className="font-inter text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2 block">
+                        Cookie Duration
+                      </span>
+                      <p className="font-inter text-xs text-white/50">
+                        A click stays credited to you for {settings.defaultCookieDurationDays} days, even without a
+                        code at checkout.
+                      </p>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                      <span className="font-michroma block text-3xl font-bold text-white mb-2">Dual</span>
+                      <span className="font-inter text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2 block">
+                        Attribution System
+                      </span>
+                      <p className="font-inter text-xs text-white/50">
+                        Both link tracking and coupon-code tracking ensure you never miss a commission.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 flex flex-col">
+                  <h3 className="font-inter text-xs font-bold uppercase tracking-widest text-white/40 mb-8 flex justify-between items-center">
+                    <span>Commission Example</span>
+                    <span className="px-3 py-1 rounded-full bg-white/5 text-white/80">LIVE CALCULATION</span>
+                  </h3>
+
+                  <div className="space-y-6 flex-1">
+                    <div className="flex justify-between items-end border-b border-white/5 pb-4">
+                      <span className="font-inter text-white/40 text-xs font-bold tracking-widest uppercase">
+                        Customer Order Value
+                      </span>
+                      <span className="font-mono text-2xl text-white">${exampleOrder.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-end pb-2">
+                      <span className="font-inter text-indigo-400 text-sm font-bold tracking-widest uppercase">
+                        Your Commission ({commissionLabel})
+                      </span>
+                      <span className="font-mono text-4xl md:text-5xl font-bold text-indigo-400">
+                        ${exampleCommission.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 pt-8 border-t border-white/10">
+                    <h3 className="font-inter text-xs font-bold uppercase tracking-widest text-white/40 mb-6">
+                      Realistic Monthly Earnings <span className="normal-case font-normal">(@ ${avgOrder} avg order)</span>
+                    </h3>
+                    <div className="space-y-3">
+                      {[10, 25, 50].map((referrals) => (
+                        <div
+                          key={referrals}
+                          className={`flex justify-between items-center gap-4 p-4 rounded-2xl ${
+                            referrals === 50 ? "bg-indigo-500/10 border border-indigo-500/20" : "bg-white/5"
+                          }`}
+                        >
+                          <div className="font-inter font-bold text-white/80 text-sm">{referrals} referrals/mo</div>
+                          <div className={`font-mono text-lg ${referrals === 50 ? "text-indigo-400 font-bold" : "text-white"}`}>
+                            ${(perReferralCommission * referrals).toFixed(2)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
-
-            {user && affiliate && (
-              <div className="text-center">
-                <LineChart className="w-10 h-10 text-indigo-400 mx-auto mb-4" />
-                <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-3">
-                  {affiliate.status === "approved" ? "You're an Affiliate" : "Application Status"}
-                </h2>
-                <p className="text-gray-400 text-sm mb-6">
-                  {affiliate.status === "approved" &&
-                    "Head to your dashboard to grab your referral link and track your earnings."}
-                  {affiliate.status === "pending" && "Your affiliate account is awaiting approval."}
-                  {affiliate.status === "suspended" && "Your affiliate account is currently suspended. Contact support for details."}
-                  {affiliate.status === "rejected" && "Your affiliate account was not approved at this time."}
-                </p>
-                {affiliate.status === "approved" && (
-                  <Link
-                    href="/affiliates/dashboard"
-                    className="inline-block px-6 py-3 text-sm font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors"
-                  >
-                    Go To Dashboard
-                  </Link>
-                )}
-              </div>
-            )}
-
-            {user && !affiliate && (
-              <>
-                <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-6 text-center">
-                  Apply To Become An Affiliate
-                </h2>
-                <ApplyForm />
-              </>
-            )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Standards */}
+        <section className="py-24">
+          <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
+            <div className="max-w-2xl mb-14">
+              <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
+                Content Standards &amp; Compliance
+              </h2>
+              <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed">
+                We keep our affiliate program aligned with our own research-use-only positioning. Here&apos;s what
+                we require, and what we don&apos;t allow.
+              </p>
+            </div>
+
+            <div className="about-stagger grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="about-stagger-item bg-black rounded-[2rem] p-8 md:p-10 border border-red-500/10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shrink-0 border border-red-500/20">
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                  </div>
+                  <h3 className="font-inter text-xl font-bold text-white tracking-tight">Prohibited Practices</h3>
+                </div>
+                <ul className="space-y-4">
+                  {prohibitedPractices.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <XCircle className="w-4 h-4 text-red-500/80 shrink-0 mt-0.5" />
+                      <span className="font-inter text-white/70 text-sm leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="about-stagger-item bg-black rounded-[2rem] p-8 md:p-10 border border-indigo-500/10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/20">
+                    <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                  </div>
+                  <h3 className="font-inter text-xl font-bold text-white tracking-tight">Content Standards</h3>
+                </div>
+                <ul className="space-y-4">
+                  {contentStandards.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-indigo-400/80 shrink-0 mt-0.5" />
+                      <span className="font-inter text-white/70 text-sm leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Management tools */}
+        <section className="bg-gray-50 py-24">
+          <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
+            <div className="text-center mb-14">
+              <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
+                Everything You Need To Scale
+              </h2>
+              <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                A complete affiliate toolkit, from live analytics to ready-to-use marketing assets.
+              </p>
+            </div>
+
+            <div className="about-stagger grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="about-stagger-item bg-white rounded-2xl p-8 border border-black/5 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-6">
+                  <BarChart3 className="w-6 h-6 text-indigo-600" />
+                </div>
+                <h3 className="font-inter font-semibold text-gray-900 mb-2">Real-Time Analytics</h3>
+                <p className="font-inter text-gray-500 text-sm leading-relaxed">
+                  Track clicks, conversions, and earnings as they happen from a live affiliate dashboard.
+                </p>
+              </div>
+              <div className="about-stagger-item bg-white rounded-2xl p-8 border border-black/5 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-6">
+                  <Link2 className="w-6 h-6 text-indigo-600" />
+                </div>
+                <h3 className="font-inter font-semibold text-gray-900 mb-2">Link Management</h3>
+                <p className="font-inter text-gray-500 text-sm leading-relaxed">
+                  Generate and organize custom referral links for different campaigns and platforms.
+                </p>
+              </div>
+              <div className="about-stagger-item bg-white rounded-2xl p-8 border border-black/5 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-6">
+                  <BadgePercent className="w-6 h-6 text-indigo-600" />
+                </div>
+                <h3 className="font-inter font-semibold text-gray-900 mb-2">Discount Code Management</h3>
+                <p className="font-inter text-gray-500 text-sm leading-relaxed">
+                  Your personal discount code lets customers convert directly at checkout.
+                </p>
+              </div>
+              <div className="about-stagger-item bg-white rounded-2xl p-8 border border-black/5 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center mb-6">
+                  <FileText className="w-6 h-6 text-indigo-600" />
+                </div>
+                <h3 className="font-inter font-semibold text-gray-900 mb-2">Commission Reports</h3>
+                <p className="font-inter text-gray-500 text-sm leading-relaxed">
+                  Download detailed commission statements and approved marketing resources.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Apply */}
+        <section id="apply" className="bg-black py-24 px-6 md:px-12 lg:px-24 scroll-mt-32">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-white mb-4">
+                Start Earning {commissionLabel} Commission Today
+              </h2>
+              <p className="about-fade font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-6">
+                Join a growing network of partners earning recurring commission promoting research-grade peptides
+                backed by verified purity and real testing data.
+              </p>
+              <div className="about-stagger grid grid-cols-3 gap-4">
+                <div className="about-stagger-item bg-white/[0.02] border border-white/10 rounded-2xl p-5 text-center">
+                  <BadgePercent className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
+                  <div className="font-michroma text-xl font-bold text-white">{commissionLabel}</div>
+                  <p className="font-inter text-[10px] uppercase tracking-widest text-gray-400 mt-1">Commission</p>
+                </div>
+                <div className="about-stagger-item bg-white/[0.02] border border-white/10 rounded-2xl p-5 text-center">
+                  <Clock className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
+                  <div className="font-michroma text-xl font-bold text-white">{settings.defaultCookieDurationDays}d</div>
+                  <p className="font-inter text-[10px] uppercase tracking-widest text-gray-400 mt-1">Cookie</p>
+                </div>
+                <div className="about-stagger-item bg-white/[0.02] border border-white/10 rounded-2xl p-5 text-center">
+                  <DollarSign className="w-6 h-6 text-indigo-400 mx-auto mb-2" />
+                  <div className="font-michroma text-xl font-bold text-white">
+                    ${settings.defaultMinimumPayoutThreshold}
+                  </div>
+                  <p className="font-inter text-[10px] uppercase tracking-widest text-gray-400 mt-1">Min. Payout</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="about-fade bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 md:p-10 shadow-2xl">
+              {!user && (
+                <div className="text-center">
+                  <LogIn className="w-10 h-10 text-indigo-400 mx-auto mb-4" />
+                  <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-3">Log In To Apply</h2>
+                  <p className="font-inter text-gray-400 text-sm mb-6">
+                    Create a free account or log in to submit your affiliate application.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Link
+                      href="/login?callbackUrl=/affiliates"
+                      className="font-inter px-6 py-3 text-sm font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors"
+                    >
+                      Log In
+                    </Link>
+                    <Link
+                      href="/register?callbackUrl=/affiliates"
+                      className="font-inter px-6 py-3 text-sm font-bold uppercase tracking-widest text-gray-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors"
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {user && affiliate && (
+                <div className="text-center">
+                  <LineChart className="w-10 h-10 text-indigo-400 mx-auto mb-4" />
+                  <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-3">
+                    {affiliate.status === "approved" ? "You're an Affiliate" : "Application Status"}
+                  </h2>
+                  <p className="font-inter text-gray-400 text-sm mb-6">
+                    {affiliate.status === "approved" &&
+                      "Head to your dashboard to grab your referral link and track your earnings."}
+                    {affiliate.status === "pending" && "Your affiliate account is awaiting approval."}
+                    {affiliate.status === "suspended" &&
+                      "Your affiliate account is currently suspended. Contact support for details."}
+                    {affiliate.status === "rejected" && "Your affiliate account was not approved at this time."}
+                  </p>
+                  {affiliate.status === "approved" && (
+                    <Link
+                      href="/affiliates/dashboard"
+                      className="font-inter inline-block px-6 py-3 text-sm font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors"
+                    >
+                      Go To Dashboard
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {user && !affiliate && (
+                <>
+                  <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-6 text-center">
+                    Apply To Become An Affiliate
+                  </h2>
+                  <ApplyForm />
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <FAQSection
+          title={
+            <>
+              Affiliate <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">Questions</span>
+            </>
+          }
+          subtitle="Find answers to common questions about commissions, tracking, and payouts."
+          faqs={faqs}
+        />
+
+        {/* Compliance note */}
+        <section className="bg-black text-gray-400 py-16 px-6 md:px-12 lg:px-24 border-t border-white/5">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="about-fade font-inter text-sm leading-relaxed">
+              <span className="text-red-500 font-bold">Research Use Only:</span> All Primetime Biolabs products are
+              manufactured and sold exclusively for laboratory research purposes. Not for human consumption, medical
+              treatment, or athletic performance enhancement. This affiliate program is for marketing research
+              compounds only. Affiliates must comply with all applicable laws and regulations.
+            </p>
+          </div>
+        </section>
+      </AboutPageAnimator>
 
       <Footer />
     </main>

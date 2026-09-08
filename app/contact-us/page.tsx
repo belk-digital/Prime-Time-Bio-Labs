@@ -1,5 +1,6 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
+import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 
 export const metadata = {
@@ -9,59 +10,86 @@ export const metadata = {
 
 export default function ContactUsPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
+    <main className="min-h-screen bg-[#FAFAFA]">
       {/* Hero */}
-      <section className="relative bg-[#0a0a0a] text-gray-200 overflow-hidden pt-40 pb-24 px-6 md:px-12 lg:px-24">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <div>
+      <div className="pt-28 md:pt-36 px-4 sm:px-6 md:px-8 lg:px-12">
+        <section className="relative text-gray-200 overflow-hidden rounded-[2rem] md:rounded-[3rem] pt-16 pb-16 md:pt-24 md:pb-24 px-6 md:px-12 lg:px-16">
+          <div className="absolute inset-0 z-0">
+            <img
+              src="/cta-banner.png"
+              alt="Primetime Biolabs research facility"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {/* Localized scrim so the heading stays legible without darkening the whole photo */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          </div>
+
+          <div className="relative z-10 max-w-4xl">
             <div className="inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded uppercase">
               Contact Us
             </div>
-            <h1 className="text-4xl md:text-5xl font-michroma uppercase font-bold tracking-wider text-white leading-[1.2] mb-6">
-              Let&apos;s <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Talk</span>
+            <h1 className="text-4xl md:text-6xl font-michroma uppercase font-bold tracking-wider text-white leading-[1.2] mb-6">
+              Let&apos;s Talk
             </h1>
-            <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light mb-10">
-              Questions about an order, a custom synthesis request, or a partnership opportunity? Send us a message and our team will respond promptly.
+            <p className="text-gray-400 text-base md:text-lg max-w-2xl leading-relaxed font-light">
+              Questions about an order, a custom synthesis request, or a partnership opportunity? Send us a
+              message and our team will respond promptly.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      {/* Contact info + form */}
+      <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div>
+            <h2 className="font-michroma uppercase text-2xl md:text-3xl font-bold tracking-wider text-gray-900 mb-4">
+              Get In Touch
+            </h2>
+            <p className="font-inter text-gray-500 leading-relaxed mb-10">
+              Our research and support team is here to help with orders, custom synthesis requests, and
+              partnership inquiries.
             </p>
 
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <Mail className="w-4 h-4 text-indigo-400" />
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                  <Mail className="w-4 h-4 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Email</p>
-                  <p className="text-white font-medium">support@primetimebiolabs.com</p>
+                  <p className="font-inter text-sm text-gray-400">Email</p>
+                  <p className="font-inter text-gray-900 font-medium">support@primetimebiolabs.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <Phone className="w-4 h-4 text-indigo-400" />
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Phone</p>
-                  <p className="text-white font-medium">Available upon request</p>
+                  <p className="font-inter text-sm text-gray-400">Phone</p>
+                  <p className="font-inter text-gray-900 font-medium">Available upon request</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                  <MapPin className="w-4 h-4 text-indigo-400" />
+                <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Location</p>
-                  <p className="text-white font-medium">United States</p>
+                  <p className="font-inter text-sm text-gray-400">Location</p>
+                  <p className="font-inter text-gray-900 font-medium">United States</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-md p-8 shadow-2xl">
+          <div className="bg-white border border-black/5 rounded-2xl p-8 shadow-sm">
             <ContactForm />
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* FAQ */}
+      <FAQSection />
 
       <Footer />
     </main>

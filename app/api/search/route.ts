@@ -37,9 +37,10 @@ export async function GET(request: NextRequest) {
     const items: (SearchResult & { description?: string | null })[] = (
       productsResult.docs ?? []
     ).map((product) => {
-      const firstImage = product.images?.[0]?.image;
-      const imageUrl =
-        firstImage && typeof firstImage === "object" ? firstImage.url ?? null : null;
+      // TEMPORARY: local media storage isn't reachable on Vercel yet (R2 not connected),
+      // so serve the shared placeholder instead of the stored URL.
+      void product.images;
+      const imageUrl = "/product-card-image.png";
       return {
         id: String(product.id),
         name: product.name,

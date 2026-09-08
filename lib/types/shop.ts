@@ -128,9 +128,15 @@ export function resolveMediaUrl(
   return undefined;
 }
 
-export function getProductPrimaryImageUrl(product: ShopProduct): string | undefined {
-  const first = product.images?.[0]?.image;
-  return resolveMediaUrl(first);
+// TEMPORARY: Payload's local-disk media storage isn't reachable on Vercel yet (Cloudflare
+// R2 isn't wired up), so any media URL resolved from the database 404s in production. Every
+// seeded product currently shares the same single placeholder photo anyway, so until R2 is
+// connected we serve it straight from the public folder instead of trusting the stored URL.
+const PRODUCT_IMAGE_PLACEHOLDER = "/product-card-image.png";
+
+export function getProductPrimaryImageUrl(product: ShopProduct): string {
+  void product;
+  return PRODUCT_IMAGE_PLACEHOLDER;
 }
 
 export function getEffectivePrice(price: number, salePrice?: number | null): number {

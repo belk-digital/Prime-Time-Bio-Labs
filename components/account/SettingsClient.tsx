@@ -15,9 +15,9 @@ interface SettingsUser {
 }
 
 const inputClass =
-  "w-full px-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors";
+  "font-inter w-full px-4 py-3 bg-gray-50 border border-black/10 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors";
 const labelClass =
-  "block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2";
+  "font-inter block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2";
 
 function Toggle({
   checked,
@@ -27,12 +27,12 @@ function Toggle({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <div className="flex bg-white/5 border border-white/10 rounded-full p-1 shrink-0">
+    <div className="flex bg-gray-50 border border-black/5 rounded-full p-1 shrink-0">
       <button
         type="button"
         onClick={() => onChange(true)}
-        className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all ${
-          checked ? "bg-indigo-600 text-white" : "text-gray-500 hover:text-gray-300"
+        className={`font-inter px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all ${
+          checked ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
         }`}
       >
         On
@@ -40,8 +40,8 @@ function Toggle({
       <button
         type="button"
         onClick={() => onChange(false)}
-        className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all ${
-          !checked ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"
+        className={`font-inter px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all ${
+          !checked ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
         }`}
       >
         Off
@@ -101,20 +101,19 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
   }
 
   return (
-    <div className="flex flex-col gap-10 max-w-3xl">
-      <div className="border-b border-white/10 pb-6">
-        <h1 className="text-3xl md:text-5xl font-michroma uppercase font-bold tracking-wider text-white">
+    <div className="flex flex-col gap-8 max-w-3xl">
+      <div>
+        <h1 className="font-michroma text-3xl md:text-5xl uppercase font-bold tracking-wider text-gray-900">
           Settings
         </h1>
-        <p className="text-gray-400 mt-3 max-w-lg text-sm font-light">
-          Update your personal information, notification preferences, and
-          account security.
+        <p className="font-inter text-gray-500 mt-3 max-w-lg text-sm">
+          Update your personal information, notification preferences, and account security.
         </p>
       </div>
 
       {/* Personal Information */}
-      <section className="flex flex-col gap-5">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-white border-b border-white/10 pb-3">
+      <section className="bg-white border border-black/5 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col gap-6">
+        <h2 className="font-inter text-sm font-bold uppercase tracking-widest text-gray-900 border-b border-black/5 pb-4">
           Personal Information
         </h2>
 
@@ -130,7 +129,7 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
             </div>
             <div className="sm:col-span-2">
               <label className={labelClass}>Email</label>
-              <input value={user.email} disabled className={`${inputClass} opacity-50 cursor-not-allowed`} />
+              <input value={user.email} disabled className={`${inputClass} opacity-60 cursor-not-allowed`} />
             </div>
             <div className="sm:col-span-2">
               <label className={labelClass}>Phone</label>
@@ -138,18 +137,18 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 pt-2 border-t border-white/10">
+          <div className="flex flex-col gap-4 pt-4 border-t border-black/5">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm text-white">Marketing emails</p>
-                <p className="text-xs text-gray-500">Receive news and promotions.</p>
+                <p className="font-inter text-sm text-gray-900">Marketing emails</p>
+                <p className="font-inter text-xs text-gray-500">Receive news and promotions.</p>
               </div>
               <Toggle checked={acceptsMarketing} onChange={setAcceptsMarketing} />
             </div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm text-white">Order SMS updates</p>
-                <p className="text-xs text-gray-500">Get text alerts about your order status.</p>
+                <p className="font-inter text-sm text-gray-900">Order SMS updates</p>
+                <p className="font-inter text-xs text-gray-500">Get text alerts about your order status.</p>
               </div>
               <Toggle checked={orderSmsUpdates} onChange={setOrderSmsUpdates} />
             </div>
@@ -157,10 +156,10 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
 
           {profileMessage && (
             <div
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm border ${
+              className={`font-inter flex items-center gap-2 px-4 py-3 rounded-xl text-sm border ${
                 profileMessage.type === "success"
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                  : "bg-red-500/10 border-red-500/30 text-red-300"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  : "bg-red-50 border-red-200 text-red-600"
               }`}
             >
               {profileMessage.type === "success" ? (
@@ -175,7 +174,7 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
           <button
             type="submit"
             disabled={isPending}
-            className="w-fit flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-widest transition-colors"
+            className="font-inter w-fit flex items-center gap-2 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-widest transition-colors shadow-[0_8px_20px_rgba(79,70,229,0.25)]"
           >
             <Save className="w-4 h-4" />
             {isPending ? "Saving..." : "Save Changes"}
@@ -185,8 +184,8 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
 
       {/* Security */}
       {user.authProvider !== "google" && (
-        <section className="flex flex-col gap-5">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-white border-b border-white/10 pb-3">
+        <section className="bg-white border border-black/5 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col gap-6">
+          <h2 className="font-inter text-sm font-bold uppercase tracking-widest text-gray-900 border-b border-black/5 pb-4">
             Password
           </h2>
 
@@ -228,10 +227,10 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
 
             {passwordMessage && (
               <div
-                className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm border ${
+                className={`font-inter flex items-center gap-2 px-4 py-3 rounded-xl text-sm border ${
                   passwordMessage.type === "success"
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                    : "bg-red-500/10 border-red-500/30 text-red-300"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                    : "bg-red-50 border-red-200 text-red-600"
                 }`}
               >
                 {passwordMessage.type === "success" ? (
@@ -246,7 +245,7 @@ export function SettingsClient({ user }: { user: SettingsUser }) {
             <button
               type="submit"
               disabled={passwordPending}
-              className="w-fit flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-widest transition-colors"
+              className="font-inter w-fit flex items-center gap-2 px-6 py-3 rounded-full bg-gray-900 hover:bg-gray-700 disabled:opacity-60 text-white text-xs font-bold uppercase tracking-widest transition-colors"
             >
               <Lock className="w-4 h-4" />
               {passwordPending ? "Updating..." : "Update Password"}

@@ -39,7 +39,7 @@ export function AccountSidebar({ userName, userEmail }: AccountSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 shrink-0 h-[calc(100vh-6rem)] md:h-[calc(100vh-7rem)] sticky top-24 md:top-28 border-r border-white/10 bg-[#0b0b0b] px-5 py-8">
+    <aside className="hidden lg:flex flex-col w-64 shrink-0 h-screen sticky top-0 bg-black px-5 py-8">
       <Link href="/" className="mb-10 block">
         <img
           src="/primtime-biolabs-logo.svg"
@@ -49,14 +49,14 @@ export function AccountSidebar({ userName, userEmail }: AccountSidebarProps) {
       </Link>
 
       <div className="mb-8 px-1">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">
+        <p className="font-inter text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">
           Signed in as
         </p>
-        <p className="text-sm font-medium text-white truncate">{userName}</p>
-        <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+        <p className="font-inter text-sm font-medium text-white truncate">{userName}</p>
+        <p className="font-inter text-xs text-gray-500 truncate">{userEmail}</p>
       </div>
 
-      <nav className="flex-1 flex flex-col gap-1">
+      <nav className="flex-1 flex flex-col gap-1.5">
         {ACCOUNT_NAV_ITEMS.map((item) => {
           const active = isNavItemActive(pathname, item.href, item.exact);
           const Icon = item.icon;
@@ -64,10 +64,10 @@ export function AccountSidebar({ userName, userEmail }: AccountSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium uppercase tracking-wide transition-all ${
+              className={`font-michroma flex items-center gap-3 px-4 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${
                 active
-                  ? "bg-indigo-600/20 border border-indigo-500/40 text-white shadow-[0_0_20px_rgba(99,102,241,0.15)]"
-                  : "border border-transparent text-gray-400 hover:text-white hover:bg-white/5"
+                  ? "bg-indigo-600 text-white shadow-[0_4px_20px_rgba(79,70,229,0.35)]"
+                  : "text-gray-500 hover:text-white hover:bg-white/5"
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -79,7 +79,7 @@ export function AccountSidebar({ userName, userEmail }: AccountSidebarProps) {
 
       <button
         onClick={() => signOut({ callbackUrl: "/" })}
-        className="mt-6 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium uppercase tracking-wide text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent transition-all"
+        className="font-michroma mt-6 flex items-center gap-3 px-4 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
       >
         <LogOut className="w-4 h-4 shrink-0" />
         Sign Out
