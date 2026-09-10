@@ -7,6 +7,7 @@ import AgeGate from "@/components/AgeGate";
 import SiteHeader from "@/components/nav/SiteHeader";
 import HeaderVisibility from "@/components/nav/HeaderVisibility";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+import Analytics from "@/components/Analytics";
 
 const futuristicFont = Syncopate({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}>
+        <Analytics />
         <SmoothScrollProvider>
           <SessionProvider>
             <HeaderVisibility>
