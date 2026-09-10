@@ -5,10 +5,50 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductClient from "@/components/product/ProductClient";
 import { toShopCardProduct } from "@/lib/shopCardProduct";
-import { getProductPrimaryImageUrl } from "@/lib/types/shop";
+import { getProductPrimaryImageUrl, getEffectivePrice } from "@/lib/types/shop";
 import type { ShopProduct } from "@/lib/types/shop";
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
+
+function buildProductJsonLd(product: ShopProduct, imageUrl: string) {
+  const price = getEffectivePrice(product.price, product.salePrice);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || product.seoDescription || undefined,
+    image: imageUrl,
+    sku: product.sku || undefined,
+    brand: { "@type": "Brand", name: "Prime Time Bio Labs" },
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/product/${product.slug}`,
+      priceCurrency: "USD",
+      price: price.toFixed(2),
+      availability:
+        (product.stock ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+    ...(typeof product.coaPurity === "number"
+      ? { additionalProperty: { "@type": "PropertyValue", name: "Purity", value: `${product.coaPurity}%` } }
+      : {}),
+  };
+}
+
+function buildFaqJsonLd(product: ShopProduct) {
+  const faqs = (product.faqs ?? []).filter((f) => f.question && f.answer);
+  if (faqs.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+}
 
 const getProductBySlug = cache(async (slug: string) => {
   const payload = await getPayload({ config });
@@ -37,14 +77,25 @@ export async function generateMetadata({
   const description =
     product.seoDescription || product.description || "Research peptide for laboratory use.";
   const imageUrl = getProductPrimaryImageUrl(product);
+  const url = `${SITE_URL}/product/${slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title,
       description,
+      url,
+      siteName: "Prime Time Bio Labs",
+      type: "website",
       images: [{ url: imageUrl }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
     },
   };
 }
@@ -90,11 +141,27 @@ export default async function ProductPage({
     }
   }
 
+  const imageUrl = getProductPrimaryImageUrl(product);
+  const productJsonLd = buildProductJsonLd(product, imageUrl);
+  const faqJsonLd = buildFaqJsonLd(product);
+
   return (
-    <ProductClient
-      product={product}
-      cardProduct={toShopCardProduct(product)}
-      relatedProducts={relatedProducts.map(toShopCardProduct)}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      <ProductClient
+        product={product}
+        cardProduct={toShopCardProduct(product)}
+        relatedProducts={relatedProducts.map(toShopCardProduct)}
+      />
+    </>
   );
 }

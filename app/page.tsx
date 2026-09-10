@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import HomeClient from "@/components/HomeClient";
@@ -7,7 +8,45 @@ import type { BlogPostCardData } from "@/components/BlogSection";
 import { toShopCardProduct, type ShopMockProduct } from "@/lib/shopCardProduct";
 import type { ShopProduct } from "@/lib/types/shop";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const FALLBACK_BLOG_IMAGE = "/blog-1.jpg";
+
+const TITLE = "Prime Time Bio Labs | Research-Grade Peptides & Certificates of Analysis";
+const DESCRIPTION =
+  "Buy research-grade peptides third-party tested for purity, with a Certificate of Analysis on every batch. Fast, discreet shipping for laboratory research use only.";
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "Prime Time Bio Labs",
+    type: "website",
+    images: [{ url: `${SITE_URL}/product-card-image.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Prime Time Bio Labs",
+  url: SITE_URL,
+  logo: `${SITE_URL}/primtime-biolabs-logo.svg`,
+  description: DESCRIPTION,
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "support@primetimebiolabs.com",
+    contactType: "customer support",
+  },
+};
 
 interface MediaRef {
   url?: string | null;
@@ -111,5 +150,13 @@ export default async function Home() {
     console.error("Failed to load homepage data from Payload:", error);
   }
 
-  return <HomeClient products={products} categories={categories} posts={posts} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <HomeClient products={products} categories={categories} posts={posts} />
+    </>
+  );
 }

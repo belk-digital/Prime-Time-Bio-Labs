@@ -1,14 +1,29 @@
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
+import { DEFAULT_FAQS } from "@/lib/defaultFaqs";
 
 export const metadata = {
   title: "FAQ | Primetime Biolabs",
   description: "Answers to common questions about our research peptides, testing standards, shipping, and policies.",
 };
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: DEFAULT_FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Hero */}
       <section className="relative bg-[#0a0a0a] text-gray-200 overflow-hidden pt-40 pb-16 px-6 md:px-12 lg:px-24">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />

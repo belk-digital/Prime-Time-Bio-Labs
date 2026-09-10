@@ -379,13 +379,20 @@ export default function ProductClient({
             <div className="h-[3px] bg-gray-900 -mt-[2px] relative z-0 rounded-full" />
           </div>
           <div ref={tabContentRef} className="max-w-3xl">
-            {tabs
-              .filter((tab) => tab.key === activeTab)
-              .map((tab) => (
-                <p key={tab.key} className="font-inter text-gray-500 leading-relaxed whitespace-pre-line">
-                  {tab.description}
-                </p>
-              ))}
+            {/* All four tabs render into the DOM at all times (visibility toggled via CSS,
+                not conditional unmounting) — this keeps the research/quality/compliance
+                content readable by search crawlers and AI answer engines, which don't
+                simulate clicking between tabs and would otherwise only ever see "Details". */}
+            {tabs.map((tab) => (
+              <p
+                key={tab.key}
+                className={`font-inter text-gray-500 leading-relaxed whitespace-pre-line ${
+                  tab.key === activeTab ? "" : "hidden"
+                }`}
+              >
+                {tab.description}
+              </p>
+            ))}
           </div>
         </div>
 
@@ -430,6 +437,8 @@ export default function ProductClient({
                 <button
                   className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                   onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                  aria-expanded={openFaqIndex === index}
+                  aria-controls={`product-faq-answer-${index}`}
                 >
                   <span className="text-lg font-bold text-white uppercase tracking-wide">{faq.question}</span>
                   <ChevronDown
@@ -439,6 +448,7 @@ export default function ProductClient({
                   />
                 </button>
                 <div
+                  id={`product-faq-answer-${index}`}
                   className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
                     openFaqIndex === index ? "max-h-96 pb-5 opacity-100" : "max-h-0 opacity-0"
                   }`}

@@ -19,6 +19,8 @@ export default function BlogFaqAccordion({ faqs }: { faqs: BlogFaq[] }) {
           <button
             className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            aria-expanded={openIndex === index}
+            aria-controls={`blog-faq-answer-${index}`}
           >
             <span className="text-base md:text-lg font-bold text-white uppercase tracking-wide pr-4">
               {faq.question}
@@ -30,6 +32,7 @@ export default function BlogFaqAccordion({ faqs }: { faqs: BlogFaq[] }) {
             />
           </button>
           <div
+            id={`blog-faq-answer-${index}`}
             className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
               openIndex === index ? "max-h-96 pb-5 opacity-100" : "max-h-0 opacity-0"
             }`}

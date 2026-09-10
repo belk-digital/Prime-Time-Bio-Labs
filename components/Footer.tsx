@@ -22,6 +22,7 @@ const RESOURCE_LINKS = [
   { label: "FAQ", href: "/faq" },
   { label: "Blog", href: "/blog" },
   { label: "Certificates of Analysis", href: "/certificates" },
+  { label: "Military Discount", href: "/military-discount" },
 ];
 
 const FOOTER_LINK_UNDERLINE_CLASS =

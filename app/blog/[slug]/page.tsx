@@ -11,6 +11,8 @@ import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
+
 async function getPost(slug: string): Promise<BlogPost | null> {
   try {
     const payload = await getPayload({ config });
@@ -34,9 +36,31 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) return { title: "Article Not Found | Primetime Biolabs" };
+
+  const title = `${post.title} | Primetime Biolabs`;
+  const description = post.excerpt ?? undefined;
+  const url = `${SITE_URL}/blog/${slug}`;
+  const imageUrl = resolveBlogMediaUrl(post.featuredImage) ?? undefined;
+
   return {
-    title: `${post.title} | Primetime Biolabs`,
-    description: post.excerpt ?? undefined,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "Prime Time Bio Labs",
+      type: "article",
+      publishedTime: post.publishedAt ?? undefined,
+      images: imageUrl ? [{ url: imageUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
   };
 }
 
@@ -50,8 +74,49 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     (p): p is BlogRelatedProduct => typeof p === "object" && p !== null
   );
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt ?? undefined,
+    image: imageUrl ?? undefined,
+    datePublished: post.publishedAt ?? undefined,
+    dateModified: post.updatedAt ?? post.publishedAt ?? undefined,
+    author: { "@type": "Person", name: getAuthorDisplayName(post.author) },
+    publisher: {
+      "@type": "Organization",
+      name: "Prime Time Bio Labs",
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/primtime-biolabs-logo.svg` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${slug}` },
+  };
+
+  const faqs = (post.faqs ?? []).filter((f) => f.question && f.answer);
+  const faqJsonLd =
+    faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: { "@type": "Answer", text: faq.answer },
+          })),
+        }
+      : null;
+
   return (
     <main className="min-h-screen bg-[#0a0a0a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       {/* Hero */}
       <section className="relative bg-[#0a0a0a] text-gray-200 overflow-hidden pt-40 pb-16 px-6 md:px-12 lg:px-24">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -177,15 +242,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((product) => {
-                // TEMPORARY: local media storage isn't reachable on Vercel yet (R2 not
-                // connected), so serve the shared placeholder instead of the stored URL.
-                void product.images;
-                const productImageUrl = "/product-card-image.png";
+                const productImageUrl = resolveBlogMediaUrl(product.images?.[0]?.image) ?? "/product-card-image.png";
                 const price = product.salePrice ?? product.price;
                 return (
                   <Link
                     key={product.id}
-                    href={`/shop/${product.slug ?? product.id}`}
+                    href={`/product/${product.slug ?? product.id}`}
                     className="group relative bg-white/[0.02] border border-white/10 rounded-2xl p-6 hover:bg-white/[0.04] transition-all duration-500 overflow-hidden flex flex-col justify-between"
                   >
                     <div className="relative h-40 mb-6 flex items-center justify-center">

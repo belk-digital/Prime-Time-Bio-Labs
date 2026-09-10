@@ -5,27 +5,9 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ChevronDown } from "lucide-react";
+import { DEFAULT_FAQS } from "@/lib/defaultFaqs";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const DEFAULT_FAQS = [
-  {
-    question: "What is the purity of your research peptides?",
-    answer: "All our peptides undergo strict third-party HPLC and MS testing to guarantee a minimum purity of 99%. We provide Certificates of Analysis (COA) for every batch to verify these standards."
-  },
-  {
-    question: "Are these products intended for human consumption?",
-    answer: "No. All products sold by Primetime Biolabs are strictly for laboratory research and in-vitro use only. They are not intended for human consumption, diagnostic, or therapeutic purposes."
-  },
-  {
-    question: "How do you ensure stability during shipping?",
-    answer: "We utilize temperature-controlled packaging and expedited shipping methods to ensure that all sensitive research materials remain stable and intact throughout the entire transit process."
-  },
-  {
-    question: "Do you offer custom peptide synthesis?",
-    answer: "Yes, we provide custom synthesis services for specialized research requirements. Please contact our support team with your specific sequence, purity, and quantity needs for a custom quote."
-  }
-];
 
 interface FAQSectionProps {
   hideHeading?: boolean;
@@ -93,17 +75,20 @@ export default function FAQSection({ hideHeading = false, title, subtitle, faqs 
               key={index} 
               className={`faq-item border ${openIndex === index ? 'border-indigo-500/50 bg-indigo-900/20' : 'border-white/10 bg-[#111111]'} rounded-2xl overflow-hidden transition-all duration-300`}
             >
-              <button 
+              <button
                 className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                aria-expanded={openIndex === index}
+                aria-controls={`faq-answer-${index}`}
               >
                 <span className="text-lg font-bold text-white uppercase tracking-wide">{faq.question}</span>
-                <ChevronDown 
-                  className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-indigo-400' : ''}`} 
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-indigo-400' : ''}`}
                 />
               </button>
-              
-              <div 
+
+              <div
+                id={`faq-answer-${index}`}
                 className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
                   openIndex === index ? 'max-h-48 pb-5 opacity-100' : 'max-h-0 opacity-0'
                 }`}
