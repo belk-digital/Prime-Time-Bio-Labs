@@ -25,12 +25,13 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Prime Time Bio Labs",
     type: "website",
-    images: [{ url: `${SITE_URL}/product-card-image.png` }],
+    images: [{ url: `${SITE_URL}/cta-banner.png` }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: [`${SITE_URL}/cta-banner.png`],
   },
 };
 
