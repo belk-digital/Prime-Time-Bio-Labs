@@ -395,7 +395,7 @@ export default function ProductClient({
             <h2 className="text-2xl md:text-3xl font-michroma font-bold uppercase tracking-wider text-gray-900 mb-8">
               You May Also Like
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {relatedProducts.map((related) => (
                 <ShopProductCard key={related.id} product={related} />
               ))}

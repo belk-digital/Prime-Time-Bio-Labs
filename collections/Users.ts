@@ -1,4 +1,5 @@
 import type { CollectionConfig, Where } from 'payload'
+import { generateForgotPasswordEmail } from '../lib/email/templates/forgotPassword'
 
 const staffOnly = ({ req: { user } }: any) => !!user && ['admin', 'staff'].includes(user.role)
 
@@ -9,6 +10,10 @@ export const Users: CollectionConfig = {
   },
   auth: {
     tokenExpiration: 7200,
+    forgotPassword: {
+      generateEmailSubject: () => generateForgotPasswordEmail('').subject,
+      generateEmailHTML: (args) => generateForgotPasswordEmail(args?.token || '').html,
+    },
   },
   access: {
     read: ({ req }) => {

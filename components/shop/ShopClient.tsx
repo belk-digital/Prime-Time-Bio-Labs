@@ -67,18 +67,21 @@ function ShopClientInner({
               alt="Primetime Biolabs research facility"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            {/* Localized scrim so the heading stays legible without darkening the whole photo */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+            {/* Faint overall scrim so the photo still reads through around the text panel below */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
           </div>
 
-          <div className="relative z-10 max-w-4xl">
+          {/* Backdrop-blurred panel behind the text — the photo has its own printed labels/text,
+              so a translucent scrim alone can't guarantee contrast against arbitrary photo content;
+              blurring what's directly behind the text (rather than the whole hero) does. */}
+          <div className="relative z-10 max-w-4xl -m-4 p-4 sm:-m-6 sm:p-6 rounded-2xl bg-black/55 backdrop-blur-md">
             <div className="shop-heading inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded uppercase">
               Shop
             </div>
-            <h1 className="shop-heading text-4xl md:text-6xl font-michroma uppercase font-bold tracking-wider text-white leading-[1.2] mb-6">
+            <h1 className="shop-heading text-3xl sm:text-4xl md:text-6xl font-michroma uppercase font-bold tracking-wider text-white leading-[1.2] mb-4 md:mb-6">
               Shop Peptides
             </h1>
-            <p className="shop-heading text-gray-400 text-base md:text-lg max-w-2xl leading-relaxed font-light">
+            <p className="shop-heading text-gray-300 text-sm md:text-lg max-w-2xl leading-relaxed font-light">
               Browse our full catalog of research-grade peptides. Every batch is third-party tested for purity and
               backed by a Certificate of Analysis you can review before you order.
             </p>
@@ -158,7 +161,7 @@ function ShopClientInner({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {filteredProducts.map((product) => (
               <ShopProductCard key={product.id} product={product} />
             ))}

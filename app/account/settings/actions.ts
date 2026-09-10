@@ -4,6 +4,12 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { revalidatePath } from "next/cache";
 import { getPayloadUser } from "@/lib/auth/getPayloadUser";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import {
+  generatePasswordChangedEmail,
+  generateAdminPasswordChangedEmail,
+} from "@/lib/email/templates/passwordSecurity";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 type ActionResult = { success: true } | { success: false; error: string };
 
@@ -80,6 +86,11 @@ export async function updatePassword(
       data: { password: newPassword },
       overrideAccess: true,
     });
+
+    const changed = generatePasswordChangedEmail();
+    void sendTrackedEmail({ to: user.email, subject: changed.subject, html: changed.html });
+    const adminAlert = generateAdminPasswordChangedEmail(user.email);
+    void sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminAlert.subject, html: adminAlert.html });
 
     return { success: true };
   } catch (error: any) {

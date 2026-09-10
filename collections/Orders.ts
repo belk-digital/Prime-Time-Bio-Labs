@@ -1,7 +1,8 @@
 import type { CollectionConfig } from 'payload'
+import { handleOrderChangeEmails } from '../lib/email/orderNotifications'
 
-// TODO: port beforeChange/afterChange order-lifecycle hooks (status emails, finalization,
-// order numbering, inventory/coupon/points processing) in the checkout-implementation phase.
+// TODO: port order numbering, inventory/coupon/points processing in the
+// checkout-implementation phase. Status/invoice emails are handled below.
 export const Orders: CollectionConfig = {
   slug: 'orders',
   admin: {
@@ -16,6 +17,16 @@ export const Orders: CollectionConfig = {
     create: () => false,
     update: ({ req }) => req.user?.role === 'admin',
     delete: ({ req }) => req.user?.role === 'admin',
+  },
+  hooks: {
+    afterChange: [
+      ({ doc, previousDoc, operation, req }) => {
+        void handleOrderChangeEmails({ doc, previousDoc, operation, payload: req.payload }).catch((err) =>
+          console.error('Order email hook failed:', err)
+        )
+        return doc
+      },
+    ],
   },
   fields: [
     {
@@ -165,6 +176,8 @@ export const Orders: CollectionConfig = {
       options: [
         { label: 'Card (Stripe)', value: 'stripe' },
         { label: 'Zelle', value: 'zelle' },
+        { label: 'Venmo', value: 'venmo' },
+        { label: 'Cash App', value: 'cashapp' },
         { label: 'American Express', value: 'amex' },
         { label: 'Card (CircoFlows)', value: 'circoflows' },
         { label: 'Stripe (Payment Link)', value: 'stripe_link' },

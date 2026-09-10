@@ -5,6 +5,11 @@ import GoogleProvider from "next-auth/providers/google";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import type { User } from "@/payload-types";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import { generateWelcomeEmail } from "@/lib/email/templates/welcome";
+import { generateAdminNewUserEmail } from "@/lib/email/templates/adminNewUser";
+import { generateGoogleLinkedEmail } from "@/lib/email/templates/passwordSecurity";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -81,6 +86,10 @@ export const authOptions: NextAuthOptions = {
         });
         user.id = String(linked.id);
         (user as any).role = linked.role ?? "customer";
+
+        const linkedNotice = generateGoogleLinkedEmail();
+        void sendTrackedEmail({ to: email, subject: linkedNotice.subject, html: linkedNotice.html });
+
         return true;
       }
 
@@ -101,6 +110,17 @@ export const authOptions: NextAuthOptions = {
       });
       user.id = String(created.id);
       (user as any).role = created.role ?? "customer";
+
+      const welcome = generateWelcomeEmail(nameParts[0] || "");
+      void sendTrackedEmail({ to: email, subject: welcome.subject, html: welcome.html });
+      const adminNotice = generateAdminNewUserEmail({
+        firstName: nameParts[0],
+        lastName: nameParts.slice(1).join(" "),
+        email,
+        authProvider: "google",
+      });
+      void sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminNotice.subject, html: adminNotice.html });
+
       return true;
     },
     async jwt({ token, user }) {

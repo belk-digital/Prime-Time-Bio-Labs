@@ -14,9 +14,10 @@ import {
 type StripeCheckoutFormProps = {
   amount: number;
   orderInput: Omit<CreateOrderInput, "paymentMethod">;
+  onOrderPlaced?: () => void;
 };
 
-export default function StripeCheckoutForm({ amount, orderInput }: StripeCheckoutFormProps) {
+export default function StripeCheckoutForm({ amount, orderInput, onOrderPlaced }: StripeCheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function StripeCheckoutForm({ amount, orderInput }: StripeCheckou
         await syncPaymentStatus(paymentIntent.id, orderId);
       }
 
+      onOrderPlaced?.();
       useCartStore.getState().clear();
       router.push(`/order-confirmation/${orderId}`);
     } catch (err) {
@@ -84,7 +86,7 @@ export default function StripeCheckoutForm({ amount, orderInput }: StripeCheckou
       <PaymentElement options={{ layout: "tabs" }} />
 
       {error && (
-        <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+        <div className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
           {error}
         </div>
       )}

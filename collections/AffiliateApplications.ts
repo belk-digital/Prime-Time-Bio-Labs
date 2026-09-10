@@ -1,9 +1,20 @@
 import type { CollectionConfig } from 'payload'
+import { handleApplicationApproval } from '../lib/affiliate/handleApplicationApproval'
 
 export const AffiliateApplications: CollectionConfig = {
   slug: 'affiliate-applications',
   admin: {
     useAsTitle: 'displayName',
+  },
+  hooks: {
+    afterChange: [
+      ({ doc, previousDoc, req }) => {
+        void handleApplicationApproval({ doc, previousDoc, payload: req.payload }).catch((err) =>
+          console.error('Affiliate application approval hook failed:', err)
+        )
+        return doc
+      },
+    ],
   },
   access: {
     read: ({ req: { user } }) => {
@@ -101,6 +112,4 @@ export const AffiliateApplications: CollectionConfig = {
       admin: { readOnly: true, position: 'sidebar' },
     },
   ],
-  // TODO: port afterChange hook that creates/links an Affiliates record when an application is
-  // approved (afterAffiliateApplicationChange in the reference project).
 }

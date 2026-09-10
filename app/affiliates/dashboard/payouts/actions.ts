@@ -6,6 +6,9 @@ import { revalidatePath } from "next/cache";
 import { getPayloadUser } from "@/lib/auth/getPayloadUser";
 import { getAffiliateForUser } from "@/lib/affiliate/getAffiliateForUser";
 import type { AffiliateSettings } from "@/lib/types/affiliate";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import { generateAdminPayoutRequestEmail } from "@/lib/email/templates/affiliate";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 export type PayoutFormState = {
   success: boolean;
@@ -75,6 +78,14 @@ export async function submitPayoutRequest(
       },
       overrideAccess: true,
     });
+
+    const adminNotice = generateAdminPayoutRequestEmail({
+      affiliateName: affiliate.displayName || `Affiliate #${affiliate.id}`,
+      amount,
+      payoutMethod,
+      payoutDetails,
+    });
+    void sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminNotice.subject, html: adminNotice.html });
 
     revalidatePath("/affiliates/dashboard/payouts");
     return { success: true };

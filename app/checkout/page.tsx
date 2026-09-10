@@ -12,6 +12,11 @@ export default function CheckoutPage() {
   // `window`/localStorage, which isn't available during Next's server render pass — so this
   // must never be read synchronously during the initial render, only after mount.
   const [hasHydrated, setHasHydrated] = useState(false);
+  // Placing an order clears the cart, which would otherwise satisfy the
+  // "cart is empty" redirect below at the same moment CheckoutClient is
+  // navigating to the confirmation page — this flag lets that navigation win
+  // instead of getting clobbered by a redirect back to /shop.
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   useEffect(() => {
     setHasHydrated(useCartStore.persist?.hasHydrated() ?? true);
@@ -20,18 +25,18 @@ export default function CheckoutPage() {
   }, []);
 
   useEffect(() => {
-    if (hasHydrated && items.length === 0) {
+    if (hasHydrated && items.length === 0 && !orderPlaced) {
       router.replace("/shop");
     }
-  }, [hasHydrated, items.length, router]);
+  }, [hasHydrated, items.length, orderPlaced, router]);
 
   if (!hasHydrated) {
-    return <div className="min-h-screen bg-[#0a0a0a]" />;
+    return <div className="min-h-screen bg-[#FAFAFA]" />;
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && !orderPlaced) {
     return null;
   }
 
-  return <CheckoutClient />;
+  return <CheckoutClient onOrderPlaced={() => setOrderPlaced(true)} />;
 }

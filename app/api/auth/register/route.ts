@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getPayload } from "payload";
 import config from "@payload-config";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import { generateWelcomeEmail } from "@/lib/email/templates/welcome";
+import { generateAdminNewUserEmail } from "@/lib/email/templates/adminNewUser";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 export async function POST(request: Request) {
   try {
@@ -42,6 +46,12 @@ export async function POST(request: Request) {
       },
       overrideAccess: true,
     });
+
+    const welcome = generateWelcomeEmail(firstName || "");
+    void sendTrackedEmail({ to: user.email, subject: welcome.subject, html: welcome.html });
+
+    const adminNotice = generateAdminNewUserEmail({ firstName, lastName, email: user.email });
+    void sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminNotice.subject, html: adminNotice.html });
 
     return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
   } catch (error) {

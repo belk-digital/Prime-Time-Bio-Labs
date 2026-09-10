@@ -116,18 +116,18 @@ export default function BestSellersSection({ products }: BestSellersSectionProps
   );
 
   return (
-    <section ref={sectionRef} className="py-24 px-4 md:px-8 lg:px-12 bg-[#020202] text-white overflow-hidden">
+    <section ref={sectionRef} className="py-24 px-4 md:px-8 lg:px-12 bg-[#FAFAFA] text-gray-900 overflow-hidden">
       <div className="w-full mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div className="bs-title">
             <h2 className="text-3xl md:text-5xl font-michroma uppercase font-bold tracking-wider mb-4">
-              Best <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-500">Sellers</span>
+              Best <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-400">Sellers</span>
             </h2>
-            <p className="text-gray-400 max-w-lg font-light text-sm md:text-base">
+            <p className="font-inter text-gray-500 max-w-lg text-sm md:text-base">
               Explore our most sought-after research peptides, engineered for maximum purity and exceptional scientific results.
             </p>
           </div>
-          <Link href="/shop" className="bs-title mt-6 md:mt-0 flex items-center gap-2 text-sm uppercase tracking-widest text-gray-300 hover:text-white transition-colors group">
+          <Link href="/shop" className="bs-title mt-6 md:mt-0 flex items-center gap-2 text-sm uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors group">
             View All Products
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
@@ -135,19 +135,19 @@ export default function BestSellersSection({ products }: BestSellersSectionProps
 
         <div className="flex items-center gap-4">
           {/* Left Arrow */}
-          <button className="hidden md:flex shrink-0 items-center justify-center text-gray-500 hover:text-white transition-colors z-10">
+          <button className="hidden md:flex shrink-0 items-center justify-center text-gray-400 hover:text-gray-900 transition-colors z-10">
             <ChevronLeft className="w-12 h-12" strokeWidth={1} />
           </button>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 w-full">
             {items.map((product) => (
-              <ShopProductCard key={product.id} product={product} variant="light" />
+              <ShopProductCard key={product.id} product={product} />
             ))}
           </div>
 
           {/* Right Arrow */}
-          <button className="hidden md:flex shrink-0 items-center justify-center text-gray-500 hover:text-white transition-colors z-10">
+          <button className="hidden md:flex shrink-0 items-center justify-center text-gray-400 hover:text-gray-900 transition-colors z-10">
             <ChevronRight className="w-12 h-12" strokeWidth={1} />
           </button>
         </div>

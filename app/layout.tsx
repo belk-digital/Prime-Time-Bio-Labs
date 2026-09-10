@@ -40,12 +40,16 @@ export default function RootLayout({
       <body className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}>
         <SmoothScrollProvider>
           <SessionProvider>
-            <AgeGate />
+            <HeaderVisibility>
+              <AgeGate />
+            </HeaderVisibility>
             <HeaderVisibility>
               <SiteHeader />
             </HeaderVisibility>
             {children}
-            <CartDrawer />
+            <HeaderVisibility>
+              <CartDrawer />
+            </HeaderVisibility>
           </SessionProvider>
         </SmoothScrollProvider>
       </body>

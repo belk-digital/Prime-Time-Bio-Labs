@@ -2,6 +2,9 @@
 
 import { getPayload } from "payload";
 import config from "@payload-config";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import { generateContactFormEmail } from "@/lib/email/templates/contactForm";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 export type ContactFormState = {
   success: boolean;
@@ -36,6 +39,15 @@ export async function submitContactMessage(
       },
       overrideAccess: true,
     });
+
+    const adminNotice = generateContactFormEmail({ name, email, subject, message });
+    void sendTrackedEmail({
+      to: ADMIN_EMAIL,
+      subject: adminNotice.subject,
+      html: adminNotice.html,
+      replyTo: email,
+    });
+
     return { success: true };
   } catch (err) {
     console.error("Failed to submit contact message:", err);

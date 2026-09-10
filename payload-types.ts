@@ -709,7 +709,7 @@ export interface Order {
   shippingMethod?: string | null;
   trackingLink?: string | null;
   sendTrackingEmail?: boolean | null;
-  paymentMethod?: ('stripe' | 'zelle' | 'amex' | 'circoflows' | 'stripe_link') | null;
+  paymentMethod?: ('stripe' | 'zelle' | 'venmo' | 'cashapp' | 'amex' | 'circoflows' | 'stripe_link') | null;
   circoflowsTransactionId?: string | null;
   couponCode?: string | null;
   affiliateId?: string | null;

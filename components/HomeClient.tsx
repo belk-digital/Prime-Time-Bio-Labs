@@ -12,6 +12,7 @@ import BestSellersSection from "@/components/BestSellersSection";
 import QualitySection from "@/components/QualitySection";
 import FAQSection from "@/components/FAQSection";
 import CategoriesSection, { type CategoryCardData } from "@/components/CategoriesSection";
+import MilitaryDiscountSection from "@/components/MilitaryDiscountSection";
 import BlogSection, { type BlogPostCardData } from "@/components/BlogSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
@@ -165,6 +166,9 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
         </div>
       </section>
 
+      {/* Best Sellers Section */}
+      <BestSellersSection products={products} />
+
       {/* About Section */}
       <section className="about-section bg-white text-gray-900 py-24 px-6 md:px-12 lg:px-24 flex flex-col lg:flex-row items-center gap-16">
         <div className="w-full lg:w-1/2">
@@ -198,13 +202,11 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
       {/* Categories Section */}
       <CategoriesSection categories={categories} />
 
-      {/* Best Sellers Section */}
-      <BestSellersSection products={products} />
-
       {/* Precision Section */}
       <PrecisionSection />
 
-
+      {/* Military & Veteran Discount */}
+      <MilitaryDiscountSection />
 
       {/* Quality & Standards Section */}
       <QualitySection />

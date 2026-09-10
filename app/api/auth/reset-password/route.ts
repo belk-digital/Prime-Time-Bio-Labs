@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getPayload } from "payload";
 import config from "@payload-config";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import { generateAdminPasswordResetEmail } from "@/lib/email/templates/passwordSecurity";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 export async function POST(request: Request) {
   try {
@@ -28,6 +31,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    const adminAlert = generateAdminPasswordResetEmail(String(result.user.email));
+    void sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminAlert.subject, html: adminAlert.html });
 
     return NextResponse.json({ message: "Password reset successfully." });
   } catch (error) {

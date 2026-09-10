@@ -24,19 +24,19 @@ export default function LegalPageLayout({
           <div className="inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded uppercase">
             {eyebrow}
           </div>
-          <h1 className="text-3xl md:text-5xl font-michroma uppercase font-bold tracking-wider text-white leading-[1.2] mb-6">
+          <h1 className="text-4xl md:text-6xl font-michroma uppercase font-semibold tracking-wider text-white leading-[1.2] mb-6">
             {title}
           </h1>
           {intro && (
-            <p className="text-gray-400 text-base md:text-lg max-w-2xl leading-relaxed font-light mb-4">{intro}</p>
+            <p className="font-inter text-gray-400 text-base md:text-lg max-w-2xl leading-relaxed font-light mb-4">{intro}</p>
           )}
           {lastUpdated && <p className="text-xs uppercase tracking-widest text-gray-500">Last updated: {lastUpdated}</p>}
         </div>
       </section>
 
       {/* Content */}
-      <section className="bg-gray-50 py-16 px-6 md:px-12 lg:px-24">
-        <div className="max-w-4xl mx-auto prose prose-lg prose-headings:font-michroma prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-gray-900 prose-a:text-indigo-600 max-w-none space-y-10">
+      <section className="bg-gray-50 py-16 px-6 md:px-12 lg:px-24 text-gray-700">
+        <div className="font-inter max-w-4xl mx-auto prose prose-lg prose-headings:font-michroma prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700 prose-strong:text-gray-900 prose-a:text-indigo-600 max-w-none space-y-10">
           {children}
         </div>
       </section>

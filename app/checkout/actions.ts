@@ -4,6 +4,7 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import Stripe from "stripe";
 import { FREE_SHIPPING_THRESHOLD, DEFAULT_COUNTRY } from "@/lib/shipping/constants";
+import { trackAffiliateConversion } from "@/lib/affiliate/trackConversion";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -46,7 +47,14 @@ export type CheckoutItemInput = {
   productSnapshot?: unknown;
 };
 
-export type PaymentMethodOption = "stripe" | "zelle" | "amex" | "circoflows" | "stripe_link";
+export type PaymentMethodOption =
+  | "stripe"
+  | "zelle"
+  | "venmo"
+  | "cashapp"
+  | "amex"
+  | "circoflows"
+  | "stripe_link";
 
 export type CreateOrderInput = {
   items: CheckoutItemInput[];
@@ -329,7 +337,10 @@ export async function createPayloadOrder(
   const orderNumber = await getNextOrderNumber(payload);
 
   const orderItems = input.items.map((item) => ({
-    product: item.productId,
+    // Cart items always carry productId as a string (see toShopCardProduct), but Payload's
+    // Postgres adapter stores product IDs as integers and rejects a string here as an
+    // unresolvable relationship — coerce back to a number when it looks numeric.
+    product: /^\d+$/.test(String(item.productId)) ? Number(item.productId) : item.productId,
     variantTitle: item.variantTitle,
     variant: item.variantSku,
     price: item.priceSnapshot,
@@ -369,6 +380,16 @@ export async function createPayloadOrder(
     } as any,
     overrideAccess: true,
   });
+
+  void trackAffiliateConversion({
+    payload,
+    orderId: order.id,
+    orderSubtotal: subtotal,
+    orderDiscount: discountTotal,
+    couponCode: input.couponCode,
+    customerEmail: input.guestEmail,
+    customerUserId: input.userId,
+  }).catch((err) => console.error("Affiliate conversion tracking failed:", err));
 
   return { orderId: String(order.id), orderNumber, total };
 }

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getPayload } from "payload";
 import config from "@payload-config";
+import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
+import { generateStripeDisputeEmail } from "@/lib/email/templates/stripeDispute";
+import { ADMIN_EMAIL } from "@/lib/email/layout";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +75,16 @@ export async function POST(req: NextRequest) {
             paymentStatus: "refunded",
           });
         }
+        break;
+      }
+      case "charge.dispute.created": {
+        const dispute = event.data.object as Stripe.Dispute;
+        const disputeEmail = generateStripeDisputeEmail({
+          chargeId: typeof dispute.charge === "string" ? dispute.charge : dispute.charge.id,
+          amount: dispute.amount / 100,
+          reason: dispute.reason,
+        });
+        void sendTrackedEmail({ to: ADMIN_EMAIL, subject: disputeEmail.subject, html: disputeEmail.html });
         break;
       }
       default:

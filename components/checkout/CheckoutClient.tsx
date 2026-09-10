@@ -38,6 +38,19 @@ const addressSchema = z.object({
   country: z.string().min(1, "Country is required"),
 });
 
+// Unlike addressSchema.partial(), this doesn't re-run the min(1) checks on omitted
+// fields — those default to "" (not undefined) when "same as shipping" is checked,
+// and .partial() only skips validation for undefined, not for a present empty string.
+// Actual required-ness when billing differs from shipping is enforced in superRefine below.
+const billingAddressSchema = z.object({
+  line1: z.string().optional(),
+  line2: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().optional(),
+});
+
 const checkoutSchema = z
   .object({
     guestEmail: z.email("Enter a valid email address"),
@@ -46,7 +59,7 @@ const checkoutSchema = z
     phone: z.string().min(7, "Enter a valid phone number"),
     shippingAddress: addressSchema,
     billingSameAsShipping: z.boolean(),
-    billingAddress: addressSchema.partial(),
+    billingAddress: billingAddressSchema,
   })
   .superRefine((data, ctx) => {
     if (!data.billingSameAsShipping) {
@@ -73,18 +86,26 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 const PAYMENT_METHODS: Array<{ value: PaymentMethodOption; label: string; description: string }> = [
   { value: "stripe", label: "Credit / Debit Card", description: "Secure card payment via Stripe" },
-  { value: "zelle", label: "Zelle", description: "Pay via Zelle, order held pending confirmation" },
+  { value: "zelle", label: "Zelle", description: "Scan the QR code to pay, order held pending confirmation" },
+  { value: "venmo", label: "Venmo", description: "Scan the QR code to pay, order held pending confirmation" },
+  { value: "cashapp", label: "Cash App", description: "Scan the QR code to pay, order held pending confirmation" },
   { value: "amex", label: "American Express", description: "Manual Amex payment, confirmed by our team" },
   { value: "circoflows", label: "CircoFlows", description: "Alternative card processor" },
 ];
 
-const inputClass =
-  "w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-indigo-500 transition-colors";
-const labelClass = "text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 block";
-const errorClass = "text-xs text-red-400 mt-1";
-const cardClass = "bg-white/[0.02] border border-white/10 rounded-2xl p-6";
+const QR_PAYMENT_IMAGES: Partial<Record<PaymentMethodOption, string>> = {
+  zelle: "/payments/zelle.jpeg",
+  venmo: "/payments/venmo.jpeg",
+  cashapp: "/payments/cashapp.jpeg",
+};
 
-export default function CheckoutClient() {
+const inputClass =
+  "font-inter w-full bg-gray-50 border border-black/10 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors";
+const labelClass = "text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 block";
+const errorClass = "text-xs text-red-500 mt-1";
+const cardClass = "bg-white border border-black/5 rounded-2xl p-6 shadow-sm";
+
+export default function CheckoutClient({ onOrderPlaced }: { onOrderPlaced?: () => void }) {
   const router = useRouter();
   const { data: session } = useSession();
   const items = useCartStore((s) => s.items);
@@ -278,6 +299,7 @@ export default function CheckoutClient() {
     try {
       const orderInput = buildOrderInput(formData);
       const { orderId } = await createPayloadOrder({ ...orderInput, paymentMethod });
+      onOrderPlaced?.();
       useCartStore.getState().clear();
       router.push(`/order-confirmation/${orderId}`);
     } catch (err) {
@@ -304,9 +326,9 @@ export default function CheckoutClient() {
   if (step === "payment" && paymentMethod === "stripe" && pendingOrderInput) {
     if (!stripePromise) {
       return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4">
+        <div className="min-h-screen bg-[#FAFAFA] text-gray-900 flex items-center justify-center px-4 pt-24">
           <div className={cardClass + " max-w-md text-center"}>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-500">
               Stripe is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.
             </p>
           </div>
@@ -317,32 +339,34 @@ export default function CheckoutClient() {
     }
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-10 md:px-8 lg:px-12">
-        <div className="max-w-2xl mx-auto flex flex-col gap-6">
-          <button
-            onClick={() => setStep("details")}
-            className="w-fit flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors bg-white/5 border border-white/10 px-4 py-2 rounded-full"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back
-          </button>
-
-          <h1 className="text-2xl md:text-3xl font-michroma uppercase font-bold tracking-wider">
-            Payment
-          </h1>
-
-          <div className={cardClass}>
-            <Elements
-              stripe={stripePromise}
-              options={{
-                mode: "payment",
-                amount: Math.max(50, Math.round(total * 100)),
-                currency: "usd",
-                appearance: { theme: "night" },
-              }}
+      <div className="min-h-screen bg-[#FAFAFA] text-gray-900">
+        <div className="px-4 pt-28 pb-10 md:px-8 md:pt-36 lg:px-12">
+          <div className="max-w-2xl mx-auto flex flex-col gap-6">
+            <button
+              onClick={() => setStep("details")}
+              className="w-fit flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors bg-black/5 border border-black/10 px-4 py-2 rounded-full"
             >
-              <StripeCheckoutForm amount={total} orderInput={pendingOrderInput} />
-            </Elements>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back
+            </button>
+
+            <h1 className="text-2xl md:text-3xl font-michroma uppercase font-bold tracking-wider">
+              Payment
+            </h1>
+
+            <div className={cardClass}>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  mode: "payment",
+                  amount: Math.max(50, Math.round(total * 100)),
+                  currency: "usd",
+                  appearance: { theme: "stripe" },
+                }}
+              >
+                <StripeCheckoutForm amount={total} orderInput={pendingOrderInput} onOrderPlaced={onOrderPlaced} />
+              </Elements>
+            </div>
           </div>
         </div>
 
@@ -352,7 +376,8 @@ export default function CheckoutClient() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white px-4 py-10 md:px-8 lg:px-12">
+    <div className="min-h-screen bg-[#FAFAFA] text-gray-900">
+      <div className="px-4 pt-28 pb-10 md:px-8 md:pt-36 lg:px-12">
       <div className="max-w-6xl mx-auto flex flex-col gap-8">
         <h1 className="text-2xl md:text-4xl font-michroma uppercase font-bold tracking-wider">
           Secure Checkout
@@ -365,7 +390,7 @@ export default function CheckoutClient() {
           <div className="flex flex-col gap-6">
             {/* Contact + shipping address */}
             <section className={cardClass}>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-white mb-5 border-b border-white/10 pb-4">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-5 border-b border-black/10 pb-4">
                 Contact &amp; Shipping
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -433,10 +458,10 @@ export default function CheckoutClient() {
 
             {/* Billing address */}
             <section className={cardClass}>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-white mb-5 border-b border-white/10 pb-4">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-5 border-b border-black/10 pb-4">
                 Billing Address
               </h2>
-              <label className="flex items-center gap-2 text-sm text-gray-300 mb-4 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-gray-600 mb-4 cursor-pointer">
                 <input type="checkbox" className="accent-indigo-500" {...register("billingSameAsShipping")} />
                 Same as shipping address
               </label>
@@ -487,7 +512,7 @@ export default function CheckoutClient() {
 
             {/* Shipping method */}
             <section className={cardClass}>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-white mb-5 border-b border-white/10 pb-4 flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-5 border-b border-black/10 pb-4 flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 Shipping Method
               </h2>
@@ -507,7 +532,7 @@ export default function CheckoutClient() {
                         className={`flex items-center justify-between gap-4 border rounded-xl px-4 py-3 cursor-pointer transition-colors ${
                           selectedMethodName === method.method
                             ? "border-indigo-500 bg-indigo-500/10"
-                            : "border-white/10 hover:border-white/20"
+                            : "border-black/10 hover:border-black/20"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -518,7 +543,7 @@ export default function CheckoutClient() {
                             onChange={() => setSelectedMethodName(method.method)}
                           />
                           <div>
-                            <p className="text-sm text-white">{method.method}</p>
+                            <p className="text-sm text-gray-900">{method.method}</p>
                             {method.estimatedDays && (
                               <p className="text-xs text-gray-500">
                                 Est. {method.estimatedDays} day{method.estimatedDays === 1 ? "" : "s"}
@@ -526,7 +551,7 @@ export default function CheckoutClient() {
                             )}
                           </div>
                         </div>
-                        <span className="text-sm font-light text-white">
+                        <span className="text-sm font-light text-gray-900">
                           {displayPrice === 0 ? "Free" : `$${displayPrice.toFixed(2)}`}
                         </span>
                       </label>
@@ -538,16 +563,16 @@ export default function CheckoutClient() {
 
             {/* Coupon */}
             <section className={cardClass}>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-white mb-5 border-b border-white/10 pb-4 flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-5 border-b border-black/10 pb-4 flex items-center gap-2">
                 <Tag className="w-4 h-4" />
                 Coupon Code
               </h2>
               {appliedCoupon ? (
                 <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
-                  <span className="text-sm text-emerald-300">
+                  <span className="text-sm text-emerald-700">
                     {appliedCoupon.code} applied — ${appliedCoupon.discount.toFixed(2)} off
                   </span>
-                  <button type="button" onClick={handleRemoveCoupon} className="text-emerald-300 hover:text-white">
+                  <button type="button" onClick={handleRemoveCoupon} className="text-emerald-700 hover:text-emerald-900">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -563,7 +588,7 @@ export default function CheckoutClient() {
                     type="button"
                     onClick={handleApplyCoupon}
                     disabled={isVerifyingCoupon}
-                    className="px-5 py-3 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-sm font-medium text-white whitespace-nowrap transition-colors disabled:opacity-50"
+                    className="px-5 py-3 rounded-lg bg-gray-900 hover:bg-gray-700 border border-black/10 text-sm font-medium text-white whitespace-nowrap transition-colors disabled:opacity-50"
                   >
                     {isVerifyingCoupon ? "Checking…" : "Apply"}
                   </button>
@@ -575,13 +600,13 @@ export default function CheckoutClient() {
             {/* Optional processing fees */}
             {optionalFees.length > 0 && (
               <section className={cardClass}>
-                <h2 className="text-xs font-bold uppercase tracking-widest text-white mb-5 border-b border-white/10 pb-4">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-5 border-b border-black/10 pb-4">
                   Optional Add-ons
                 </h2>
                 <div className="flex flex-col gap-3">
                   {optionalFees.map((fee) => (
                     <label key={fee.id} className="flex items-center justify-between gap-4 cursor-pointer">
-                      <span className="flex items-center gap-3 text-sm text-gray-300">
+                      <span className="flex items-center gap-3 text-sm text-gray-600">
                         <input
                           type="checkbox"
                           className="accent-indigo-500"
@@ -590,7 +615,7 @@ export default function CheckoutClient() {
                         />
                         {fee.name}
                       </span>
-                      <span className="text-sm text-white">
+                      <span className="text-sm text-gray-900">
                         {fee.type === "percentage" ? `${fee.amount}%` : `$${fee.amount.toFixed(2)}`}
                       </span>
                     </label>
@@ -601,7 +626,7 @@ export default function CheckoutClient() {
 
             {/* Payment method */}
             <section className={cardClass}>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-white mb-5 border-b border-white/10 pb-4 flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 mb-5 border-b border-black/10 pb-4 flex items-center gap-2">
                 <Lock className="w-4 h-4" />
                 Payment Method
               </h2>
@@ -612,7 +637,7 @@ export default function CheckoutClient() {
                     className={`flex items-center justify-between gap-4 border rounded-xl px-4 py-3 cursor-pointer transition-colors ${
                       paymentMethod === pm.value
                         ? "border-indigo-500 bg-indigo-500/10"
-                        : "border-white/10 hover:border-white/20"
+                        : "border-black/10 hover:border-black/20"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -623,17 +648,32 @@ export default function CheckoutClient() {
                         onChange={() => setPaymentMethod(pm.value)}
                       />
                       <div>
-                        <p className="text-sm text-white">{pm.label}</p>
+                        <p className="text-sm text-gray-900">{pm.label}</p>
                         <p className="text-xs text-gray-500">{pm.description}</p>
                       </div>
                     </div>
                   </label>
                 ))}
               </div>
+
+              {QR_PAYMENT_IMAGES[paymentMethod] && (
+                <div className="mt-5 flex flex-col items-center gap-3 border border-black/10 rounded-xl p-5 bg-gray-50">
+                  <img
+                    src={QR_PAYMENT_IMAGES[paymentMethod]}
+                    alt={`Scan to pay via ${PAYMENT_METHODS.find((pm) => pm.value === paymentMethod)?.label}`}
+                    className="w-48 h-48 object-contain rounded-lg bg-white p-2 border border-black/5"
+                  />
+                  <p className="text-xs text-gray-500 text-center max-w-sm">
+                    Scan this QR code with your {PAYMENT_METHODS.find((pm) => pm.value === paymentMethod)?.label} app to send
+                    payment for the total below, then place your order. We&apos;ll confirm payment and begin processing once
+                    it&apos;s received.
+                  </p>
+                </div>
+              )}
             </section>
 
             {submitError && (
-              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+              <div className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
                 {submitError}
               </div>
             )}
@@ -641,14 +681,14 @@ export default function CheckoutClient() {
 
           {/* Order summary */}
           <div className={cardClass + " lg:sticky lg:top-8 flex flex-col gap-4"}>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-white border-b border-white/10 pb-4">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-gray-900 border-b border-black/10 pb-4">
               Order Summary
             </h2>
             <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-1">
               {items.map((line) => (
                 <div key={line.lineId} className="flex justify-between gap-3 text-sm">
                   <div className="flex flex-col">
-                    <span className="text-white">{line.product.name}</span>
+                    <span className="text-gray-900 uppercase font-semibold">{line.product.name}</span>
                     {line.variantTitle && <span className="text-xs text-gray-500">{line.variantTitle}</span>}
                     <span className="text-xs text-gray-500">Qty {line.quantity}</span>
                   </div>
@@ -657,7 +697,7 @@ export default function CheckoutClient() {
               ))}
             </div>
 
-            <div className="flex flex-col gap-2 border-t border-white/10 pt-4 text-sm">
+            <div className="flex flex-col gap-2 border-t border-black/10 pt-4 text-sm">
               <div className="flex justify-between text-gray-400">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -678,7 +718,7 @@ export default function CheckoutClient() {
                   <span>${feeTotal.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between items-center pt-3 mt-1 border-t border-white/10 text-white font-medium">
+              <div className="flex justify-between items-center pt-3 mt-1 border-t border-black/10 text-gray-900 font-medium">
                 <span className="text-sm">Total</span>
                 <span className="text-2xl font-light">${total.toFixed(2)}</span>
               </div>
@@ -697,6 +737,7 @@ export default function CheckoutClient() {
             </button>
           </div>
         </form>
+      </div>
       </div>
 
       <Footer />

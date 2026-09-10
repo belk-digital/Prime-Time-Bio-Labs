@@ -36,6 +36,8 @@ export const AffiliateConversions: CollectionConfig = {
     { name: 'flaggedForReview', type: 'checkbox' },
     { name: 'fraudNotes', type: 'text' },
   ],
-  // TODO: port afterChange hook (afterAffiliateConversionChange) that updates Affiliates stats
-  // and drives commission approval/payout status transitions.
+  // Conversions are created by trackAffiliateConversion() in app/checkout/actions.ts
+  // (coupon-code attribution) which also updates Affiliates stats + sends the admin
+  // notification email. Still TODO: automatic pending -> approved -> paid transitions
+  // (e.g. after the pendingPeriodDays window, or when a payout is issued).
 }
