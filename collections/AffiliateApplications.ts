@@ -1,12 +1,29 @@
 import type { CollectionConfig } from 'payload'
 import { handleApplicationApproval } from '../lib/affiliate/handleApplicationApproval'
 
+const staffOnly = ({ req: { user } }: any) => !!user && ['admin', 'staff'].includes(user.role)
+
 export const AffiliateApplications: CollectionConfig = {
   slug: 'affiliate-applications',
   admin: {
     useAsTitle: 'displayName',
   },
   hooks: {
+    // create access requires a logged-in user (below), but nothing stops that user from
+    // passing a different `user` id or a pre-set status:"approved" in the request body —
+    // force both server-side so an application can never be filed on someone else's behalf
+    // or created already-approved.
+    beforeChange: [
+      ({ req, data, operation }) => {
+        if (operation === 'create' && req.user) {
+          data.user = req.user.id
+          data.status = 'pending'
+          data.reviewedBy = undefined
+          data.linkedAffiliate = undefined
+        }
+        return data
+      },
+    ],
     afterChange: [
       ({ doc, previousDoc, req }) => {
         void handleApplicationApproval({ doc, previousDoc, payload: req.payload }).catch((err) =>
@@ -22,9 +39,9 @@ export const AffiliateApplications: CollectionConfig = {
       if (['admin', 'staff'].includes(user.role as string)) return true
       return { user: { equals: user.id } }
     },
-    create: () => true, // Logged in users can apply (or public depending on strategy)
-    update: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
-    delete: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
+    create: ({ req }) => !!req.user,
+    update: staffOnly,
+    delete: staffOnly,
   },
   fields: [
     {

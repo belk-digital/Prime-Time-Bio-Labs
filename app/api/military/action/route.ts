@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { verifyMilitaryActionToken } from "@/lib/email/militaryActionToken";
@@ -21,7 +22,10 @@ function resultPage(title: string, message: string) {
 }
 
 function generateCouponCode(): string {
-  const random = Math.random().toString(36).slice(2, 8).toUpperCase();
+  // crypto.randomBytes rather than Math.random() — this code is also only usable by the
+  // requester's own locked email (see lockedEmails below), but it shouldn't be guessable
+  // as a second line of defense.
+  const random = crypto.randomBytes(6).toString("hex").toUpperCase();
   return `MIL-${random}`;
 }
 

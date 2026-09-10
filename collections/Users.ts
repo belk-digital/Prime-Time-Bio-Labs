@@ -46,8 +46,13 @@ export const Users: CollectionConfig = {
       type: 'text',
       unique: true,
       index: true,
+      // Never publicly settable — this field is the account-linking key the Google
+      // sign-in callback trusts (lib/auth/authOptions.ts). If a public create request
+      // could set it, an attacker could pre-register a victim's Google account id and
+      // hijack their next Google sign-in.
       access: {
         read: () => false,
+        create: () => false,
         update: () => false,
       },
     },
@@ -60,6 +65,7 @@ export const Users: CollectionConfig = {
         { label: 'Google', value: 'google' },
       ],
       access: {
+        create: () => false,
         update: () => false,
       },
     },
@@ -81,15 +87,18 @@ export const Users: CollectionConfig = {
         { label: 'Admin', value: 'admin' },
         { label: 'Staff', value: 'staff' },
       ],
-      // A customer's own update access only lets them PATCH their own record — without this,
-      // that's enough to self-promote to admin. Only admins/staff may change this field.
-      access: { update: staffOnly },
+      // The collection-level `create` access is public (anyone can register), so without a
+      // field-level restriction here a signup request could set role:"admin" directly —
+      // Payload defaults unset field access to allow, independent of the collection access.
+      // Only admins/staff may set or change this field; public registration falls back to
+      // the defaultValue above.
+      access: { create: staffOnly, update: staffOnly },
     },
     {
       name: 'emailVerified',
       type: 'checkbox',
       defaultValue: false,
-      access: { update: staffOnly },
+      access: { create: staffOnly, update: staffOnly },
     },
     {
       name: 'acceptsMarketing',
@@ -114,7 +123,7 @@ export const Users: CollectionConfig = {
       admin: {
         readOnly: true,
       },
-      access: { update: staffOnly },
+      access: { create: staffOnly, update: staffOnly },
     },
     {
       name: 'defaultShippingAddress',
@@ -164,12 +173,12 @@ export const Users: CollectionConfig = {
       admin: {
         readOnly: true,
       },
-      access: { update: staffOnly },
+      access: { create: staffOnly, update: staffOnly },
     },
     {
       name: 'metadata',
       type: 'json',
-      access: { update: staffOnly },
+      access: { create: staffOnly, update: staffOnly },
     },
     {
       name: 'hbPoints',
@@ -181,7 +190,7 @@ export const Users: CollectionConfig = {
       },
       // Only server-side code (checkout, refund hooks) using overrideAccess may change this —
       // never a customer's own PATCH request, or they could mint free store credit for themselves.
-      access: { update: staffOnly },
+      access: { create: staffOnly, update: staffOnly },
     },
   ],
   hooks: {

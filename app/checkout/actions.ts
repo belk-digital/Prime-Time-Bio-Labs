@@ -5,6 +5,7 @@ import config from "@payload-config";
 import Stripe from "stripe";
 import { FREE_SHIPPING_THRESHOLD, DEFAULT_COUNTRY } from "@/lib/shipping/constants";
 import { trackAffiliateConversion } from "@/lib/affiliate/trackConversion";
+import { getEffectivePrice } from "@/lib/types/shop";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -288,7 +289,31 @@ export async function createPayloadOrder(
 ): Promise<{ orderId: string; orderNumber: string; total: number }> {
   const payload = await getPayload({ config });
 
-  const subtotal = input.items.reduce(
+  // Never trust item prices from the client — the cart is plain localStorage state and
+  // trivially editable. Re-fetch each product (and matching variant, if any) from the
+  // database and price every line item from that, ignoring `item.priceSnapshot` entirely.
+  const verifiedItems = await Promise.all(
+    input.items.map(async (item) => {
+      const numericId = /^\d+$/.test(String(item.productId)) ? Number(item.productId) : item.productId;
+      const product = await payload.findByID({ collection: "products", id: numericId, overrideAccess: true }).catch(() => null);
+      if (!product) {
+        throw new Error(`Product ${item.productId} no longer exists.`);
+      }
+
+      let unitPrice = getEffectivePrice(product.price as number, product.salePrice as number | undefined);
+      if (product.hasVariants && item.variantSku) {
+        const variant = (product.variants as any[] | undefined)?.find((v) => v.sku === item.variantSku);
+        if (!variant) {
+          throw new Error(`Variant ${item.variantSku} not found on product ${product.name}.`);
+        }
+        unitPrice = getEffectivePrice(variant.price, variant.salePrice);
+      }
+
+      return { ...item, priceSnapshot: unitPrice, productId: numericId };
+    })
+  );
+
+  const subtotal = verifiedItems.reduce(
     (sum, item) => sum + item.priceSnapshot * item.quantity,
     0
   );
@@ -336,11 +361,8 @@ export async function createPayloadOrder(
 
   const orderNumber = await getNextOrderNumber(payload);
 
-  const orderItems = input.items.map((item) => ({
-    // Cart items always carry productId as a string (see toShopCardProduct), but Payload's
-    // Postgres adapter stores product IDs as integers and rejects a string here as an
-    // unresolvable relationship — coerce back to a number when it looks numeric.
-    product: /^\d+$/.test(String(item.productId)) ? Number(item.productId) : item.productId,
+  const orderItems = verifiedItems.map((item) => ({
+    product: item.productId,
     variantTitle: item.variantTitle,
     variant: item.variantSku,
     price: item.priceSnapshot,
@@ -403,13 +425,29 @@ function getStripeClient(): Stripe {
 }
 
 export async function createPaymentIntent(
-  amountCents: number,
+  _amountCents: number,
   orderId: string
 ): Promise<{ clientSecret: string | null }> {
+  // The amount is never taken from the caller — it's a client-computed value and would let
+  // someone charge themselves 50 cents for any order by editing it before this call. Always
+  // charge the order's own server-computed `total` from the database instead.
+  const payload = await getPayload({ config });
+  const order = await payload
+    .findByID({
+      collection: "orders",
+      id: isNaN(Number(orderId)) ? orderId : Number(orderId),
+      overrideAccess: true,
+    })
+    .catch(() => null);
+  if (!order) {
+    throw new Error(`Order ${orderId} not found.`);
+  }
+  const amountCents = Math.round(Number(order.total) * 100);
+
   const stripe = getStripeClient();
 
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: Math.max(50, Math.round(amountCents)),
+    amount: Math.max(50, amountCents),
     currency: "usd",
     automatic_payment_methods: { enabled: true },
     metadata: { orderId },

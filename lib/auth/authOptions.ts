@@ -11,6 +11,11 @@ import { generateAdminNewUserEmail } from "@/lib/email/templates/adminNewUser";
 import { generateGoogleLinkedEmail } from "@/lib/email/templates/passwordSecurity";
 import { ADMIN_EMAIL } from "@/lib/email/layout";
 
+// Fail fast rather than letting NextAuth fall back to an insecure default session secret.
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET environment variable is required and must not be empty.");
+}
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },

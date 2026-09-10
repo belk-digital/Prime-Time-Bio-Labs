@@ -41,6 +41,13 @@ import { BlogAuthorProfile } from './globals/BlogAuthorProfile'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Fail fast instead of silently signing every session/CSRF token (and the military
+// one-click-action JWTs, which reuse this same secret) with an empty string — that
+// would make them trivially forgeable rather than just breaking the app outright.
+if (!process.env.PAYLOAD_SECRET) {
+  throw new Error('PAYLOAD_SECRET environment variable is required and must not be empty.')
+}
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -82,7 +89,7 @@ export default buildConfig({
   ],
   globals: [AffiliateSettings, BlogAuthorProfile],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: process.env.PAYLOAD_SECRET,
   email: resendAdapter({
     defaultFromAddress: process.env.RESEND_FROM_EMAIL || 'support@primetimebiolabs.com',
     defaultFromName: 'Prime Time Bio Labs',
