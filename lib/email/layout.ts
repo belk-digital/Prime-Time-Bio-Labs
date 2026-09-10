@@ -3,7 +3,7 @@ import { escapeHtml } from "./escapeHtml";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const BRAND_NAME = "Prime Time Bio Labs";
 const ACCENT = "#4f46e5"; // indigo-600, matches the site's accent color
-const ADMIN_EMAIL = process.env.SUPPORT_EMAIL || "support@primetimebiolabs.com";
+const ADMIN_EMAIL = process.env.SUPPORT_EMAIL || "primetimebiolabs@gmail.com";
 
 export type EmailButton = { label: string; href: string };
 

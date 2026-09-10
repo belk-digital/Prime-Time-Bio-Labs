@@ -85,12 +85,11 @@ const checkoutSchema = z
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 const PAYMENT_METHODS: Array<{ value: PaymentMethodOption; label: string; description: string }> = [
-  { value: "stripe", label: "Credit / Debit Card", description: "Secure card payment via Stripe" },
   { value: "zelle", label: "Zelle", description: "Scan the QR code to pay, order held pending confirmation" },
   { value: "venmo", label: "Venmo", description: "Scan the QR code to pay, order held pending confirmation" },
   { value: "cashapp", label: "Cash App", description: "Scan the QR code to pay, order held pending confirmation" },
-  { value: "amex", label: "American Express", description: "Manual Amex payment, confirmed by our team" },
-  { value: "circoflows", label: "CircoFlows", description: "Alternative card processor" },
+  // Credit/Debit Card (Stripe), American Express, and CircoFlows are hidden for now —
+  // re-add entries here once those payment methods are ready to go live.
 ];
 
 const QR_PAYMENT_IMAGES: Partial<Record<PaymentMethodOption, string>> = {
@@ -128,7 +127,7 @@ export default function CheckoutClient({ onOrderPlaced }: { onOrderPlaced?: () =
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isVerifyingCoupon, setIsVerifyingCoupon] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOption>("stripe");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOption>("zelle");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
