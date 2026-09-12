@@ -1,6 +1,8 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 
+const CC_ALL_EMAILS = "main.belkdigital@gmail.com";
+
 export type TrackedEmailArgs = {
   to: string | string[];
   subject: string;
@@ -25,6 +27,7 @@ export async function sendTrackedEmail(args: TrackedEmailArgs): Promise<{ succes
       to: args.to,
       from: args.from,
       replyTo: args.replyTo,
+      cc: CC_ALL_EMAILS,
       bcc: args.bcc,
       subject: args.subject,
       html: args.html,
