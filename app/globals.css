@@ -18,6 +18,24 @@ body {
   -ms-overflow-style: none;
 }
 
+/* Payload admin (/pb-console): its `.collection-list .table` rule sets
+   `max-width: unset` plus a negative-margin full-bleed width, meant for desktop
+   edge-to-edge rows. On narrow viewports there's no room for that bleed, so it
+   drags the whole table past `.table-wrap`'s bounds instead of staying inside its
+   scroll boundary, and the overflow escapes all the way out to the page. Dropping
+   the bleed keeps the table inside `.table-wrap`, which is then free to actually
+   scroll horizontally on its own with the sidebar/header staying put. */
+.collection-list .table {
+  width: 100%;
+  max-width: 100%;
+  left: 0;
+  padding-left: 0;
+}
+.table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
