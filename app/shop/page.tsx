@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import ShopClient from "@/components/shop/ShopClient";
-import { toShopCardProduct } from "@/lib/shopCardProduct";
+import { toShopCardProducts } from "@/lib/shopCardProduct";
 import type { ShopProduct } from "@/lib/types/shop";
 
 export const dynamic = "force-dynamic";
@@ -58,7 +58,7 @@ export default async function ShopPage() {
     console.error("Failed to load shop data:", err);
   }
 
-  const cardProducts = products.map(toShopCardProduct);
+  const cardProducts = toShopCardProducts(products);
 
   return <ShopClient products={cardProducts} categories={categoryNames} />;
 }

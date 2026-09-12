@@ -4,7 +4,7 @@ import config from "@payload-config";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductClient from "@/components/product/ProductClient";
-import { toShopCardProduct } from "@/lib/shopCardProduct";
+import { getMultiVariantConfig, toShopCardProduct, toShopCardProducts } from "@/lib/shopCardProduct";
 import { getProductPrimaryImageUrl, getEffectivePrice } from "@/lib/types/shop";
 import type { ShopProduct } from "@/lib/types/shop";
 
@@ -52,12 +52,57 @@ function buildFaqJsonLd(product: ShopProduct) {
 
 const getProductBySlug = cache(async (slug: string) => {
   const payload = await getPayload({ config });
-  const result = await payload.find({
+  const mvConfig = getMultiVariantConfig(slug);
+
+  if (mvConfig) {
+    const keywordConditions = (mvConfig.dbKeywords || [mvConfig.name, mvConfig.slug]).flatMap(
+      (kw) => [
+        { slug: { equals: kw } },
+        { slug: { like: `${kw}%` } },
+        { name: { like: `${kw}%` } },
+        { name: { equals: kw } },
+      ]
+    );
+
+    const result = await payload.find({
+      collection: "products",
+      where: {
+        or: [
+          { slug: { equals: slug } },
+          { slug: { equals: mvConfig.slug } },
+          ...keywordConditions,
+        ],
+      } as any,
+      depth: 2,
+      limit: 1,
+    });
+    if (result.docs?.[0]) return result.docs[0] as unknown as ShopProduct;
+  }
+
+  // 1. Exact match by slug
+  let result = await payload.find({
     collection: "products",
     where: { slug: { equals: slug } },
     depth: 2,
     limit: 1,
   });
+  if (result.docs?.[0]) return result.docs[0] as unknown as ShopProduct;
+
+  // 2. Prefix or contains match (e.g. clean slug "bpc-157" matches "bpc-157-10-mg")
+  const searchName = slug.replace(/-/g, " ");
+  result = await payload.find({
+    collection: "products",
+    where: {
+      or: [
+        { slug: { like: `${slug}%` } },
+        { slug: { contains: slug } },
+        { name: { contains: searchName } },
+      ],
+    } as any,
+    depth: 2,
+    limit: 1,
+  });
+
   return (result.docs?.[0] ?? null) as unknown as ShopProduct | null;
 });
 
@@ -160,7 +205,7 @@ export default async function ProductPage({
       <ProductClient
         product={product}
         cardProduct={toShopCardProduct(product)}
-        relatedProducts={relatedProducts.map(toShopCardProduct)}
+        relatedProducts={toShopCardProducts(relatedProducts)}
       />
     </>
   );

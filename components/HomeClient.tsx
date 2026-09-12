@@ -129,8 +129,8 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
                 {/* Left side: Image */}
                 <div className="w-2/5 aspect-square rounded-xl overflow-hidden relative shrink-0">
                   <img
-                    src="/product-card-image.png"
-                    alt="Retatrutide"
+                    src="/primetimebiolabs prod images/GLP-3RTA-10MG_PRIME.png"
+                    alt="GLP-3RTA"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -145,7 +145,7 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
                       </span>
                     </div>
                     <div className="flex justify-between items-baseline mb-1">
-                      <h3 className="text-lg text-white font-medium font-michroma leading-tight">Retatrutide</h3>
+                      <h3 className="text-lg text-white font-medium font-michroma leading-tight">GLP-3RTA</h3>
                       <span className="text-white font-light text-sm ml-2">10mg</span>
                     </div>
                     <p className="text-xs text-gray-400">
@@ -153,7 +153,7 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
                     </p>
                   </div>
                   <Link
-                    href="/product/retatrutide"
+                    href="/product/glp-3rta"
                     className="flex items-center justify-between w-full px-4 py-2 mt-4 text-xs text-black bg-white hover:bg-gray-200 transition-colors rounded-lg font-medium"
                   >
                     <span>View Product</span>

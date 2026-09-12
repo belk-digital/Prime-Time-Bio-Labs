@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/lib/cart/store";
 import ShopProductCard, { type ShopMockProduct } from "@/components/shop/ShopProductCard";
+import { getProductDisplayDetails, getMultiVariantConfig } from "@/lib/shopCardProduct";
 import Footer from "@/components/Footer";
 import { resolveMediaUrl, type ShopProduct } from "@/lib/types/shop";
 
@@ -70,6 +71,7 @@ export default function ProductClient({
         {
           key: "details" as const,
           title: product.productDetailsTitle || "Product Details",
+          shortTitle: "Details",
           description:
             product.productDetailsDescription ||
             "Every batch is synthesized to research-grade standards and shipped in a sealed, light-protected vial with a printed lot number for full traceability. Store lyophilized peptide at -20°C prior to reconstitution.",
@@ -77,6 +79,7 @@ export default function ProductClient({
         {
           key: "research" as const,
           title: product.researchFocusTitle || "Research Focus",
+          shortTitle: "Research",
           description:
             product.researchFocusDescription ||
             "This compound is supplied strictly for in-vitro laboratory research and is not intended for human or animal consumption. Researchers should follow their institution's handling and disposal protocols.",
@@ -84,6 +87,7 @@ export default function ProductClient({
         {
           key: "quality" as const,
           title: product.qualityPurityTitle || "Quality & Purity",
+          shortTitle: "Quality",
           description:
             product.qualityPurityDescription ||
             "Third-party HPLC and mass spectrometry testing verifies purity on every production batch. A Certificate of Analysis (COA) is available on request for the specific lot number received.",
@@ -91,11 +95,12 @@ export default function ProductClient({
         {
           key: "compliance" as const,
           title: product.complianceNoticeTitle || "Compliance Notice",
+          shortTitle: "Compliance",
           description:
             product.complianceNoticeDescription ||
             "For Research Use Only. Not for human consumption. This product is not a drug, food, or cosmetic and has not been evaluated by the FDA. Sale is restricted to qualified researchers.",
         },
-      ] satisfies { key: TabKey; title: string; description: string }[],
+      ] satisfies { key: TabKey; title: string; shortTitle: string; description: string }[],
     [product]
   );
 
@@ -138,12 +143,24 @@ export default function ProductClient({
     { dependencies: [activeTab], scope: sectionRef }
   );
 
+  const mvConfig = getMultiVariantConfig(cardProduct.slug || cardProduct.name);
+  const displayDetails = getProductDisplayDetails(cardProduct, selectedDosage);
+
+  const activePrice = displayDetails.price;
+  const activeImage = displayDetails.image;
+  const galleryImages = displayDetails.galleryImages;
+
   const handleAddToCart = () => {
     addItem(
-      { id: cardProduct.id, name: cardProduct.name, imageUrl: cardProduct.image, slug: cardProduct.slug },
+      {
+        id: displayDetails.sku,
+        name: cardProduct.name,
+        imageUrl: activeImage,
+        slug: cardProduct.slug,
+      },
       selectedDosage,
       quantity,
-      cardProduct.price,
+      activePrice,
       selectedDosage
     );
     setAddedMessage(true);
@@ -165,30 +182,38 @@ export default function ProductClient({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-20">
           {/* Gallery */}
           <div className="pd-gallery">
-            <div className="relative aspect-square border border-black/5 rounded-[2rem] overflow-hidden mb-4 shadow-sm">
+            <div className="relative aspect-square border border-black/5 rounded-[2rem] overflow-hidden mb-4 shadow-sm bg-[#F5F5F5]">
               {cardProduct.featured && (
                 <span className="absolute top-5 left-5 z-10 px-3 py-1 text-[10px] uppercase tracking-widest font-bold text-white bg-gray-900 rounded-full">
                   Featured
                 </span>
               )}
               <img
-                src={cardProduct.image}
+                src={activeImage}
                 alt={cardProduct.name}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
               />
             </div>
             <div className="flex gap-3">
-              {[0, 1, 2].map((idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`relative w-20 h-20 rounded-2xl border overflow-hidden transition-all ${
-                    idx === 0 ? "border-indigo-500" : "border-black/5 hover:border-black/20"
-                  }`}
-                >
-                  <img src={cardProduct.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                </button>
-              ))}
+              {galleryImages.map((imgSrc, idx) => {
+                const isSelectedImg = activeImage === imgSrc;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      if (mvConfig && mvConfig.dosageOptions[idx]) {
+                        setSelectedDosage(mvConfig.dosageOptions[idx]);
+                      }
+                    }}
+                    className={`relative w-20 h-20 rounded-2xl border overflow-hidden transition-all ${
+                      isSelectedImg ? "border-indigo-500 ring-2 ring-indigo-500/20" : "border-black/5 hover:border-black/20"
+                    }`}
+                  >
+                    <img src={imgSrc} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -210,7 +235,7 @@ export default function ProductClient({
 
             <div className="flex items-baseline gap-3 mb-6">
               <span className="text-3xl font-michroma font-bold text-gray-900">
-                ${cardProduct.price.toFixed(2)}
+                ${activePrice.toFixed(2)}
               </span>
             </div>
 
@@ -347,7 +372,7 @@ export default function ProductClient({
         {/* Tabs */}
         <div className="pd-reveal mb-20">
           <div className="relative mb-8">
-            <div className="flex items-end overflow-x-auto no-scrollbar">
+            <div className="flex items-end w-full">
               {tabs.map((tab, index) => {
                 const isActive = activeTab === tab.key;
                 return (
@@ -355,22 +380,30 @@ export default function ProductClient({
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveTab(tab.key)}
-                    style={{ zIndex: tabs.length - index, marginLeft: index === 0 ? 0 : "-19px" }}
-                    className="relative shrink-0 pb-[2px]"
+                    style={{
+                      zIndex: tabs.length - index,
+                    }}
+                    className={`relative flex-1 pb-[2px] ${
+                      index === 0 ? "ml-0" : "-ml-2 sm:-ml-3 md:-ml-[19px]"
+                    }`}
                   >
                     <span
-                      className={`absolute inset-0 -skew-x-[14deg] rounded-t-2xl transition-colors ${
+                      className={`absolute inset-0 -skew-x-[10deg] sm:-skew-x-[12deg] md:-skew-x-[14deg] rounded-t-lg sm:rounded-t-xl md:rounded-t-2xl transition-colors ${
                         isActive
                           ? "bg-gray-900 shadow-[0_-4px_16px_rgba(0,0,0,0.15)]"
                           : "bg-white border border-black/10 hover:bg-gray-50"
                       }`}
                     />
                     <span
-                      className={`relative block py-3.5 text-[11px] md:text-xs uppercase tracking-wide font-bold whitespace-nowrap transition-colors ${
-                        index === 0 ? "px-4 md:px-5" : "pl-6 md:pl-7 pr-3 md:pr-4"
+                      className={`relative block py-2 sm:py-2.5 md:py-3.5 text-[8.5px] min-[360px]:text-[9.5px] sm:text-[11px] md:text-xs uppercase tracking-tight md:tracking-wide font-bold transition-colors text-center truncate ${
+                        index === 0
+                          ? "px-1 sm:px-2 md:px-5"
+                          : "pl-2.5 sm:pl-4 md:pl-7 pr-1 sm:pr-2 md:pr-4"
                       } ${isActive ? "text-white" : "text-gray-500"}`}
                     >
-                      {tab.title}
+                      {/* Responsive short title on mobile, full title on desktop */}
+                      <span className="md:hidden">{tab.shortTitle}</span>
+                      <span className="hidden md:inline">{tab.title}</span>
                     </span>
                   </button>
                 );

@@ -5,7 +5,7 @@ import HomeClient from "@/components/HomeClient";
 import type { CategoryCardData } from "@/components/CategoriesSection";
 import { getCategoryImage } from "@/lib/categoryImages";
 import type { BlogPostCardData } from "@/components/BlogSection";
-import { toShopCardProduct, type ShopMockProduct } from "@/lib/shopCardProduct";
+import { toShopCardProducts, type ShopMockProduct } from "@/lib/shopCardProduct";
 import type { ShopProduct } from "@/lib/types/shop";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
@@ -141,7 +141,7 @@ export default async function Home() {
       }),
     ]);
 
-    products = (productsResult.docs as unknown as ShopProduct[]).map(toShopCardProduct);
+    products = toShopCardProducts(productsResult.docs as unknown as ShopProduct[]);
     categories = (categoriesResult.docs as CategoryDoc[]).map(mapCategory);
     posts = (postsResult.docs as BlogPostDoc[]).map(mapBlogPost);
   } catch (error) {

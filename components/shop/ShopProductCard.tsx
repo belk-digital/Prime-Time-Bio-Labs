@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/cart/store";
-import type { ShopMockProduct } from "@/lib/shopCardProduct";
+import { getProductDisplayDetails, type ShopMockProduct } from "@/lib/shopCardProduct";
 
 export type { ShopMockProduct };
 
@@ -20,6 +20,9 @@ export default function ShopProductCard({
   const addItem = useCartStore((state) => state.addItem);
 
   const isLight = variant === "light";
+  const displayDetails = getProductDisplayDetails(product, selectedDosage);
+  const displayPrice = displayDetails.price;
+  const displayImage = displayDetails.image;
 
   return (
     <div
@@ -36,7 +39,7 @@ export default function ShopProductCard({
             </span>
           )}
           <img
-            src={product.image}
+            src={displayImage}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
@@ -116,16 +119,16 @@ export default function ShopProductCard({
         {/* Price row */}
         <div className="flex items-center justify-between mt-4">
           <span className={`text-2xl font-semibold ${isLight ? "text-gray-900" : "text-white"}`}>
-            ${product.price.toFixed(0)}
+            ${displayPrice.toFixed(0)}
           </span>
           <button
             type="button"
             onClick={() =>
               addItem(
-                { id: product.id, name: product.name, imageUrl: product.image, slug: product.slug },
+                { id: displayDetails.sku, name: product.name, imageUrl: displayImage, slug: product.slug },
                 selectedDosage,
                 1,
-                product.price,
+                displayPrice,
                 selectedDosage
               )
             }
