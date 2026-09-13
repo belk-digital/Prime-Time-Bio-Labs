@@ -55,11 +55,14 @@ const BlogSection = ({ posts }: BlogSectionProps) => {
               Blog
             </div>
             <h2 className="text-3xl md:text-4xl font-michroma font-bold text-gray-900 tracking-wider uppercase">
-              Latest in Peptide Synthesis
+              Latest Research and Peptide Science
             </h2>
+            <p className="text-gray-500 text-sm md:text-base mt-3 max-w-xl">
+              Our research team publishes on synthesis methods, analytical verification and stability handling, written for laboratory professionals and citing the primary literature behind it.
+            </p>
           </div>
           <Link href="/blog" className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors rounded-lg w-fit">
-            See More
+            Read All Articles
             <ChevronRight className="w-4 h-4" />
           </Link>
         </div>

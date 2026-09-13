@@ -56,17 +56,19 @@ export default function MilitaryDiscountSection() {
           <div className="w-full lg:w-[55%] flex flex-col py-4 lg:py-0 lg:pl-8 order-1 lg:order-2">
             <div className="mb-8">
               <span className="font-inter text-indigo-600 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase mb-4 block">
-                Military &amp; Veteran Discount
+                Serve With Honor. Research With Us.
               </span>
               <h2 className="font-michroma text-3xl md:text-4xl lg:text-5xl uppercase font-bold leading-[1.15] tracking-wider mb-6 text-gray-900">
-                Serve With Honor.
-                <br />
-                Research With Us.
+                Military and Veteran Research Discount
               </h2>
               <p className="font-inter text-gray-500 text-base md:text-lg leading-relaxed w-full lg:max-w-[85%]">
-                Active-duty service members, veterans, and their immediate family qualify for an exclusive discount
-                on every research peptide we offer. Upload a quick photo ID for verification and we&apos;ll email
-                your one-time discount code within 1&ndash;2 business days.
+                Active-duty service members, veterans and their immediate family qualify for a standing discount on every research peptide in our catalogue. Upload a photo of your military or veteran identification, and we&apos;ll email your discount code within one to two business days. The code applies to your account rather than a single order, so you never need to re-verify on repeat purchases.
+              </p>
+              <h3 className="font-michroma text-lg md:text-xl uppercase tracking-wider text-gray-900 mt-8 mb-2">
+                How We Handle Your ID Photo
+              </h3>
+              <p className="font-inter text-gray-500 text-sm md:text-base leading-relaxed w-full lg:max-w-[85%]">
+                A human reviewer checks your identification photo once, then deletes it permanently from our systems. We do not store it, we do not archive it, and we never share it with a third party. We keep one thing only: a flag on your account recording that verification succeeded.
               </p>
             </div>
 

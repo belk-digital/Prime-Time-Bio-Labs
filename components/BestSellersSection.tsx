@@ -21,7 +21,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     description:
       "Triple GIP/GLP-1/glucagon receptor agonist studied for its effects on metabolic pathways and body composition.",
     dosageOptions: ["10mg", "30mg"],
-    purity: "99%+ Purity",
+    purity: "≥99% Purity",
     type: "Research Grade Peptide",
     price: 64.99,
     image: "/primetimebiolabs prod images/GLP-3RTA-10MG_PRIME.png",
@@ -35,7 +35,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     description:
       "Dual GIP and GLP-1 receptor agonist researched for synergistic effects on glucose homeostasis.",
     dosageOptions: ["10mg", "30mg"],
-    purity: "99.9% Purity",
+    purity: "≥99% Purity",
     type: "Research Grade Peptide",
     price: 61.99,
     image: "/primetimebiolabs prod images/GLP1TRZ_10MG_PRIME.png",
@@ -48,7 +48,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     slug: "semaglutide",
     description: "GLP-1 receptor agonist widely studied for glycemic control and weight management research.",
     dosageOptions: ["2MG", "5MG", "10MG"],
-    purity: "99.5% Purity",
+    purity: "≥99% Purity",
     type: "Research Grade Peptide",
     price: 99.99,
     image: FALLBACK_IMAGE,
@@ -62,8 +62,8 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     description:
       "Synthetic peptide derived from a protective stomach protein, studied for tissue repair and gut healing.",
     dosageOptions: ["5MG", "10MG"],
-    purity: "99%+ Purity",
-    type: "Healing Peptide",
+    purity: "≥99% Purity",
+    type: "Research Peptide",
     price: 79.99,
     image: FALLBACK_IMAGE,
     featured: false,
