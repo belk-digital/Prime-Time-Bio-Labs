@@ -94,15 +94,15 @@ export default function GenomicsSection() {
             <div className="inline-block px-3 py-1.5 mb-6 text-[10px] md:text-xs font-bold tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md rounded-md uppercase shadow-sm">
               Certificate of Analysis
             </div>
-            <p className="text-4xl md:text-5xl lg:text-6xl font-michroma font-light leading-[1.1] mb-8 tracking-tight text-white">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-michroma font-light leading-[1.1] mb-8 tracking-tight text-white">
               Transparency<br />
               in Every Batch.
-            </p>
+            </h2>
           </div>
           
           <p ref={subTextRef} className="text-white/70 max-w-xs text-sm font-michroma font-light leading-relaxed mb-10">
             Every peptide is independently<br />
-            verified to ≥99% purity<br />
+            verified for {">"}99% purity<br />
             and identity.
           </p>
 

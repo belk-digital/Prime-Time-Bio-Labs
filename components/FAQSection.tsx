@@ -90,7 +90,7 @@ export default function FAQSection({ hideHeading = false, title, subtitle, faqs 
               <div
                 id={`faq-answer-${index}`}
                 className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-                  openIndex === index ? 'max-h-64 pb-5 opacity-100' : 'max-h-0 opacity-0'
+                  openIndex === index ? 'max-h-48 pb-5 opacity-100' : 'max-h-0 opacity-0'
                 }`}
               >
                 <p className="text-gray-300 leading-relaxed">

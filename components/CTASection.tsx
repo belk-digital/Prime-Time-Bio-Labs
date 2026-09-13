@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -42,31 +41,19 @@ export default function CTASection() {
 
         {/* Content */}
         <div className="relative z-10 cta-content py-10 px-8 md:py-16 md:px-12 lg:py-20 lg:px-16 flex flex-col items-start text-left text-white max-w-2xl">
-          <p className="text-sm font-bold tracking-widest text-indigo-400 uppercase mb-4">
+          <h2 className="text-sm font-bold tracking-widest text-indigo-400 uppercase mb-4">
             Accelerate Your Discoveries
-          </p>
-          <h2 className="text-4xl md:text-5xl font-michroma font-bold leading-tight mb-6 uppercase tracking-wider">
-            Start Your Next Research Project
           </h2>
+          <h3 className="text-4xl md:text-5xl font-michroma font-bold leading-tight mb-6 uppercase tracking-wider">
+            Ready to Elevate Your Research?
+          </h3>
           <p className="text-gray-300 leading-relaxed mb-10 text-lg">
-            Browse the full catalogue of research peptides. We synthesise each one in the United States, test it to ≥99% purity through an independent laboratory, and ship it with the Certificate of Analysis for its batch. If you need a compound we do not list, ask us about custom synthesis.
+            Experience the difference that 99.9% purity can make. Browse our complete catalog of research-grade peptides, synthesized and tested in the USA.
           </p>
-          <div className="flex flex-wrap items-center gap-4">
-            <Link
-              href="/shop"
-              className="flex items-center gap-3 px-8 py-4 bg-white text-black text-sm font-bold uppercase tracking-wider rounded-lg hover:bg-gray-200 transition-colors group"
-            >
-              Shop the Catalogue
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="/contact-us"
-              className="flex items-center gap-3 px-8 py-4 border border-white/30 text-white text-sm font-bold uppercase tracking-wider rounded-lg hover:bg-white/10 transition-colors group"
-            >
-              Request Custom Synthesis
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
+          <button className="flex items-center gap-3 px-8 py-4 bg-white text-black text-sm font-bold uppercase tracking-wider rounded-lg hover:bg-gray-200 transition-colors group">
+            Shop Our Catalog
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
         </div>
       </div>
     </section>

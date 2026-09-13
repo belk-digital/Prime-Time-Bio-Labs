@@ -16,9 +16,6 @@ import MilitaryDiscountSection from "@/components/MilitaryDiscountSection";
 import BlogSection, { type BlogPostCardData } from "@/components/BlogSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
-import WhatAreResearchPeptidesSection from "@/components/WhatAreResearchPeptidesSection";
-import PurityVerificationSection from "@/components/PurityVerificationSection";
-import ShippingColdChainSection from "@/components/ShippingColdChainSection";
 import type { ShopMockProduct } from "@/lib/shopCardProduct";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -105,10 +102,7 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
             {/* Right Description Text */}
             <div className="gsap-hero max-w-md mt-0 text-left md:text-right">
               <p className="text-base md:text-lg text-gray-300 leading-relaxed font-light">
-                PrimeTime BioLabs supplies research-grade peptides from United States laboratories. Independent
-                HPLC and mass spectrometry analysis verifies every batch, and each one ships with a Certificate of
-                Analysis listing its purity result and batch number. We sell strictly for in-vitro laboratory
-                research.
+                Premium-grade, 99%+ purity peptides engineered for breakthrough research and scientific excellence.
               </p>
             </div>
           </div>
@@ -118,44 +112,15 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
             {/* Main Title Area */}
             <div className="gsap-hero max-w-2xl mb-12 md:mb-0">
               <div className="hidden md:inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-white bg-white/10 border border-white/10 rounded backdrop-blur-sm uppercase">
-                Trusted by 100+ Research Laboratories
+                We Supply 100+ Research Labs
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-michroma uppercase tracking-wider text-white leading-[1.2]">
-                Research Peptides Tested to ≥99% Purity,
+                Pure. Precise.
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
-                  With a COA on Every Batch
+                  Peptides.
                 </span>
               </h1>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-6 text-[11px] md:text-xs uppercase tracking-widest text-gray-400 font-mono">
-                <span>≥99% purity</span>
-                <span className="text-white/30">·</span>
-                <span>Independent HPLC + MS testing</span>
-                <span className="text-white/30">·</span>
-                <span>COA on every batch</span>
-                <span className="text-white/30">·</span>
-                <span>Synthesised in the USA</span>
-                <span className="text-white/30">·</span>
-                <span>Cold-chain shipping</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 mt-6">
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-gray-200 transition-colors group"
-                >
-                  Shop Research Peptides
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/certificates"
-                  className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-white/10 transition-colors group"
-                >
-                  View Certificates of Analysis
-                </Link>
-              </div>
-              <p className="mt-6 text-[11px] text-gray-500 uppercase tracking-widest">
-                For laboratory research use only. Not for human or animal consumption.
-              </p>
             </div>
 
             {/* Featured Product Card */}
@@ -204,19 +169,16 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
       {/* Best Sellers Section */}
       <BestSellersSection products={products} />
 
-      {/* What Are Research Peptides */}
-      <WhatAreResearchPeptidesSection />
-
       {/* About Section */}
       <section className="about-section bg-white text-gray-900 py-24 px-6 md:px-12 lg:px-24 flex flex-col lg:flex-row items-center gap-16">
         <div className="w-full lg:w-1/2">
-          <p className="gsap-about-text text-sm font-bold tracking-widest text-indigo-600 uppercase mb-4">About Primetime Biolabs</p>
-          <h2 className="gsap-about-text text-4xl md:text-5xl font-michroma font-bold leading-tight mb-6 uppercase tracking-wider">Pioneering the Future of Peptide Synthesis</h2>
+          <h2 className="gsap-about-text text-sm font-bold tracking-widest text-indigo-600 uppercase mb-4">About Primetime Biolabs</h2>
+          <h3 className="gsap-about-text text-4xl md:text-5xl font-michroma font-bold leading-tight mb-6 uppercase tracking-wider">Pioneering the Future of Peptide Synthesis</h3>
           <p className="gsap-about-text text-gray-600 leading-relaxed mb-6">
-            At Primetime Biolabs, we are dedicated to pushing the boundaries of laboratory research by providing the highest purity peptides available on the market. Our state-of-the-art laboratory facilities and stringent quality control processes ensure that every product we synthesize meets the exacting standards required for laboratory research.
+            At Primetime Biolabs, we are dedicated to pushing the boundaries of scientific research by providing the highest purity peptides available on the market. Our state-of-the-art laboratory facilities and stringent quality control processes ensure that every product we synthesize meets the exacting standards required for breakthrough discoveries.
           </p>
           <p className="gsap-about-text text-gray-600 leading-relaxed mb-8">
-            Whether you are conducting complex cellular assays or developing next-generation analytical methods, our precision-engineered solutions deliver the reliability and consistency your research demands. Partner with us to accelerate your research programme.
+            Whether you are conducting complex cellular assays or developing next-generation therapeutics, our precision-engineered solutions deliver the reliability and consistency your research demands. Partner with us to accelerate your scientific endeavors.
           </p>
           <Link
             href="/about-us"
@@ -249,26 +211,15 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
       {/* Quality & Standards Section */}
       <QualitySection />
 
-      {/* Genomics Section (lead-in banner) */}
+      {/* Genomics Section */}
       <GenomicsSection />
 
-      {/* Purity Verification + Comparison Table */}
-      <PurityVerificationSection />
-
-      {/* Shipping, Cold Chain and Storage */}
-      <ShippingColdChainSection />
 
       {/* Blog Section */}
       <BlogSection posts={posts} />
 
       {/* FAQ Section */}
-      <FAQSection
-        title={
-          <>
-            Research Peptide <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">FAQs</span>
-          </>
-        }
-      />
+      <FAQSection />
 
 
 

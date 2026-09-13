@@ -213,10 +213,9 @@ export default function Footer() {
         <div className="footer-stagger border-t border-white/5 pt-8 mb-8">
           <p className="text-[11px] leading-relaxed text-gray-500 max-w-4xl">
             <span className="font-bold text-gray-400 uppercase tracking-wider mr-2">Research Use Only:</span>
-            Products supplied by PrimeTime BioLabs are intended strictly for laboratory and in-vitro research by qualified professionals.
-            They are not drugs, dietary supplements or cosmetics. They are not intended for human or animal consumption, and they are not
-            for diagnostic, therapeutic or preventive use of any kind. No statement on this site has been evaluated by the Food and Drug
-            Administration.
+            Products sold by Primetime Biolabs are intended strictly for laboratory and in-vitro research use by qualified professionals.
+            They are not drugs, dietary supplements, or cosmetics, and are not intended for human or animal consumption, diagnostic, or
+            therapeutic use of any kind.
           </p>
         </div>
 
@@ -238,11 +237,11 @@ export default function Footer() {
             WebkitMaskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)"
           }}
         >
-          <p
+          <h1
             className="footer-giant-text text-[12vw] font-black tracking-tighter leading-none m-0 p-0 bg-gradient-to-b from-indigo-600 to-purple-900 text-transparent bg-clip-text"
           >
             PRIMETIME
-          </p>
+          </h1>
         </div>
       </div>
     </footer>
