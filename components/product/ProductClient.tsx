@@ -411,7 +411,7 @@ export default function ProductClient({
             </div>
             <div className="h-[3px] bg-gray-900 -mt-[2px] relative z-0 rounded-full" />
           </div>
-          <div ref={tabContentRef} className="max-w-3xl">
+          <div ref={tabContentRef} className="max-w-none">
             {/* All four tabs render into the DOM at all times (visibility toggled via CSS,
                 not conditional unmounting) — this keeps the research/quality/compliance
                 content readable by search crawlers and AI answer engines, which don't

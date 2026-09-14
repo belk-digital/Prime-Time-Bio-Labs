@@ -132,8 +132,11 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
             </div>
 
             {/* Featured Product Card */}
-            <div className="gsap-hero hidden lg:flex w-full md:w-[380px]">
-              <div className="p-3 bg-[#111111]/80 border border-white/10 rounded-2xl backdrop-blur-md shadow-2xl flex flex-row items-stretch gap-4 group w-full">
+            <Link
+              href="/product/glp-3rta"
+              className="gsap-hero hidden lg:flex w-full md:w-[380px]"
+            >
+              <div className="p-3 bg-[#111111]/80 border border-white/10 rounded-2xl backdrop-blur-md shadow-2xl flex flex-row items-stretch gap-4 group w-full hover:border-white/20 transition-colors">
                 {/* Left side: Image */}
                 <div className="w-2/5 aspect-square rounded-xl overflow-hidden relative shrink-0">
                   <img
@@ -160,16 +163,13 @@ export default function HomeClient({ products, categories, posts }: HomeClientPr
                       Research Grade Peptide
                     </p>
                   </div>
-                  <Link
-                    href="/product/glp-3rta"
-                    className="flex items-center justify-between w-full px-4 py-2 mt-3 text-xs text-black bg-white hover:bg-gray-200 transition-colors rounded-lg font-medium"
-                  >
+                  <div className="flex items-center justify-between w-full px-4 py-2 mt-3 text-xs text-black bg-white group-hover:bg-gray-200 transition-colors rounded-lg font-medium">
                     <span>View Product</span>
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
