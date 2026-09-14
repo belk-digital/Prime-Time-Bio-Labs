@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function PrecisionSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const headingRef = useRef<HTMLParagraphElement>(null);
   const tagsRef = useRef<(HTMLDivElement | null)[]>([]);
   const bgRef = useRef<HTMLImageElement>(null);
 
@@ -53,7 +53,7 @@ export default function PrecisionSection() {
   }, { scope: containerRef });
 
   const tags = [
-    { text: "99.9% Purity Guaranteed", style: { top: "28%", left: "8%" }, mobileStyle: { top: "18%", left: "2%" } },
+    { text: "≥99% Purity Verified", style: { top: "28%", left: "8%" }, mobileStyle: { top: "18%", left: "2%" } },
     { text: "Third-Party Tested", style: { top: "12%", left: "50%", marginLeft: "-90px" }, mobileStyle: { top: "8%", left: "50%", marginLeft: "-55px" } },
     { text: "Research Grade", style: { top: "26%", right: "8%" }, mobileStyle: { top: "24%", right: "2%" } },
     { text: "Fast USA Shipping", style: { bottom: "25%", left: "12%" }, mobileStyle: { bottom: "20%", left: "2%" } },
@@ -157,12 +157,12 @@ export default function PrecisionSection() {
 
         {/* Center Content */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-3xl mx-auto mt-20 md:mt-0">
-        <h2 
+        <p
           ref={headingRef}
           className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-8 md:mb-6 leading-tight uppercase"
         >
           Precision in Every Peptide.
-        </h2>
+        </p>
       </div>
     </section>
   );

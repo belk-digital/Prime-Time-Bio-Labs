@@ -21,7 +21,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     description:
       "Triple GIP/GLP-1/glucagon receptor agonist studied for its effects on metabolic pathways and body composition.",
     dosageOptions: ["10mg", "30mg"],
-    purity: "99%+ Purity",
+    purity: "≥99% Purity",
     type: "Research Grade Peptide",
     price: 64.99,
     image: "/primetimebiolabs prod images/GLP-3RTA-10MG_PRIME.png",
@@ -35,7 +35,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     description:
       "Dual GIP and GLP-1 receptor agonist researched for synergistic effects on glucose homeostasis.",
     dosageOptions: ["10mg", "30mg"],
-    purity: "99.9% Purity",
+    purity: "≥99% Purity",
     type: "Research Grade Peptide",
     price: 61.99,
     image: "/primetimebiolabs prod images/GLP1TRZ_10MG_PRIME.png",
@@ -48,7 +48,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     slug: "semaglutide",
     description: "GLP-1 receptor agonist widely studied for glycemic control and weight management research.",
     dosageOptions: ["2MG", "5MG", "10MG"],
-    purity: "99.5% Purity",
+    purity: "≥99% Purity",
     type: "Research Grade Peptide",
     price: 99.99,
     image: FALLBACK_IMAGE,
@@ -62,14 +62,52 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     description:
       "Synthetic peptide derived from a protective stomach protein, studied for tissue repair and gut healing.",
     dosageOptions: ["5MG", "10MG"],
-    purity: "99%+ Purity",
-    type: "Healing Peptide",
+    purity: "≥99% Purity",
+    type: "Research Peptide",
     price: 79.99,
     image: FALLBACK_IMAGE,
     featured: false,
     category: "Healing & Recovery",
   },
+  {
+    id: "5",
+    name: "MOTS-c",
+    slug: "mots-c",
+    description: "Mitochondrial-derived peptide studied for its role in cellular energy metabolism.",
+    dosageOptions: ["10mg", "20mg"],
+    purity: "≥99% Purity",
+    type: "Growth Hormone Secretagogue",
+    price: 59.99,
+    image: "/primetimebiolabs prod images/MOTS-C-10MG.webp",
+    featured: false,
+    category: "Growth Hormone Secretagogue",
+  },
+  {
+    id: "6",
+    name: "Tesamorelin",
+    slug: "tesamorelin",
+    description: "GHRH analogue studied for its effects on the somatotropic axis and body composition.",
+    dosageOptions: ["10mg", "20mg"],
+    purity: "≥99% Purity",
+    type: "Growth Hormone Secretagogue",
+    price: 64.99,
+    image: "/primetimebiolabs prod images/Tesamorelin-10mg.webp",
+    featured: false,
+    category: "Growth Hormone Secretagogue",
+  },
 ];
+
+/** Ensures there are always enough cards to make the desktop slider worth sliding —
+ * pads with real catalog products (never fake ones) rather than hiding/duplicating
+ * whatever real best-sellers were passed in. */
+const MIN_SLIDER_ITEMS = 6;
+
+function withSliderPadding(items: ShopMockProduct[]): ShopMockProduct[] {
+  if (items.length >= MIN_SLIDER_ITEMS) return items;
+  const seenSlugs = new Set(items.map((p) => p.slug));
+  const padding = FALLBACK_PRODUCTS.filter((p) => !seenSlugs.has(p.slug));
+  return [...items, ...padding].slice(0, Math.max(MIN_SLIDER_ITEMS, items.length));
+}
 
 interface BestSellersSectionProps {
   products?: ShopMockProduct[];
@@ -77,7 +115,16 @@ interface BestSellersSectionProps {
 
 export default function BestSellersSection({ products }: BestSellersSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const items = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const baseItems = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+  const items = withSliderPadding(baseItems);
+
+  const scrollSlider = (direction: "left" | "right") => {
+    const el = sliderRef.current;
+    if (!el) return;
+    const cardWidth = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 300;
+    el.scrollBy({ left: direction === "left" ? -(cardWidth + 24) : cardWidth + 24, behavior: "smooth" });
+  };
 
   useGSAP(
     () => {
@@ -133,21 +180,42 @@ export default function BestSellersSection({ products }: BestSellersSectionProps
           </Link>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Left Arrow */}
-          <button className="hidden md:flex shrink-0 items-center justify-center text-gray-400 hover:text-gray-900 transition-colors z-10">
+        {/* Mobile & tablet: static grid, no slider */}
+        <div className="grid grid-cols-2 lg:hidden gap-3 sm:gap-6 w-full">
+          {items.map((product) => (
+            <ShopProductCard key={product.id} product={product} />
+          ))}
+        </div>
+
+        {/* Desktop: horizontal slider */}
+        <div className="hidden lg:flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => scrollSlider("left")}
+            aria-label="Scroll to previous products"
+            className="shrink-0 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors z-10"
+          >
             <ChevronLeft className="w-12 h-12" strokeWidth={1} />
           </button>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 w-full">
+          <div
+            ref={sliderRef}
+            data-testid="bestsellers-slider"
+            className="no-scrollbar flex gap-6 w-full overflow-x-auto scroll-smooth snap-x snap-mandatory"
+          >
             {items.map((product) => (
-              <ShopProductCard key={product.id} product={product} />
+              <div key={product.id} className="w-[calc(25%-18px)] shrink-0 snap-start">
+                <ShopProductCard product={product} />
+              </div>
             ))}
           </div>
 
-          {/* Right Arrow */}
-          <button className="hidden md:flex shrink-0 items-center justify-center text-gray-400 hover:text-gray-900 transition-colors z-10">
+          <button
+            type="button"
+            onClick={() => scrollSlider("right")}
+            aria-label="Scroll to next products"
+            className="shrink-0 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors z-10"
+          >
             <ChevronRight className="w-12 h-12" strokeWidth={1} />
           </button>
         </div>

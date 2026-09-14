@@ -1,54 +1,60 @@
 import { Activity, CheckCircle2, DollarSign, Link2, TrendingUp } from "lucide-react";
 
-const features = [
-  {
-    icon: <TrendingUp className="w-8 h-8 text-indigo-500" />,
-    topRightText: "BUILT-IN\nCUSTOMER DISCOUNT",
-    titleMain: "HIGH",
-    titleMainColor: "text-indigo-600 text-4xl mb-1",
-    titleSub: "CONVERSION RATES",
-    description:
-      "The discount your referred customers get gives your audience an immediate reason to buy, improving conversion on every link you share.",
-    badges: ["LOW FRICTION", "EASY SHARE", "BUILT TO CONVERT"],
-  },
-  {
-    icon: <DollarSign className="w-8 h-8 text-indigo-500" />,
-    topRightText: "PAID ON EVERY\nQUALIFYING SALE",
-    titleMain: "COMPETITIVE",
-    titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "COMMISSION RATE",
-    description:
-      "One of the more competitive commission structures in the research-chemical affiliate space, with no cap on total earnings.",
-    badges: ["NO EARNINGS CAP", "MONTHLY PAYOUTS", "SCALES WITH YOU"],
-  },
-  {
-    icon: <Link2 className="w-8 h-8 text-indigo-500" />,
-    topRightText: "LINK + DISCOUNT\nCODE",
-    titleMain: "DUAL",
-    titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "TRACKING SYSTEM",
-    description:
-      "Both your referral link and your personal discount code are tracked independently, so you're credited no matter which one a customer uses.",
-    badges: ["LINK TRACKING", "CODE TRACKING", "NEVER MISS A SALE"],
-  },
-  {
-    icon: <Activity className="w-8 h-8 text-indigo-500" />,
-    topRightText: "LIVE AFFILIATE\nDASHBOARD",
-    titleMain: "REAL-TIME",
-    titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "PERFORMANCE DATA",
-    description:
-      "Monitor clicks, conversions, and pending commissions as they happen from your dashboard, instead of waiting on a periodic report.",
-    badges: ["LIVE CLICKS", "CONVERSION RATE", "PENDING EARNINGS"],
-  },
-];
+interface AffiliateBenefitsSectionProps {
+  cookieDurationDays?: number;
+  minimumPayoutThreshold?: number;
+}
 
-export default function AffiliateBenefitsSection() {
+export default function AffiliateBenefitsSection({
+  cookieDurationDays = 30,
+  minimumPayoutThreshold = 50,
+}: AffiliateBenefitsSectionProps) {
+  const features = [
+    {
+      icon: <Link2 className="w-8 h-8 text-indigo-500" />,
+      topRightText: "LINK + DISCOUNT\nCODE",
+      titleMain: "DUAL",
+      titleMainColor: "text-gray-900 text-2xl mb-1",
+      titleSub: "ATTRIBUTION: LINK AND CODE BOTH TRACKED",
+      description: `Most programs track a referral link and nothing else. We track both independently — your link carries a ${cookieDurationDays}-day cookie, and your personal discount code earns credit whenever someone uses it, with no expiry. You get paid whichever route the customer takes.`,
+      badges: ["LINK TRACKING", "CODE TRACKING", "NEVER MISS A SALE"],
+    },
+    {
+      icon: <DollarSign className="w-8 h-8 text-indigo-500" />,
+      topRightText: "PAID ON EVERY\nQUALIFYING SALE",
+      titleMain: `$${minimumPayoutThreshold}`,
+      titleMainColor: "text-indigo-600 text-4xl mb-1",
+      titleSub: "PAYOUT THRESHOLD",
+      description: `A payout threshold decides whether you actually get paid or merely accrue a balance. Programs that set it at $100 or more mean smaller affiliates wait months. Ours is $${minimumPayoutThreshold}, paid monthly.`,
+      badges: ["NO EARNINGS CAP", "MONTHLY PAYOUTS", "LOW THRESHOLD"],
+    },
+    {
+      icon: <Activity className="w-8 h-8 text-indigo-500" />,
+      topRightText: "LIVE AFFILIATE\nDASHBOARD",
+      titleMain: "REAL-TIME",
+      titleMainColor: "text-gray-900 text-2xl mb-1",
+      titleSub: "LIVE DATA, NOT A MONTHLY REPORT",
+      description:
+        "Clicks, conversions and pending commissions update in your dashboard as they happen, so you can see what's converting while the campaign is still running.",
+      badges: ["LIVE CLICKS", "CONVERSION RATE", "PENDING EARNINGS"],
+    },
+    {
+      icon: <TrendingUp className="w-8 h-8 text-indigo-500" />,
+      topRightText: "BUILT-IN\nCUSTOMER DISCOUNT",
+      titleMain: "HIGH",
+      titleMainColor: "text-gray-900 text-2xl mb-1",
+      titleSub: "A DISCOUNT YOUR AUDIENCE ACTUALLY USES",
+      description:
+        "Referred customers receive a discount at checkout, so your recommendation carries something concrete rather than just a link — improving conversion on every placement.",
+      badges: ["LOW FRICTION", "EASY SHARE", "BUILT TO CONVERT"],
+    },
+  ];
+
   return (
     <section className="bg-gray-50 py-24 px-4 md:px-8 lg:px-12">
       <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
         <h2 className="about-fade text-3xl md:text-4xl font-michroma font-bold text-gray-900 tracking-wider uppercase text-center mb-16">
-          Why Partner With Us
+          What Makes This Program Different
         </h2>
 
         <div className="about-stagger grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">

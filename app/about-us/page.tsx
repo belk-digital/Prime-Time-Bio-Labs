@@ -4,17 +4,38 @@ import Footer from "@/components/Footer";
 import AboutValuesSection from "@/components/about/AboutValuesSection";
 import AboutPageAnimator from "@/components/about/AboutPageAnimator";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
+const TITLE = "About PrimeTime BioLabs | USA Peptide Synthesis & Testing";
+const DESCRIPTION =
+  "Inside the US facility behind PrimeTime BioLabs: solid-phase synthesis, independent HPLC and MS verification, and a Certificate of Analysis on every batch. RUO.";
+
 export const metadata = {
-  title: "About Us | Primetime Biolabs",
-  description:
-    "Learn about Primetime Biolabs' mission to deliver the highest purity research peptides through rigorous quality control and state-of-the-art synthesis.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${SITE_URL}/about-us` },
+  openGraph: {
+    title: TITLE,
+    description:
+      "A US-based synthesis facility, independent HPLC and mass spectrometry verification, and a Certificate of Analysis on every batch. For laboratory research use only.",
+    url: `${SITE_URL}/about-us`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${SITE_URL}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${SITE_URL}/cta-banner.png`],
+  },
 };
 
 const labStandards = [
-  "cGMP-Aligned Facility",
-  "HPLC & Mass Spectrometry Instrumentation",
-  "Climate-Controlled Cold-Chain Storage",
-  "Full Batch Chain-of-Custody Documentation",
+  "US-based synthesis facility, documented and standardised workflows",
+  "Analytical HPLC and mass spectrometry instrumentation",
+  "Preparative chromatography for purification",
+  "Climate-controlled storage and cold-chain outbound logistics",
+  "Full batch chain-of-custody documentation, retained and retrievable",
 ];
 
 const processSteps = [
@@ -22,43 +43,43 @@ const processSteps = [
     number: "01",
     title: "Sequence Design & Sourcing",
     description:
-      "Every research peptide begins with verified raw materials and a documented sequence, sourced and logged before synthesis ever starts.",
+      "Each batch starts with a documented target sequence and verified raw materials — amino acid lots, supplier and intake date, logged before synthesis begins.",
   },
   {
     number: "02",
     title: "Solid-Phase Synthesis",
     description:
-      "Our lab uses solid-phase peptide synthesis (SPPS) to build each compound with precise, reproducible amino acid coupling.",
+      "We build each compound by solid-phase peptide synthesis (SPPS), anchoring the chain to a resin support so excess reagents wash away between coupling cycles.",
   },
   {
     number: "03",
-    title: "Purification & Analytical Testing",
+    title: "Purification & Independent Analysis",
     description:
-      "Batches are purified and independently verified via HPLC and mass spectrometry to confirm purity, identity, and concentration.",
+      "After purification by preparative chromatography, an independent laboratory runs HPLC to quantify purity and mass spectrometry to confirm identity — never our own bench.",
   },
   {
     number: "04",
     title: "Certificate of Analysis & Fulfillment",
     description:
-      "Every vial ships with a matching Certificate of Analysis and is packed using temperature-controlled logistics for research use.",
+      "Material that clears analysis is lyophilised, sealed and labelled with its batch number, then ships with its matching Certificate of Analysis in cold-chain packaging.",
   },
 ];
 
 const purposeFeatures = [
   {
     icon: FlaskConical,
-    title: "Research-Driven Approach",
-    description: "Every formulation is grounded in rigorous laboratory science, not shortcuts.",
+    title: "Reproducible by Design",
+    description: "Solid-phase synthesis with documented run parameters, so the same sequence reaches the same specification every time.",
   },
   {
     icon: Sparkles,
-    title: "Custom Synthesis",
-    description: "Tailoring peptide sequences and batch sizes to fit each lab's exact needs.",
+    title: "Direct Lab Partnership",
+    description: "Custom sequence, purity threshold and quantity requests come back as a real quotation, not a form response.",
   },
   {
     icon: ShieldCheck,
-    title: "Uncompromising QC",
-    description: "Third-party verified purity on every single batch we release.",
+    title: "Independently Verified",
+    description: "Release testing goes to an independent laboratory, not our own bench, on every batch we ship.",
   },
 ];
 
@@ -66,16 +87,56 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "AboutPage",
-      name: "About Primetime Biolabs",
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "PrimeTime BioLabs",
+      alternateName: "Primetime Biolabs",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/primtime-biolabs-logo.svg`,
+      },
       description:
-        "Learn about Primetime Biolabs' USA-based research peptide laboratory, our synthesis process, and our quality control standards.",
+        "United States supplier of research-grade peptides produced by solid-phase peptide synthesis and verified by independent HPLC and mass spectrometry analysis, with a Certificate of Analysis on every batch. For laboratory research use only.",
+      email: "support@primetimebiolabs.com",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "support@primetimebiolabs.com",
+        areaServed: "US",
+        availableLanguage: "English",
+      },
     },
     {
-      "@type": "Organization",
-      name: "Primetime Biolabs",
+      "@type": "AboutPage",
+      "@id": `${SITE_URL}/about-us#webpage`,
+      url: `${SITE_URL}/about-us`,
+      name: TITLE,
+      description: DESCRIPTION,
+      mainEntity: { "@id": `${SITE_URL}/#organization` },
+      inLanguage: "en-US",
+      breadcrumb: { "@id": `${SITE_URL}/about-us#breadcrumb` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/about-us#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "About Us", item: `${SITE_URL}/about-us` },
+      ],
+    },
+    {
+      "@type": "HowTo",
+      "@id": `${SITE_URL}/about-us#process`,
+      name: "How PrimeTime BioLabs produces a batch of research peptides",
       description:
-        "USA-based supplier of research-use-only synthetic peptides for laboratory research, verified by HPLC and mass spectrometry testing.",
+        "The four-stage process every PrimeTime BioLabs research peptide batch follows, from documented sequence design through to Certificate of Analysis and fulfilment.",
+      step: processSteps.map((step, i) => ({
+        "@type": "HowToStep",
+        position: i + 1,
+        name: step.title,
+        text: step.description,
+      })),
     },
   ],
 };
@@ -92,22 +153,35 @@ export default function AboutUsPage() {
       {/* Header */}
       <section className="px-6 md:px-12 lg:px-24 pb-16 text-center">
         <div className="max-w-2xl mx-auto">
+          <p className="about-fade font-inter text-xs md:text-sm font-bold tracking-widest text-indigo-600 uppercase mb-3">
+            Pioneering the future of peptide synthesis
+          </p>
           <h1 className="about-fade text-4xl md:text-5xl font-michroma font-bold text-gray-900 leading-tight mb-6">
-            Pioneering the future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">peptide synthesis</span>
+            About <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">PrimeTime BioLabs</span>
           </h1>
           <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-            We are dedicated to pushing the boundaries of scientific research by providing the highest purity,
-            precision-engineered peptides available on the market.
+            PrimeTime BioLabs is a United States research peptide supplier. We produce research-grade peptides by
+            solid-phase peptide synthesis in a US facility, then send every batch to an independent laboratory for
+            HPLC purity analysis and mass spectrometry identity confirmation. Each vial ships with the Certificate
+            of Analysis for its batch. We supply for in-vitro laboratory research only.
           </p>
-          <Link
-            href="/shop"
-            className="about-fade font-inter inline-flex items-center gap-2 pl-6 pr-2 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
-          >
-            Shop Now
-            <span className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
-              <ArrowUpRight className="w-4 h-4" />
-            </span>
-          </Link>
+          <div className="about-fade flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/shop"
+              className="font-inter inline-flex items-center gap-2 pl-6 pr-2 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+            >
+              Browse the Catalogue
+              <span className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+                <ArrowUpRight className="w-4 h-4" />
+              </span>
+            </Link>
+            <Link
+              href="/certificates"
+              className="font-inter inline-flex items-center gap-2 px-6 py-2 rounded-full border border-gray-200 text-gray-900 text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              See Our Certificates of Analysis
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -116,7 +190,7 @@ export default function AboutUsPage() {
         <div className="about-fade w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto rounded-3xl overflow-hidden">
           <img
             src="/about-image.jpg"
-            alt="Primetime Biolabs research facility"
+            alt="PrimeTime BioLabs research facility"
             className="w-full h-[280px] md:h-[420px] object-cover"
           />
         </div>
@@ -171,14 +245,23 @@ export default function AboutUsPage() {
               Inside Our Laboratory
             </h2>
             <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed mb-4">
-              Primetime Biolabs operates a USA-based synthesis facility purpose-built for research-grade peptide
-              production. Every workflow, from raw material intake to final packaging, is documented and
-              standardized so results are reproducible across every batch.
+              PrimeTime BioLabs operates a United States synthesis facility purpose-built for research-grade
+              peptide production. Every workflow, from raw material intake to final packaging, follows a
+              documented and standardised procedure, so a batch produced this quarter runs the same route as one
+              produced last year.
+            </p>
+            <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed mb-4">
+              Our analytical chemists verify each compound by HPLC and mass spectrometry before release. Every
+              batch also carries a chain-of-custody record linking the raw material lot, the synthesis run and
+              the final vial count to a single batch number — the same number that appears on your{" "}
+              <Link href="/certificates" className="text-indigo-600 font-medium hover:underline">
+                Certificate of Analysis
+              </Link>
+              .
             </p>
             <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-              Our analytical chemists verify each compound with HPLC and mass spectrometry before it&apos;s cleared
-              for release, and finished vials are stored and shipped using temperature-controlled cold-chain
-              logistics to preserve peptide stability from our lab to yours.
+              Finished vials are stored and shipped using temperature-controlled cold-chain logistics, so material
+              stays stable from our lab to yours.
             </p>
             <ul className="about-stagger grid grid-cols-1 sm:grid-cols-2 gap-3">
               {labStandards.map((standard) => (
@@ -192,7 +275,7 @@ export default function AboutUsPage() {
           <div className="about-fade order-1 lg:order-2 rounded-3xl overflow-hidden">
             <img
               src="/cta-banner.png"
-              alt="Inside the Primetime Biolabs research laboratory"
+              alt="Analytical chemists at the PrimeTime BioLabs US peptide synthesis facility"
               className="w-full h-[280px] md:h-[420px] object-cover"
             />
           </div>
@@ -204,11 +287,12 @@ export default function AboutUsPage() {
         <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
           <div className="max-w-2xl mb-14">
             <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
-              From Sequence to Certificate: Our Process
+              From Sequence to Certificate: How Every Batch Is Made
             </h2>
             <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed">
-              Every peptide we release follows the same four-stage process, engineered so research labs can trust
-              the purity and documentation behind every vial.
+              Every peptide we release follows the same four stages. The sequence is fixed, the checkpoints are
+              fixed, and nothing skips ahead — here is what happens between a target sequence and a vial on your
+              bench.
             </p>
           </div>
 
@@ -225,7 +309,7 @@ export default function AboutUsPage() {
           <div className="about-fade rounded-3xl overflow-hidden">
             <img
               src="/shop-banner-image.png"
-              alt="Research-grade peptide vials produced at Primetime Biolabs"
+              alt="Research-grade peptide vials produced at PrimeTime BioLabs"
               className="w-full h-[240px] md:h-[360px] object-cover"
             />
           </div>
@@ -236,7 +320,11 @@ export default function AboutUsPage() {
       <section className="bg-black text-gray-400 py-16 px-6 md:px-12 lg:px-24 border-t border-white/5">
         <div className="max-w-4xl mx-auto text-center">
           <p className="about-fade font-inter text-sm leading-relaxed">
-            All products sold by Primetime Biolabs are intended strictly for laboratory research and in-vitro use only. They are not intended for human consumption, diagnostic, or therapeutic use.
+            <span className="font-bold text-gray-300 uppercase tracking-wider mr-2">Research Use Only:</span>
+            Products supplied by PrimeTime BioLabs are intended strictly for laboratory and in-vitro research by
+            qualified professionals. They are not drugs, dietary supplements or cosmetics. They are not intended
+            for human or animal consumption, and they are not for diagnostic, therapeutic or preventive use of
+            any kind. No statement on this site has been evaluated by the Food and Drug Administration.
           </p>
         </div>
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -102,14 +103,17 @@ export default function GenomicsSection() {
           
           <p ref={subTextRef} className="text-white/70 max-w-xs text-sm font-michroma font-light leading-relaxed mb-10">
             Every peptide is independently<br />
-            verified for {">"}99% purity<br />
+            verified to ≥99% purity<br />
             and identity.
           </p>
 
           <div ref={toggleRef} className="z-40">
-            <button className="px-6 py-3 text-sm font-michroma font-medium text-white bg-white/10 hover:bg-white/20 border border-white/10 rounded-md backdrop-blur-sm transition-all shadow-xl">
+            <Link
+              href="/certificates"
+              className="inline-block px-6 py-3 text-sm font-michroma font-medium text-white bg-white/10 hover:bg-white/20 border border-white/10 rounded-md backdrop-blur-sm transition-all shadow-xl"
+            >
               View COA
-            </button>
+            </Link>
           </div>
         </div>
 

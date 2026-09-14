@@ -28,6 +28,18 @@ export const BlogPosts: CollectionConfig = {
       type: 'richText',
       editor: lexicalEditor(),
     },
+    {
+      name: 'inlineImages',
+      type: 'array',
+      admin: {
+        description:
+          'Images interleaved through the article body (roughly evenly spaced between paragraphs). Add 1-3.',
+      },
+      fields: [
+        { name: 'image', type: 'upload', relationTo: 'blog-media', required: true },
+        { name: 'caption', type: 'text' },
+      ],
+    },
     { name: 'publishedAt', type: 'date' },
     {
       name: 'status',

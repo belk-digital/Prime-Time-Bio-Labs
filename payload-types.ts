@@ -850,6 +850,16 @@ export interface BlogPost {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Images interleaved through the article body (roughly evenly spaced between paragraphs). Add 1-3.
+   */
+  inlineImages?:
+    | {
+        image: number | BlogMedia;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   publishedAt?: string | null;
   status?: ('draft' | 'published') | null;
   category?: ('Metabolic research' | 'Recovery protocols' | 'Growth research' | 'Muscle studies') | null;
@@ -1948,6 +1958,13 @@ export interface BlogPostsSelect<T extends boolean = true> {
   featuredImage?: T;
   excerpt?: T;
   content?: T;
+  inlineImages?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
   publishedAt?: T;
   status?: T;
   category?: T;

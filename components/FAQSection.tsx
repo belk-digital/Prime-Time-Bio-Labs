@@ -63,7 +63,7 @@ export default function FAQSection({ hideHeading = false, title, subtitle, faqs 
                 </>
               )}
             </h2>
-            <p className="text-gray-400 text-base md:text-lg">
+            <p className="font-inter text-gray-400 text-base md:text-lg">
               {subtitle ?? "Find answers to common questions about our products, testing standards, and research policies."}
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function FAQSection({ hideHeading = false, title, subtitle, faqs 
                 aria-expanded={openIndex === index}
                 aria-controls={`faq-answer-${index}`}
               >
-                <span className="text-lg font-bold text-white uppercase tracking-wide">{faq.question}</span>
+                <span className="font-michroma text-lg font-bold text-white uppercase tracking-wide">{faq.question}</span>
                 <ChevronDown
                   className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-indigo-400' : ''}`}
                 />
@@ -90,10 +90,10 @@ export default function FAQSection({ hideHeading = false, title, subtitle, faqs 
               <div
                 id={`faq-answer-${index}`}
                 className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-                  openIndex === index ? 'max-h-48 pb-5 opacity-100' : 'max-h-0 opacity-0'
+                  openIndex === index ? 'max-h-64 pb-5 opacity-100' : 'max-h-0 opacity-0'
                 }`}
               >
-                <p className="text-gray-300 leading-relaxed">
+                <p className="font-inter text-gray-300 leading-relaxed">
                   {faq.answer}
                 </p>
               </div>

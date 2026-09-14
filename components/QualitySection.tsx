@@ -12,28 +12,28 @@ const features = [
   {
     icon: <FlaskConical className="w-8 h-8 text-indigo-500" />,
     topRightText: "VERIFIED\nPURITY",
-    titleMain: "99%+",
+    titleMain: "≥99%",
     titleMainColor: "text-indigo-600 text-4xl mb-1",
-    titleSub: "GUARANTEED PURITY",
-    description: "Every batch undergoes rigorous HPLC and MS testing to ensure absolute purity and consistency.",
+    titleSub: "VERIFIED PURITY, NOT CLAIMED PURITY",
+    description: "Every batch is analysed by an independent laboratory using HPLC and mass spectrometry. The purity result and the chromatogram both appear on the Certificate of Analysis, so the claim is checkable rather than stated.",
     badges: ["HPLC TESTED", "MS VERIFIED", "BATCH CERTIFIED"]
   },
   {
     icon: <Flag className="w-8 h-8 text-indigo-500" />,
     topRightText: "AMERICAN\nSYNTHESIS",
-    titleMain: "SYNTHESIZED",
+    titleMain: "SYNTHESISED",
     titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "IN THE USA",
-    description: "All our research peptides are synthesized in state-of-the-art American laboratory facilities.",
+    titleSub: "IN UNITED STATES LABORATORIES",
+    description: "Our peptides are produced by US-based synthesis partners working to documented process controls, keeping batch records, change control and analyst traceability inside a single regulatory jurisdiction.",
     badges: ["USA MADE", "cGMP FACILITY", "LAB TESTED"]
   },
   {
     icon: <ShieldCheck className="w-8 h-8 text-indigo-500" />,
     topRightText: "QUALITY\nASSURED",
-    titleMain: "STRICT QUALITY",
+    titleMain: "MULTI-STAGE",
     titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "CONTROL",
-    description: "We employ strict multi-stage quality control protocols to meet the highest scientific standards.",
+    titleSub: "QUALITY CONTROL",
+    description: "Material is checked at synthesis, after purification and again before release. Any batch that fails at any stage is quarantined rather than reworked into inventory.",
     badges: ["MULTI-STAGE QC", "STANDARDIZED", "RELIABLE"]
   },
   {
@@ -42,7 +42,7 @@ const features = [
     titleMain: "COLD-CHAIN",
     titleMainColor: "text-gray-900 text-2xl mb-1",
     titleSub: "SHIPPING",
-    description: "Temperature-controlled logistics ensure your research materials arrive stable and intact.",
+    description: "Lyophilised peptides ship in insulated packaging with coolant and move on expedited services, so material arrives dry, stable and ready for reconstitution.",
     badges: ["TEMP CONTROLLED", "SECURE PACKAGING", "RELIABLE DELIVERY"]
   }
 ];
@@ -99,6 +99,14 @@ export default function QualitySection() {
       </div>
 
       <div className="relative z-10 w-full mx-auto">
+        <div className="text-center mb-12 max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl md:text-5xl font-michroma uppercase font-bold tracking-wider mb-4 text-gray-900">
+            Why Researchers Order From PrimeTime BioLabs
+          </h2>
+          <p className="font-inter text-gray-600 text-sm md:text-base">
+            Four commitments define how we operate. Each one is verifiable. Each one appears on the paperwork that ships with your order rather than on a banner.
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
           {features.map((feature, idx) => (
             <div 
@@ -119,10 +127,10 @@ export default function QualitySection() {
 
               {/* Card Title */}
               <div className="mb-4 mt-auto">
-                <h3 className={`font-bold tracking-tight ${feature.titleMainColor}`}>
+                <h3 className={`font-inter font-bold tracking-tight ${feature.titleMainColor}`}>
                   {feature.titleMain}
                 </h3>
-                <h4 className="text-lg font-semibold text-gray-800 tracking-wide leading-tight">
+                <h4 className="font-inter text-lg font-semibold text-gray-800 tracking-wide leading-tight">
                   {feature.titleSub}
                 </h4>
                 {/* Separator Line */}
@@ -130,7 +138,7 @@ export default function QualitySection() {
               </div>
 
               {/* Description */}
-              <p className="text-gray-500 text-sm leading-relaxed mb-6">
+              <p className="font-inter text-gray-500 text-sm leading-relaxed mb-6">
                 {feature.description}
               </p>
 

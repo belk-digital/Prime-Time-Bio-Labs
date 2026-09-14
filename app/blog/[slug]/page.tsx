@@ -9,6 +9,31 @@ import { formatBlogDate, getAuthorDisplayName, resolveBlogMediaUrl } from "@/lib
 import BlogFaqAccordion from "@/components/blog/BlogFaqAccordion";
 import Footer from "@/components/Footer";
 
+/** Splits a Lexical root.children array into `parts` roughly-equal chunks, so
+ * inline images can be interleaved between chunks without needing separate
+ * richText fields per section. */
+function splitContentChildren(content: BlogPost["content"], parts: number): unknown[][] {
+  const children = (content?.root?.children ?? []) as unknown[];
+  if (parts <= 1 || children.length === 0) return [children];
+  const chunkSize = Math.ceil(children.length / parts);
+  const chunks: unknown[][] = [];
+  for (let i = 0; i < children.length; i += chunkSize) {
+    chunks.push(children.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
+function toRichTextDoc(children: unknown[]) {
+  return { root: { type: "root", children, direction: "ltr", format: "", indent: 0, version: 1 } };
+}
+
+function estimateWordCount(content: BlogPost["content"]): number {
+  const text = JSON.stringify(content ?? {});
+  const matches = text.match(/"text":"([^"]*)"/g) ?? [];
+  const words = matches.map((m) => m.slice(8, -1)).join(" ").trim();
+  return words ? words.split(/\s+/).length : 0;
+}
+
 export const dynamic = "force-dynamic";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
@@ -70,25 +95,48 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   if (!post) notFound();
 
   const imageUrl = resolveBlogMediaUrl(post.featuredImage);
+  const absoluteImageUrl = imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `${SITE_URL}${imageUrl}`) : undefined;
   const relatedProducts = (post.relatedProducts ?? []).filter(
     (p): p is BlogRelatedProduct => typeof p === "object" && p !== null
   );
+  const inlineImages = (post.inlineImages ?? []).filter(
+    (i): i is NonNullable<typeof i> => !!i && typeof i.image === "object" && i.image !== null
+  );
+  const contentChunks = splitContentChildren(post.content, inlineImages.length + 1);
 
-  const articleJsonLd = {
+  const graphJsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt ?? undefined,
-    image: imageUrl ?? undefined,
-    datePublished: post.publishedAt ?? undefined,
-    dateModified: post.updatedAt ?? post.publishedAt ?? undefined,
-    author: { "@type": "Person", name: getAuthorDisplayName(post.author) },
-    publisher: {
-      "@type": "Organization",
-      name: "Prime Time Bio Labs",
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/primtime-biolabs-logo.svg` },
-    },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${slug}` },
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `${SITE_URL}/blog/${slug}#article`,
+        headline: post.title,
+        description: post.excerpt ?? undefined,
+        image: absoluteImageUrl ? { "@type": "ImageObject", url: absoluteImageUrl } : undefined,
+        datePublished: post.publishedAt ?? undefined,
+        dateModified: post.updatedAt ?? post.publishedAt ?? undefined,
+        author: { "@type": "Person", name: getAuthorDisplayName(post.author) },
+        publisher: {
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: "PrimeTime BioLabs",
+          logo: { "@type": "ImageObject", url: `${SITE_URL}/primtime-biolabs-logo.svg` },
+        },
+        articleSection: post.category ?? undefined,
+        wordCount: estimateWordCount(post.content) || undefined,
+        mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${slug}` },
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${SITE_URL}/blog/${slug}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: `${SITE_URL}/blog/${slug}` },
+        ],
+      },
+    ],
   };
 
   const faqs = (post.faqs ?? []).filter((f) => f.question && f.answer);
@@ -97,6 +145,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       ? {
           "@context": "https://schema.org",
           "@type": "FAQPage",
+          "@id": `${SITE_URL}/blog/${slug}#faq`,
           mainEntity: faqs.map((faq) => ({
             "@type": "Question",
             name: faq.question,
@@ -109,7 +158,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <main className="min-h-screen bg-[#0a0a0a]">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(graphJsonLd) }}
       />
       {faqJsonLd && (
         <script
@@ -118,10 +167,23 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         />
       )}
       {/* Hero */}
-      <section className="relative bg-[#0a0a0a] text-gray-200 overflow-hidden pt-40 pb-16 px-6 md:px-12 lg:px-24">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-4xl mx-auto">
+      <section className="relative text-gray-200 overflow-hidden pt-40 pb-16 px-6 md:px-12 lg:px-24 min-h-[520px] flex items-end">
+        {imageUrl ? (
+          <div className="absolute inset-0 z-0">
+            <img
+              src={imageUrl}
+              alt={post.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-[#0a0a0a]/40" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 z-0 bg-[#0a0a0a]">
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+          </div>
+        )}
+        <div className="relative z-10 max-w-4xl mx-auto w-full">
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-gray-400 hover:text-white transition-colors mb-8"
@@ -163,14 +225,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
       </section>
 
-      {imageUrl && (
-        <section className="px-6 md:px-12 lg:px-24 -mt-4 mb-4 relative z-10">
-          <div className="max-w-4xl mx-auto rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-            <img src={imageUrl} alt={post.title} className="w-full h-auto object-cover" />
-          </div>
-        </section>
-      )}
-
       {/* Key Takeaways */}
       {post.keyTakeaways && post.keyTakeaways.length > 0 && (
         <section className="px-6 md:px-12 lg:px-24 py-8 bg-[#0a0a0a]">
@@ -188,11 +242,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </section>
       )}
 
-      {/* Article Content */}
+      {/* Article Content, with inline images interleaved between chunks */}
       <section className="bg-gray-50 py-16 px-6 md:px-12 lg:px-24">
         <article className="max-w-4xl mx-auto prose prose-lg prose-headings:font-michroma prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-gray-900 prose-a:text-indigo-600 max-w-none">
           {post.content ? (
-            <RichText data={post.content as any} />
+            contentChunks.map((chunk, i) => (
+              <div key={i}>
+                {chunk.length > 0 && <RichText data={toRichTextDoc(chunk) as any} />}
+                {inlineImages[i] && (
+                  <figure className="my-10 not-prose">
+                    <div className="rounded-2xl overflow-hidden border border-black/5 shadow-lg">
+                      <img
+                        src={resolveBlogMediaUrl(inlineImages[i].image)}
+                        alt={inlineImages[i].caption ?? post.title}
+                        className="w-full h-[280px] md:h-[360px] object-cover"
+                      />
+                    </div>
+                    {inlineImages[i].caption && (
+                      <figcaption className="text-center text-sm text-gray-500 mt-3">
+                        {inlineImages[i].caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )}
+              </div>
+            ))
           ) : (
             <p className="text-gray-500">This article's content is coming soon.</p>
           )}

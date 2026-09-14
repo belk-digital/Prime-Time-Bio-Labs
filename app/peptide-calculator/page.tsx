@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   Calculator,
@@ -17,6 +18,49 @@ import { motion } from "framer-motion";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 
+const PEPTIDE_CALCULATOR_FAQS = [
+  {
+    question: "How much bacteriostatic water should I use to reconstitute a peptide?",
+    answer:
+      "Two to three millilitres suits most vials. More diluent lowers the concentration and raises the volume you draw, which improves measurement precision. Less diluent concentrates the solution and makes small measurement errors proportionally larger. Enter both values into the calculator above to see the effect.",
+  },
+  {
+    question: "What is the peptide reconstitution formula?",
+    answer:
+      "Divide the target quantity in micrograms by the total peptide in the vial in micrograms, then multiply by the diluent volume in millilitres. The result is the volume to draw. For a 5 mg vial in 2 mL, drawing 250 mcg: (250 ÷ 5,000) × 2 = 0.1 mL.",
+  },
+  {
+    question: "What is the difference between bacteriostatic and sterile water?",
+    answer:
+      "Bacteriostatic water contains 0.9% benzyl alcohol, which suppresses bacterial growth and allows a vial to be drawn from repeatedly. Sterile water contains no preservative, so it suits single-use preparation only. Using sterile water in a multi-use vial lets contamination grow.",
+  },
+  {
+    question: "Why should you never shake a reconstituted peptide vial?",
+    answer:
+      "Shaking applies shear force and introduces foaming, and both damage peptide structure. The resulting degradation shows up as reduced purity in any subsequent analysis. Swirl the vial gently instead, and allow several minutes for a larger vial to dissolve fully.",
+  },
+  {
+    question: "How long does a reconstituted peptide last?",
+    answer:
+      "Refrigerated at 4°C and kept away from light, reconstituted research peptides typically hold for 20 to 30 days. That range is indicative rather than universal, because stability depends heavily on the sequence, the solvent and how often the vial has been handled.",
+  },
+  {
+    question: "Can you freeze a reconstituted peptide?",
+    answer:
+      "No. Freezing forms ice crystals that disrupt peptide structure, and thawing does not reverse the damage. Refrigerate reconstituted solution at 4°C instead. Lyophilised powder, by contrast, freezes at −20°C without issue and stores that way for years.",
+  },
+  {
+    question: "How many units is 0.1 mL on a U-100 syringe?",
+    answer:
+      "Ten. A U-100 scale divides one millilitre into 100 graduations, so 0.1 mL reads as 10, 0.25 mL as 25 and 0.5 mL as 50. A U-40 scale divides the same millilitre into 40 graduations, so the same numbered mark holds 2.5 times as much. Check the scale printed on the barrel.",
+  },
+  {
+    question: "Are these products intended for human consumption?",
+    answer:
+      "No. PrimeTime BioLabs supplies every product strictly for laboratory and in-vitro research by qualified professionals. These compounds are not drugs, dietary supplements or cosmetics. They are not intended for human or animal consumption, and they are not for diagnostic or therapeutic use of any kind. This calculator performs dilution arithmetic for laboratory preparation only.",
+  },
+];
+
 export default function PeptideCalculatorPage() {
   return (
     <main className="bg-[#FAFAFA] min-h-screen relative overflow-x-clip">
@@ -28,6 +72,17 @@ export default function PeptideCalculatorPage() {
         <div id="calculators-hub" className="scroll-mt-32">
           <CalculatorsHub />
         </div>
+      </div>
+
+      {/* Page-level disclaimer, directly beneath the calculator output */}
+      <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto -mt-8 sm:-mt-12 mb-8">
+        <p className="font-inter text-center text-[11px] md:text-xs text-gray-400 leading-relaxed max-w-3xl mx-auto">
+          This calculator performs dilution arithmetic for laboratory preparation. It returns concentration and
+          volume, and it makes no recommendation regarding any use of any compound. Products supplied by PrimeTime
+          BioLabs are intended strictly for laboratory and in-vitro research by qualified professionals. They are
+          not drugs, dietary supplements or cosmetics, and they are not intended for human or animal consumption,
+          or for diagnostic, therapeutic or preventive use of any kind.
+        </p>
       </div>
 
       <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto flex flex-col gap-32 md:gap-48 pb-32">
@@ -60,14 +115,14 @@ export default function PeptideCalculatorPage() {
                     <TrendingDown className="w-6 h-6 text-red-500 shrink-0" />
                     <div>
                       <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight">Wasted Peptides</h4>
-                      <p className="font-inter text-sm text-gray-500 mt-1">Over-diluting destroys concentration efficacy.</p>
+                      <p className="font-inter text-sm text-gray-500 mt-1">Over-diluting drops the working concentration far below what a study design needs.</p>
                     </div>
                   </li>
                   <li className="flex gap-4 items-start">
                     <ShieldCheck className="w-6 h-6 text-indigo-600 shrink-0" />
                     <div>
                       <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight">Data Integrity</h4>
-                      <p className="font-inter text-sm text-gray-500 mt-1">Inconsistent dosing ruins long-term observational data.</p>
+                      <p className="font-inter text-sm text-gray-500 mt-1">Inconsistent measurement between preparations ruins long-term observational data.</p>
                     </div>
                   </li>
                 </ul>
@@ -111,7 +166,8 @@ export default function PeptideCalculatorPage() {
                   </div>
                   <p className="font-inter text-gray-500 mb-6">
                     Wipe the rubber stoppers of both the peptide vial and bacteriostatic water with an alcohol swab.
-                    Wait 30 seconds for it to dry completely.
+                    Wait 30 seconds for it to dry completely — the wait is not optional. Alcohol needs contact time
+                    to work, and piercing a wet stopper carries residue straight into the vial.
                   </p>
                   <div className="w-12 h-12 rounded-full bg-[#FAFAFA] border border-black/5 flex items-center justify-center text-gray-400">
                     <ShieldCheck className="w-5 h-5" />
@@ -127,7 +183,9 @@ export default function PeptideCalculatorPage() {
                   </div>
                   <p className="font-inter text-white/60 mb-6">
                     Draw the exact amount of bacteriostatic water. Inject it into the peptide vial slowly, aiming for
-                    the glass wall, not the powder directly, to avoid damaging the fragile bonds.
+                    the glass wall, not the powder directly — directing the stream at the lyophilised cake drives
+                    mechanical stress through the peptide chain, while running it down the wall lets the solvent
+                    reach the powder gently.
                   </p>
                   <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white">
                     <Droplets className="w-5 h-5" />
@@ -143,7 +201,10 @@ export default function PeptideCalculatorPage() {
                   </div>
                   <p className="font-inter text-gray-500 mb-6">
                     Do not shake. Gently swirl the vial in a circular motion until the powder is completely dissolved
-                    and the liquid is perfectly clear.
+                    and the liquid is perfectly clear. Shaking introduces shear force and foaming that degrade
+                    peptide structure — full dissolution can take several minutes with a larger vial, so let it
+                    take them. If the solution stays cloudy after prolonged gentle swirling, stop and contact us
+                    with the batch number rather than proceeding.
                   </p>
                   <div className="w-12 h-12 rounded-full bg-[#FAFAFA] border border-black/5 flex items-center justify-center text-gray-400">
                     <ArrowRight className="w-5 h-5" />
@@ -185,8 +246,8 @@ export default function PeptideCalculatorPage() {
                     </li>
                     <li className="flex items-center gap-4 border-t border-black/5 pt-4">
                       <div className="w-2 h-2 rounded-full bg-indigo-600" />
-                      <span className="font-inter font-bold text-gray-900">Desired Dose</span>
-                      <span className="font-inter text-gray-400 ml-auto">Target mcg/mg</span>
+                      <span className="font-inter font-bold text-gray-900">Target Quantity</span>
+                      <span className="font-inter text-gray-400 ml-auto">Per aliquot, mcg/mg</span>
                     </li>
                   </ul>
                 </div>
@@ -273,11 +334,11 @@ export default function PeptideCalculatorPage() {
             <FadeUp className="relative z-10">
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase mb-6">
-                  The Mathematics of Reconstitution
+                  The Reconstitution Formula
                 </h2>
                 <p className="font-inter text-gray-500 text-lg">
                   Understanding the formula behind the calculator is critical. It allows you to verify your math and
-                  ensure complete dosing accuracy.
+                  ensure complete measurement accuracy.
                 </p>
               </div>
 
@@ -287,7 +348,7 @@ export default function PeptideCalculatorPage() {
                     The Universal Formula
                   </h3>
                   <div className="bg-white p-6 rounded-2xl shadow-sm border border-black/5 font-mono text-base md:text-xl font-bold text-gray-900 flex flex-wrap items-center justify-center md:justify-start gap-y-2">
-                    <span className="text-indigo-600 mr-1">(</span>Desired Dose{" "}
+                    <span className="text-indigo-600 mr-1">(</span>Target Quantity{" "}
                     <span className="text-gray-400 text-sm mx-2 italic">in mcg</span>
                     <span className="text-indigo-600 mx-1">/</span> Total Peptide{" "}
                     <span className="text-gray-400 text-sm mx-2 italic">in mcg</span>
@@ -314,7 +375,7 @@ export default function PeptideCalculatorPage() {
                       <strong>BAC Water Added:</strong> <span>2mL</span>
                     </li>
                     <li className="flex justify-between">
-                      <strong>Desired Dose:</strong> <span>250mcg</span>
+                      <strong>Target Quantity:</strong> <span>250mcg per aliquot</span>
                     </li>
                   </ul>
                 </div>
@@ -333,6 +394,19 @@ export default function PeptideCalculatorPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="mt-8 bg-[#FAFAFA] border border-black/5 rounded-[2rem] p-8 md:p-10">
+                <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight mb-3 text-sm">
+                  Why the Volume Changes the Answer
+                </h4>
+                <p className="font-inter text-gray-500 leading-relaxed">
+                  The quantity of peptide in the vial is fixed. Adding more diluent does not add or remove peptide
+                  — it spreads the same quantity across a larger volume, so the concentration falls and the volume
+                  you draw rises. That matters for measurement precision: a very concentrated solution means
+                  drawing a tiny volume, where small measurement errors become large proportional errors.
+                  Over-diluting wastes vial capacity. Two to three millilitres per vial suits most working ranges.
+                </p>
+              </div>
             </FadeUp>
           </div>
         </section>
@@ -347,12 +421,12 @@ export default function PeptideCalculatorPage() {
             <FadeUp>
               <div className="text-center mb-16">
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase mb-6">
-                  Dilution Guidelines
+                  Dilution Reference Table
                 </h2>
                 <p className="font-inter text-gray-500 text-lg max-w-3xl mx-auto">
-                  How much bacteriostatic water should you add? While the volume of water does not change the total
-                  mg of peptide in the vial, it drastically alters the concentration. Here are the standard
-                  recommended dilution ratios.
+                  Five common vial-and-diluent combinations, each showing the resulting concentration and the
+                  volume containing 250 mcg. All figures below are verified against the formula in the previous
+                  section.
                 </p>
               </div>
 
@@ -400,6 +474,10 @@ export default function PeptideCalculatorPage() {
                   </tbody>
                 </table>
               </div>
+              <p className="font-inter text-gray-500 text-sm max-w-3xl mx-auto mt-6 text-center">
+                Notice the last row. At 10 mg/mL, 250 mcg occupies 0.025 mL — two and a half graduations. Precision
+                at that scale is poor. More diluent would measure better.
+              </p>
             </FadeUp>
           </div>
         </section>
@@ -414,11 +492,12 @@ export default function PeptideCalculatorPage() {
             <FadeUp>
               <div className="text-center mb-16">
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase mb-6">
-                  Storage Masterclass
+                  Storing Peptides Before and After Reconstitution
                 </h2>
                 <p className="font-inter text-gray-500 text-lg max-w-2xl mx-auto">
-                  Improper storage degrades peptide purity rapidly. Follow these strict guidelines to maximize shelf
-                  life.
+                  Lyophilised powder and reconstituted solution behave very differently. The figures below are
+                  typical ranges for research peptides, not guarantees for any specific compound — confirm against
+                  your own stability data and the compound&apos;s Certificate of Analysis.
                 </p>
               </div>
             </FadeUp>
@@ -462,8 +541,8 @@ export default function PeptideCalculatorPage() {
                     <span className="text-xl text-white/40 tracking-widest">Liquid</span>
                   </h3>
                   <p className="font-inter text-white/60 mb-8 font-light">
-                    Once mixed with bacteriostatic water, the bonds become fragile and begin degrading slowly over
-                    time.
+                    Once mixed with bacteriostatic water, ice crystal formation and repeated handling become the
+                    real risks. Freezing a reconstituted vial disrupts peptide structure irreversibly.
                   </p>
                   <ul className="font-inter space-y-4 font-medium text-white/90">
                     <li className="flex items-center gap-3">
@@ -476,6 +555,14 @@ export default function PeptideCalculatorPage() {
                       <div className="w-1.5 h-1.5 rounded-full bg-white/40" /> Keep away from direct light.
                     </li>
                   </ul>
+                  <p className="font-inter text-white/40 text-xs leading-relaxed mt-6 pt-6 border-t border-white/10">
+                    Record the reconstitution date on the label. Stability varies by sequence, so confirm these
+                    ranges against your own data and the compound&apos;s{" "}
+                    <Link href="/certificates" className="text-white/70 underline hover:text-white transition-colors">
+                      Certificate of Analysis
+                    </Link>
+                    .
+                  </p>
                 </div>
               </FadeUp>
             </div>
@@ -492,11 +579,10 @@ export default function PeptideCalculatorPage() {
             <FadeUp>
               <div className="text-center mb-16">
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase mb-6">
-                  The 3 Fatal Mistakes
+                  Three Handling Errors That Ruin a Vial
                 </h2>
                 <p className="font-inter text-gray-500 text-lg max-w-2xl mx-auto">
-                  Peptides are notoriously fragile. Avoid these three common errors that will instantly ruin your
-                  research compounds.
+                  Peptides are notoriously fragile. Avoid these three common errors that ruin research compounds.
                 </p>
               </div>
 
@@ -507,8 +593,9 @@ export default function PeptideCalculatorPage() {
                   </div>
                   <h3 className="font-michroma font-bold text-gray-900 uppercase text-xl mb-3">Shaking the Vial</h3>
                   <p className="font-inter text-gray-600">
-                    Amino acid bonds are incredibly delicate. Shaking a reconstituted vial vigorously will shatter
-                    these bonds, completely destroying the peptide&apos;s efficacy. Always swirl gently.
+                    Peptide chains are held together by bonds that shear under mechanical stress. Vigorous shaking
+                    foams the solution and damages structure, which shows up as reduced purity on any subsequent
+                    analysis. Swirl gently instead, and allow the time it takes.
                   </p>
                 </div>
                 <div className="bg-blue-50 p-8 rounded-[2rem] border border-blue-100 hover:shadow-lg hover:-translate-y-1 transition-all">
@@ -517,18 +604,20 @@ export default function PeptideCalculatorPage() {
                   </div>
                   <h3 className="font-michroma font-bold text-gray-900 uppercase text-xl mb-3">Freezing Liquid</h3>
                   <p className="font-inter text-gray-600">
-                    While lyophilized powder should be frozen for long-term storage, freezing a reconstituted liquid
-                    peptide will cause crystallization that irreparably damages the compound.
+                    Freezing a reconstituted vial forms ice crystals that disrupt peptide structure, and the damage
+                    does not reverse on thawing. Refrigerate at 4°C instead. Lyophilised powder freezes without
+                    issue — solution does not.
                   </p>
                 </div>
                 <div className="bg-amber-50 p-8 rounded-[2rem] border border-amber-100 hover:shadow-lg hover:-translate-y-1 transition-all">
                   <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center mb-6">
                     <AlertTriangle className="w-6 h-6" />
                   </div>
-                  <h3 className="font-michroma font-bold text-gray-900 uppercase text-xl mb-3">Wrong Water</h3>
+                  <h3 className="font-michroma font-bold text-gray-900 uppercase text-xl mb-3">The Wrong Diluent</h3>
                   <p className="font-inter text-gray-600">
-                    Using standard sterile water instead of Bacteriostatic water allows bacteria to breed rapidly in
-                    the vial. BAC water contains 0.9% benzyl alcohol to prevent this.
+                    Sterile water contains no preservative, so a multi-use vial reconstituted with it becomes a
+                    growth medium. Bacteriostatic water contains 0.9% benzyl alcohol, which suppresses bacterial
+                    growth over the working life of the vial. Check the label before you draw.
                   </p>
                 </div>
               </div>
@@ -547,13 +636,13 @@ export default function PeptideCalculatorPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
                   <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase mb-6">
-                    Syringe Danger:
+                    <span className="text-indigo-600">U-100</span> vs U-40:
                     <br />
-                    <span className="text-indigo-600">U-100</span> vs U-40
+                    Why the Scale Matters
                   </h2>
                   <p className="font-inter text-gray-500 text-lg mb-8">
-                    Not all syringes are created equal. Using the wrong type of syringe is the number one cause of
-                    massive overdosing in research.
+                    Not all syringes are created equal. Reading the wrong graduation scale is the single biggest
+                    source of measurement error in reconstitution.
                   </p>
 
                   <div className="space-y-6">
@@ -564,8 +653,8 @@ export default function PeptideCalculatorPage() {
                       <div>
                         <h4 className="font-inter font-bold text-gray-900 uppercase">U-100 Syringes (Standard)</h4>
                         <p className="font-inter text-gray-500 text-sm mt-1">
-                          Holds 100 units per 1mL. This calculator, and nearly all human-grade research, uses U-100
-                          syringes exclusively.
+                          Holds 100 graduations per 1mL. This calculator returns U-100 graduations, the scale used
+                          throughout this page.
                         </p>
                       </div>
                     </div>
@@ -574,10 +663,11 @@ export default function PeptideCalculatorPage() {
                         <AlertTriangle className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="font-inter font-bold text-gray-900 uppercase">U-40 Syringes (Veterinary)</h4>
+                        <h4 className="font-inter font-bold text-gray-900 uppercase">U-40 Syringes</h4>
                         <p className="font-inter text-gray-500 text-sm mt-1">
-                          Holds 40 units per 1mL. If you use a U-40 syringe with U-100 math, you will draw 2.5x the
-                          intended dose.
+                          Holds 40 graduations per 1mL. Read this calculator&apos;s U-100 result on a U-40 barrel and
+                          you will measure 2.5x the intended volume, because each U-40 graduation holds 2.5 times
+                          as much. Check the scale printed on the barrel before you measure anything.
                         </p>
                       </div>
                     </div>
@@ -624,39 +714,39 @@ export default function PeptideCalculatorPage() {
             </div>
 
             <FadeUp className="relative z-10">
-              <div className="text-center mb-20 md:mb-24 relative z-20">
+              <div className="text-center mb-16 md:mb-20 relative z-20">
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-white uppercase mb-6">
-                  The Science of Degradation
+                  What Actually Drives Peptide Degradation
                 </h2>
                 <p className="font-inter text-white/60 text-lg max-w-2xl mx-auto">
-                  Peptide bonds are fragile amino acid chains. Understanding their half-life is crucial for research
-                  viability.
+                  Reconstituted peptides degrade over time, but no single decay curve applies across compounds.
+                  Rate depends on the sequence, the solvent, the temperature, the light exposure and the number of
+                  times the vial has been handled. Five factors do most of the work.
                 </p>
               </div>
 
               <div className="relative max-w-5xl mx-auto">
-                <div className="absolute top-7 left-0 right-0 h-1.5 bg-gradient-to-r from-green-500 via-amber-500 to-red-600 rounded-full hidden md:block shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
                   {[
-                    { title: "Day 1", desc: "100% Efficacy", sub: "Peak Purity", color: "text-green-400", dot: "bg-green-500", border: "border-green-500/30" },
-                    { title: "Day 15", desc: "95% Efficacy", sub: "Slight Degradation", color: "text-lime-400", dot: "bg-lime-500", border: "border-lime-500/30" },
-                    { title: "Day 30", desc: "85% Efficacy", sub: "Noticeable Drop", color: "text-amber-400", dot: "bg-amber-500", border: "border-amber-500/30" },
-                    { title: "Day 60+", desc: "<50% Efficacy", sub: "Severely Degraded", color: "text-red-400", dot: "bg-red-500", border: "border-red-500/30" },
+                    { title: "Temperature", desc: "The dominant variable", sub: "Refrigerate reconstituted vials; never leave them at ambient", dot: "bg-red-500", border: "border-red-500/30" },
+                    { title: "Freeze-Thaw Cycles", desc: "Each cycle damages structure", sub: "Do not freeze reconstituted solution at all", dot: "bg-amber-500", border: "border-amber-500/30" },
+                    { title: "Light Exposure", desc: "Affects sensitive residues", sub: "Store in the original vial, in the dark", dot: "bg-lime-500", border: "border-lime-500/30" },
+                    { title: "Oxidation", desc: "Residues oxidise on air contact", sub: "Minimise headspace and repeated stopper punctures", dot: "bg-blue-400", border: "border-blue-400/30" },
+                    { title: "Sequence Composition", desc: "Some sequences are far more stable", sub: "Treat published ranges as indicative; confirm against your own data", dot: "bg-indigo-400", border: "border-indigo-400/30" },
                   ].map((point, idx) => (
-                    <div key={idx} className="flex flex-col items-center mb-8 md:mb-0 group">
+                    <div key={idx} className="flex flex-col items-center group">
                       <div
                         className={`w-14 h-14 rounded-full bg-gray-900 border-[4px] ${point.border} flex items-center justify-center mb-6 relative z-10 transition-transform duration-500 group-hover:scale-110 shadow-2xl`}
                       >
                         <div className={`w-4 h-4 rounded-full ${point.dot} shadow-[0_0_15px_rgba(255,255,255,0.4)]`} />
                       </div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 sm:p-8 rounded-[2rem] text-center w-full shadow-2xl hover:bg-white/10 transition-colors">
-                        <h4 className="font-michroma font-bold text-2xl text-white mb-2">{point.title}</h4>
-                        <div className={`font-inter font-bold uppercase tracking-widest text-sm mb-2 ${point.color}`}>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 sm:p-8 rounded-[2rem] text-center w-full h-full shadow-2xl hover:bg-white/10 transition-colors">
+                        <h4 className="font-michroma font-bold text-xl text-white mb-2">{point.title}</h4>
+                        <div className="font-inter font-bold uppercase tracking-widest text-xs mb-3 text-white/50">
                           {point.desc}
                         </div>
                         <div className="w-full h-px bg-white/10 my-4" />
-                        <p className="font-inter text-white/40 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+                        <p className="font-inter text-white/50 text-xs leading-relaxed">
                           {point.sub}
                         </p>
                       </div>
@@ -664,6 +754,12 @@ export default function PeptideCalculatorPage() {
                   ))}
                 </div>
               </div>
+
+              <p className="font-inter text-white/50 text-sm max-w-3xl mx-auto mt-12 text-center leading-relaxed">
+                Because stability is sequence-specific, the practical approach is to date the vial at
+                reconstitution, keep handling to a minimum, and generate your own stability data if your study
+                design depends on it. A published curve is a starting assumption, not a measurement.
+              </p>
             </FadeUp>
           </div>
         </section>
@@ -678,19 +774,21 @@ export default function PeptideCalculatorPage() {
             <FadeUp>
               <div className="text-center mb-16">
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase mb-6">
-                  The Essential Glossary
+                  Reconstitution Glossary
                 </h2>
                 <p className="font-inter text-gray-500 text-lg max-w-2xl mx-auto">
                   Master the terminology of peptide research to ensure complete accuracy in your protocols.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
-                  { term: "Lyophilized", def: "A freeze-drying process that removes water to increase shelf life and stability." },
-                  { term: "Bacteriostatic Water", def: "Sterile water containing 0.9% benzyl alcohol to prevent bacterial growth over time." },
-                  { term: "Subcutaneous", def: "Injection into the tissue layer between the skin and the muscle." },
-                  { term: "mg vs mcg", def: "1 milligram (mg) equals 1,000 micrograms (mcg). A critical conversion." },
+                  { term: "Lyophilised", def: "Freeze-dried. Water is removed under vacuum from a frozen solution, leaving a dry cake that stores far longer than solution." },
+                  { term: "Bacteriostatic Water", def: "Sterile water containing 0.9% benzyl alcohol, which suppresses bacterial growth and allows a reconstituted vial to be drawn from more than once." },
+                  { term: "Sterile Water", def: "Sterile water with no preservative. Suitable for single-use preparation only, since nothing inhibits growth after the stopper is first pierced." },
+                  { term: "Working Concentration", def: "The quantity of peptide per unit volume after reconstitution, usually expressed in mg/mL or mcg/mL. This is what the calculator returns." },
+                  { term: "Aliquot", def: "A measured portion drawn from a larger volume of solution." },
+                  { term: "mg vs mcg", def: "1 milligram (mg) equals 1,000 micrograms (mcg). This conversion causes more errors than any other." },
                 ].map((item, idx) => (
                   <div
                     key={idx}
@@ -709,7 +807,30 @@ export default function PeptideCalculatorPage() {
       </div>
 
       {/* FAQ */}
-      <FAQSection />
+      <FAQSection
+        title={
+          <>
+            Peptide Reconstitution <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-white">FAQs</span>
+          </>
+        }
+        subtitle="Answers to the questions researchers actually ask about reconstitution, storage and measurement."
+        faqs={PEPTIDE_CALCULATOR_FAQS}
+      />
+
+      <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto py-16 text-center">
+        <p className="font-inter text-gray-500 text-sm md:text-base">
+          Every peptide in our catalogue arrives as lyophilised powder with the Certificate of Analysis for its
+          batch.{" "}
+          <Link href="/shop" className="text-indigo-600 font-bold hover:underline">
+            Shop research peptides
+          </Link>{" "}
+          or{" "}
+          <Link href="/certificates" className="text-indigo-600 font-bold hover:underline">
+            view Certificates of Analysis
+          </Link>
+          .
+        </p>
+      </div>
 
       <Footer />
     </main>

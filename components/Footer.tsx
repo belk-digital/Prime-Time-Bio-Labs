@@ -103,14 +103,14 @@ export default function Footer() {
           <div className="lg:w-1/3 footer-stagger flex flex-col gap-8">
             <div>
               <img src="/primtime-biolabs-logo.svg" alt="Primetime Biolabs" className="h-16 md:h-20 w-auto mb-6" />
-              <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-                Primetime Biolabs is a premier peptide synthesis facility specializing in high-purity research materials and custom synthesis.
+              <p className="font-inter text-gray-400 text-sm leading-relaxed max-w-sm">
+                PrimeTime BioLabs is a premier peptide synthesis facility specializing in high-purity research materials and custom synthesis.
               </p>
             </div>
 
             <div className="max-w-sm">
-              <h4 className="text-base font-semibold text-white mb-3">Stay in the loop</h4>
-              <p className="text-gray-400 text-sm mb-4">Get research updates and product releases in your inbox.</p>
+              <h4 className="font-inter text-base font-semibold text-white mb-3">Stay in the loop</h4>
+              <p className="font-inter text-gray-400 text-sm mb-4">Get research updates and product releases in your inbox.</p>
               <form onSubmit={handleNewsletterSubmit} className="relative">
                 <input
                   type="email"
@@ -149,7 +149,7 @@ export default function Footer() {
           {/* Links Grid */}
           <div className="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-8">
             <div className="footer-stagger">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-6">Menu</h4>
+              <h4 className="font-inter text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-6">Menu</h4>
               <ul className="space-y-4">
                 {MENU_LINKS.map((link) => (
                   <li key={link.href}>
@@ -162,7 +162,7 @@ export default function Footer() {
             </div>
 
             <div className="footer-stagger">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-6">Resources</h4>
+              <h4 className="font-inter text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-6">Resources</h4>
               <ul className="space-y-4">
                 {RESOURCE_LINKS.map((link) => (
                   <li key={link.href}>
@@ -175,7 +175,7 @@ export default function Footer() {
             </div>
 
             <div className="footer-stagger">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-6">Legal</h4>
+              <h4 className="font-inter text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-6">Legal</h4>
               <ul className="space-y-4">
                 {LEGAL_LINKS.map((link) => (
                   <li key={link.href}>
@@ -191,7 +191,7 @@ export default function Footer() {
 
         {/* Contact row */}
         <div className="footer-stagger flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-white/5 pt-8 mb-8 text-sm text-gray-400">
-          <p>
+          <p className="font-inter">
             Questions? <Link href="/contact-us" className={`text-white ${CONTACT_LINK_UNDERLINE_CLASS}`}>Contact us</Link>{" "}
             or email{" "}
             <a href="mailto:support@primetimebiolabs.com" className={`text-white ${CONTACT_LINK_UNDERLINE_CLASS}`}>
@@ -202,7 +202,7 @@ export default function Footer() {
             onClick={handleScrollToTop}
             className="group flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 pl-4 pr-2 py-2 rounded-full transition-colors w-fit"
           >
-            <span className="text-xs font-medium tracking-wide">Back to top</span>
+            <span className="font-inter text-xs font-medium tracking-wide">Back to top</span>
             <div className="w-7 h-7 rounded-full bg-white text-black flex items-center justify-center group-hover:-translate-y-0.5 transition-transform shrink-0">
               <ArrowRight className="w-3.5 h-3.5 -rotate-90" strokeWidth={2.5} />
             </div>
@@ -211,17 +211,18 @@ export default function Footer() {
 
         {/* Disclaimer */}
         <div className="footer-stagger border-t border-white/5 pt-8 mb-8">
-          <p className="text-[11px] leading-relaxed text-gray-500 max-w-4xl">
+          <p className="font-inter text-[11px] leading-relaxed text-gray-500 max-w-4xl">
             <span className="font-bold text-gray-400 uppercase tracking-wider mr-2">Research Use Only:</span>
-            Products sold by Primetime Biolabs are intended strictly for laboratory and in-vitro research use by qualified professionals.
-            They are not drugs, dietary supplements, or cosmetics, and are not intended for human or animal consumption, diagnostic, or
-            therapeutic use of any kind.
+            Products supplied by PrimeTime BioLabs are intended strictly for laboratory and in-vitro research by qualified professionals.
+            They are not drugs, dietary supplements or cosmetics. They are not intended for human or animal consumption, and they are not
+            for diagnostic, therapeutic or preventive use of any kind. No statement on this site has been evaluated by the Food and Drug
+            Administration.
           </p>
         </div>
 
         {/* Middle Section (Copyright) */}
-        <div className="footer-stagger flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 mb-16">
-          <p>&copy; {new Date().getFullYear()} Primetime Biolabs. All rights reserved.</p>
+        <div className="footer-stagger flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 mb-16 font-inter">
+          <p>&copy; {new Date().getFullYear()} PrimeTime BioLabs. All rights reserved.</p>
           <p className="mt-4 md:mt-0">
             Design by <a href="https://belkdigital.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Belk Digital</a>
           </p>
@@ -237,11 +238,11 @@ export default function Footer() {
             WebkitMaskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)"
           }}
         >
-          <h1
+          <p
             className="footer-giant-text text-[12vw] font-black tracking-tighter leading-none m-0 p-0 bg-gradient-to-b from-indigo-600 to-purple-900 text-transparent bg-clip-text"
           >
             PRIMETIME
-          </h1>
+          </p>
         </div>
       </div>
     </footer>

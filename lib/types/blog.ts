@@ -39,6 +39,12 @@ export interface BlogReference {
   url: string;
 }
 
+export interface BlogInlineImage {
+  id?: string | number | null;
+  image: (string | number) | BlogMediaDoc;
+  caption?: string | null;
+}
+
 export interface BlogRelatedProduct {
   id: string | number;
   name: string;
@@ -65,6 +71,7 @@ export interface BlogPost {
   featuredImage?: (string | number) | BlogMediaDoc | null;
   excerpt?: string | null;
   content?: BlogRichTextContent;
+  inlineImages?: BlogInlineImage[] | null;
   publishedAt?: string | null;
   status?: "draft" | "published" | null;
   category?: string | null;

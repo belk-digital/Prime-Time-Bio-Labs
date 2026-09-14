@@ -14,40 +14,40 @@ const features = [
     topRightText: "SOLID-PHASE\nSYNTHESIS",
     titleMain: "SPPS",
     titleMainColor: "text-indigo-600 text-4xl mb-1",
-    titleSub: "PRECISION SYNTHESIS",
+    titleSub: "REPRODUCIBLE BY DESIGN",
     description:
-      "Every batch is synthesized using state-of-the-art solid-phase peptide synthesis techniques, engineered for consistency and reproducibility.",
-    badges: ["CONSISTENT", "REPRODUCIBLE", "STANDARDIZED"],
+      "We build every batch by solid-phase peptide synthesis, using controlled coupling cycles and documented run parameters — the same sequence produced twelve months apart runs the same route and reaches the same specification.",
+    badges: ["CONSISTENT", "REPRODUCIBLE", "DOCUMENTED"],
   },
   {
     icon: <Microscope className="w-8 h-8 text-indigo-500" />,
     topRightText: "HPLC & MS\nANALYSIS",
     titleMain: "THIRD-PARTY",
     titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "RIGOROUS TESTING",
+    titleSub: "TESTED BY SOMEONE ELSE",
     description:
-      "All products undergo third-party HPLC and mass spectrometry analysis to verify purity, identity, and concentration before release.",
-    badges: ["HPLC TESTED", "MS VERIFIED", "BATCH CERTIFIED"],
+      "Release testing goes to an independent analytical laboratory, not our own bench. HPLC quantifies purity, mass spectrometry confirms identity, and both results reach you on the Certificate of Analysis with the chromatogram attached.",
+    badges: ["HPLC TESTED", "MS VERIFIED", "THIRD-PARTY"],
   },
   {
     icon: <ShieldCheck className="w-8 h-8 text-indigo-500" />,
     topRightText: "CERTIFICATE\nOF ANALYSIS",
     titleMain: "COA",
     titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "QUALITY ASSURANCE",
+    titleSub: "DOCUMENTED, AND RETRIEVABLE LATER",
     description:
-      "Our quality control processes meet stringent standards, with a Certificate of Analysis provided for every batch we produce.",
-    badges: ["COA PROVIDED", "MULTI-STAGE QC", "RELIABLE"],
+      "Every batch ships with its own COA carrying the purity figure, the chromatogram, the batch number, the testing laboratory and the analysis date. We archive each one, so you can pull the same document again years afterwards.",
+    badges: ["COA PER BATCH", "ARCHIVED", "TRACEABLE"],
   },
   {
     icon: <Users className="w-8 h-8 text-indigo-500" />,
     topRightText: "LAB\nPARTNERSHIPS",
     titleMain: "DIRECT",
     titleMainColor: "text-gray-900 text-2xl mb-1",
-    titleSub: "RESEARCH PARTNERSHIP",
+    titleSub: "BUILT AROUND YOUR SPECIFICATION",
     description:
-      "We work directly with laboratories and research institutions to understand their exact specifications and support their scientific goals.",
-    badges: ["CUSTOM SPECS", "DEDICATED SUPPORT", "COLLABORATIVE"],
+      "We work directly with laboratories and research institutions on sequence, purity threshold, quantity and modifications. Custom synthesis requests come back as a real quotation with a projected timeline, not a form response.",
+    badges: ["CUSTOM SPECS", "DIRECT SUPPORT", "COLLABORATIVE"],
   },
 ];
 
@@ -117,8 +117,8 @@ export default function AboutValuesSection() {
               </div>
 
               <div className="mb-4 mt-auto">
-                <h3 className={`font-bold tracking-tight ${feature.titleMainColor}`}>{feature.titleMain}</h3>
-                <h4 className="text-lg font-semibold text-gray-800 tracking-wide leading-tight">
+                <h3 className={`font-inter font-bold tracking-tight ${feature.titleMainColor}`}>{feature.titleMain}</h3>
+                <h4 className="font-inter text-lg font-semibold text-gray-800 tracking-wide leading-tight">
                   {feature.titleSub}
                 </h4>
                 <div className="w-10 h-0.5 bg-indigo-500/30 mt-4 rounded-full" />

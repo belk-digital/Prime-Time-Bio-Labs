@@ -17,6 +17,9 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
 /* Payload admin (/pb-console): its `.collection-list .table` rule sets
    `max-width: unset` plus a negative-margin full-bleed width, meant for desktop

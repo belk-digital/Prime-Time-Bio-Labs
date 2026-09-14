@@ -15,10 +15,13 @@ export function CalculatorHero() {
               Research Tool
             </div>
             <h1 className="font-michroma text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 uppercase tracking-wider leading-[1.05] mb-3 sm:mb-4">
-              Peptide Calculator
+              Peptide Reconstitution Calculator
             </h1>
             <p className="font-inter text-gray-500 text-sm md:text-base font-medium max-w-xl">
-              Precision dosage tools for laboratory research purposes only.
+              This calculator converts a lyophilised peptide vial into a working solution of known concentration.
+              Enter the vial quantity in milligrams, the volume of bacteriostatic water you are adding, and the
+              quantity you want per aliquot. It returns the resulting concentration and the exact syringe
+              graduation to draw. For laboratory research use only.
             </p>
           </motion.div>
         </div>
@@ -45,8 +48,8 @@ export function CalculatorHero() {
               </span>
               <p className="font-inter text-white text-xs sm:text-base md:text-lg font-medium tracking-wide mb-1 leading-relaxed line-clamp-3 sm:line-clamp-none">
                 Whether you&apos;re working with a 2mg, 5mg, or 10mg peptide vial, accurate reconstitution math is
-                non-negotiable. This calculator eliminates dosing errors by converting your vial concentration into
-                precise syringe units — no manual math required.
+                non-negotiable. This calculator removes manual measurement errors by converting your vial
+                concentration into precise syringe graduations — no manual math required.
               </p>
             </div>
           </div>
@@ -65,9 +68,9 @@ export function CalculatorHero() {
             className="bg-white rounded-[1.5rem] p-6 sm:p-8 flex items-end justify-between hover:shadow-lg transition-all duration-300 cursor-default border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
           >
             <div className="flex flex-col">
-              <span className="font-michroma text-4xl sm:text-5xl font-bold text-gray-900 tracking-tighter">100%</span>
+              <span className="font-michroma text-2xl sm:text-3xl font-bold text-gray-900 tracking-tighter leading-tight">Any Vial Size</span>
               <span className="font-inter text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                Accuracy
+                Works With Any Vial Size
               </span>
             </div>
             <button className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center mb-1 hover:bg-indigo-600 transition-colors">
@@ -82,14 +85,11 @@ export function CalculatorHero() {
             className="bg-white rounded-[1.5rem] p-6 sm:p-8 flex justify-between relative hover:shadow-lg transition-all duration-300 cursor-default border border-black/5 shadow-[0_4px_20px_rgb(0,0,0,0.03)]"
           >
             <div className="flex flex-col justify-end h-full">
-              <span className="font-michroma text-4xl sm:text-5xl font-bold text-gray-900 tracking-tighter">Easy</span>
+              <span className="font-michroma text-2xl sm:text-3xl font-bold text-gray-900 tracking-tighter leading-tight">Full Working</span>
               <span className="font-inter text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                Intuitive Calculator
+                Shows the Full Working
               </span>
             </div>
-            <span className="font-inter absolute top-6 right-6 border border-black/10 text-gray-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-black/5">
-              Fast
-            </span>
           </motion.div>
 
           <motion.div
@@ -99,9 +99,9 @@ export function CalculatorHero() {
             className="bg-gray-900 rounded-[1.5rem] p-6 sm:p-8 flex items-end relative hover:bg-black transition-all duration-300 cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
           >
             <div className="flex flex-col">
-              <span className="font-michroma text-4xl sm:text-5xl font-bold text-white tracking-tighter">Safe</span>
+              <span className="font-michroma text-2xl sm:text-3xl font-bold text-white tracking-tighter leading-tight">Research Use Only</span>
               <span className="font-inter text-[10px] sm:text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
-                Lab Research Only
+                Laboratory Research Use Only
               </span>
             </div>
           </motion.div>

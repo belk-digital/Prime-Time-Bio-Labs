@@ -27,10 +27,31 @@ import AboutPageAnimator from "@/components/about/AboutPageAnimator";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
+const PAGE_URL = `${SITE_URL}/affiliates`;
+const TITLE = "Peptide Affiliate Program | 10% Commission | PrimeTime BioLabs";
+const DESCRIPTION =
+  "Earn 10% commission promoting research-grade peptides. 30-day cookie, dual link and code tracking, $50 minimum payout, paid monthly. Apply free in minutes.";
+
 export const metadata = {
-  title: "Affiliate Program | Primetime Biolabs",
-  description:
-    "Partner with Primetime Biolabs and earn commission promoting research-grade peptides, with real-time tracking and monthly payouts.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: PAGE_URL },
+  openGraph: {
+    title: "Peptide Affiliate Program | 10% Commission",
+    description:
+      "Earn 10% commission with a 30-day cookie, dual link and code attribution, a $50 minimum payout and monthly payments. Research use only positioning throughout.",
+    url: PAGE_URL,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${SITE_URL}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${SITE_URL}/cta-banner.png`],
+  },
 };
 
 export const dynamic = "force-dynamic";
@@ -57,27 +78,27 @@ async function getAffiliateSettings(): Promise<AffiliateSettings> {
 const processSteps = [
   {
     number: "01",
-    title: "Join The Program",
+    title: "Apply",
     description:
-      "Apply and get approved to join the affiliate program — there's no cost and no minimum audience size required.",
+      "Submit the application form. There is no cost and no minimum audience size. We review every application against our content standards, so approval is not automatic.",
   },
   {
     number: "02",
-    title: "Get Your Links",
+    title: "Get Your Link and Code",
     description:
-      "Access your unique referral link and personal discount code from your affiliate dashboard as soon as you're approved.",
+      "On approval, your dashboard issues a unique referral link and a personal discount code. Both are live immediately, and both track independently.",
   },
   {
     number: "03",
-    title: "Share Your Content",
+    title: "Publish",
     description:
-      "Promote through your blog, social media, email list, or wherever your audience already spends time, following our content standards.",
+      "Promote through your blog, newsletter, social channels or video, within the content standards below. Approved creatives are available in the dashboard.",
   },
   {
     number: "04",
-    title: "Earn Commissions",
+    title: "Get Paid",
     description:
-      "Get paid every month for every qualifying referral, tracked automatically through your link and discount code.",
+      "Commission accrues as referrals convert. Once your approved balance clears the payout threshold, payment goes out on the monthly cycle.",
   },
 ];
 
@@ -107,9 +128,10 @@ const purposeFeatures = [
 const prohibitedPractices = [
   "No medical, dosing, or human-use claims about any research peptide in affiliate content",
   "No bodybuilding, athletic-performance, or weight-loss outcome framing",
-  "No bidding on “Primetime Biolabs” brand terms in paid search advertising",
-  "No unauthorized use of the Primetime Biolabs logo, trademark, or brand assets",
+  "No bidding on “PrimeTime BioLabs” brand terms in paid search advertising",
+  "No unauthorized use of the PrimeTime BioLabs logo, trademark, or brand assets",
   "No guaranteed-outcome, cure, or treatment claims of any kind",
+  "No earnings claims about this affiliate program made to recruit sub-affiliates",
 ];
 
 const contentStandards = [
@@ -120,18 +142,68 @@ const contentStandards = [
   "Use only approved marketing assets and creatives provided through the affiliate dashboard",
 ];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Service",
-      name: "Primetime Biolabs Affiliate Program",
-      description:
-        "Earn commission promoting Primetime Biolabs research-grade peptides, with real-time tracking and monthly payouts.",
-      provider: { "@type": "Organization", name: "Primetime Biolabs" },
-    },
-  ],
-};
+function buildJsonLd(
+  settings: AffiliateSettings,
+  commissionLabel: string,
+  faqs: { question: string; answer: string }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${PAGE_URL}#webpage`,
+        url: PAGE_URL,
+        name: TITLE,
+        description: DESCRIPTION,
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        about: { "@id": `${SITE_URL}/#organization` },
+        inLanguage: "en-US",
+        breadcrumb: { "@id": `${PAGE_URL}#breadcrumb` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${PAGE_URL}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Affiliate Program", item: PAGE_URL },
+        ],
+      },
+      {
+        "@type": "HowTo",
+        "@id": `${PAGE_URL}#howto`,
+        name: "How to join the PrimeTime BioLabs affiliate program",
+        description:
+          "The four steps to join the PrimeTime BioLabs research peptide affiliate program, from application through to monthly commission payout.",
+        step: processSteps.map((step, i) => ({
+          "@type": "HowToStep",
+          position: i + 1,
+          name: step.title,
+          text: step.description,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${PAGE_URL}#faq`,
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "What commission rate does the PrimeTime BioLabs affiliate program pay?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `${commissionLabel} of order value on every qualifying sale, with no cap and no tiering. We track referrals through both your referral link, which carries a ${settings.defaultCookieDurationDays}-day cookie, and your personal discount code, which has no expiry.`,
+            },
+          },
+          ...faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: { "@type": "Answer", text: faq.answer },
+          })),
+        ],
+      },
+    ],
+  };
+}
 
 export default async function AffiliatesPage() {
   const [user, settings] = await Promise.all([getPayloadUser(), getAffiliateSettings()]);
@@ -201,31 +273,50 @@ export default async function AffiliatesPage() {
 
   return (
     <main className="min-h-screen bg-white pt-32 md:pt-40">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(settings, commissionLabel, faqs)) }}
+      />
 
       <AboutPageAnimator>
         {/* Header */}
         <section className="px-6 md:px-12 lg:px-24 pb-16 text-center">
           <div className="max-w-2xl mx-auto">
             <h1 className="about-fade text-4xl md:text-5xl font-michroma font-bold text-gray-900 leading-tight mb-6">
-              Partner with{" "}
+              Peptide{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                Primetime Biolabs
+                Affiliate Program
               </span>
             </h1>
             <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed mb-8">
-              Earn commission introducing researchers and labs to the highest purity peptides on the market — with
-              real-time tracking and monthly payouts.
+              PrimeTime BioLabs pays {commissionLabel} commission on every qualifying referral of{" "}
+              <Link href="/shop" className="text-indigo-600 font-medium hover:underline">
+                research-grade peptides verified to ≥99% purity
+              </Link>
+              . We track referrals two ways — your link for {settings.defaultCookieDurationDays} days, and your
+              personal discount code with no expiry — so credit does not fall through the gap. Payouts run monthly
+              once your balance clears ${settings.defaultMinimumPayoutThreshold}.
             </p>
             <Link
               href="#apply"
-              className="about-fade font-inter inline-flex items-center gap-2 pl-6 pr-2 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="about-fade font-inter inline-flex items-center gap-2 pl-6 pr-2 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-gray-800 transition-colors mb-8"
             >
-              Apply Now
+              Apply to the Program
               <span className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
                 <ArrowUpRight className="w-4 h-4" />
               </span>
             </Link>
+            <div className="about-fade flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] md:text-xs uppercase tracking-widest text-gray-400 font-mono">
+              <span>{commissionLabel} commission</span>
+              <span className="text-black/20">·</span>
+              <span>{settings.defaultCookieDurationDays}-day cookie</span>
+              <span className="text-black/20">·</span>
+              <span>Dual link + code tracking</span>
+              <span className="text-black/20">·</span>
+              <span>${settings.defaultMinimumPayoutThreshold} minimum</span>
+              <span className="text-black/20">·</span>
+              <span>Paid monthly</span>
+            </div>
           </div>
         </section>
 
@@ -234,9 +325,51 @@ export default async function AffiliatesPage() {
           <div className="about-fade w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto rounded-3xl overflow-hidden">
             <img
               src="/cta-banner.png"
-              alt="Primetime Biolabs affiliate program"
+              alt="PrimeTime BioLabs affiliate program"
               className="w-full h-[280px] md:h-[420px] object-cover"
             />
+          </div>
+        </section>
+
+        {/* Program Terms at a Glance */}
+        <section className="pb-24">
+          <div className="about-fade w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
+            <div className="max-w-2xl mb-10">
+              <h2 className="text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
+                Program Terms at a Glance
+              </h2>
+              <p className="font-inter text-gray-500 text-sm md:text-base leading-relaxed">
+                Everything a prospective affiliate compares programs on, in one table.
+              </p>
+            </div>
+            <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+              <table className="w-full text-left text-sm">
+                <tbody>
+                  {[
+                    ["Commission rate", `${commissionLabel} of order value on every qualifying sale`],
+                    ["Earnings cap", "None"],
+                    ["Cookie duration", `${settings.defaultCookieDurationDays} days from click`],
+                    ["Attribution", "Referral link and personal discount code, tracked independently"],
+                    ["Code expiry", "None — your discount code works indefinitely"],
+                    ["Customer incentive", "Referred customers receive a discount at checkout"],
+                    ["Payout threshold", `$${settings.defaultMinimumPayoutThreshold}`],
+                    ["Payout frequency", "Monthly"],
+                    ["Cost to join", "Free"],
+                    ["Minimum audience", "None"],
+                    ["Approval", "Application reviewed; approval is not automatic"],
+                    ["Permitted promotion", "Blog, social, email, video, community — see content standards below"],
+                    ["Prohibited", "Brand-term PPC bidding; medical, dosing or human-use claims"],
+                  ].map(([term, detail], i) => (
+                    <tr key={term} className={i % 2 === 1 ? "bg-gray-50" : undefined}>
+                      <th scope="row" className="px-5 py-3 font-semibold text-gray-900 align-top whitespace-nowrap border-b border-gray-100">
+                        {term}
+                      </th>
+                      <td className="px-5 py-3 text-gray-600 align-top border-b border-gray-100">{detail}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -263,12 +396,16 @@ export default async function AffiliatesPage() {
 
             <div className="relative min-h-[420px] lg:min-h-full order-1 lg:order-2">
               <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-white mb-3">
-                Earn Passive Income Promoting Research Peptides
+                Who This Program Is Built For
               </h2>
+              <p className="about-fade font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-4 max-w-md">
+                This program suits people who already write, film or post for an audience with a working interest
+                in research compounds — science and biohacking bloggers, longevity and research-community
+                creators, newsletter operators, and affiliates who run compliant content in regulated categories.
+              </p>
               <p className="about-fade font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-8 max-w-md">
-                Our affiliate program is built for content creators, bloggers, and scientific-community voices who
-                want a straightforward, well-tested way to earn from an audience already interested in
-                research-grade peptides.
+                What we provide in exchange is a framework that keeps you inside research-use-only limits: written
+                content standards, approved creatives, and attribution that does not quietly drop conversions.
               </p>
               <img
                 src="/gloves-holding-vial.png"
@@ -280,18 +417,21 @@ export default async function AffiliatesPage() {
         </section>
 
         {/* Why partner with us */}
-        <AffiliateBenefitsSection />
+        <AffiliateBenefitsSection
+          cookieDurationDays={settings.defaultCookieDurationDays}
+          minimumPayoutThreshold={settings.defaultMinimumPayoutThreshold}
+        />
 
         {/* How it works */}
         <section className="py-24">
           <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
             <div className="max-w-2xl mb-14">
               <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
-                Simple 4-Step Process To Start Earning
+                How to Join in Four Steps
               </h2>
               <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed">
-                Our affiliate program is designed with your success in mind — a straightforward way to earn from
-                every referral, with no technical setup required.
+                No technical setup required. Every application is reviewed against our content standards, so
+                approval is not automatic.
               </p>
             </div>
 
@@ -308,7 +448,7 @@ export default async function AffiliatesPage() {
             <div className="about-fade rounded-3xl overflow-hidden">
               <img
                 src="/shop-banner-image.png"
-                alt="Primetime Biolabs research peptides"
+                alt="PrimeTime BioLabs research peptides"
                 className="w-full h-[240px] md:h-[360px] object-cover"
               />
             </div>
@@ -331,10 +471,11 @@ export default async function AffiliatesPage() {
                     </span>
                   </div>
                   <h2 className="font-michroma text-3xl md:text-5xl font-bold text-white mb-6 uppercase leading-[1.1]">
-                    Industry-Leading Payouts
+                    How Much You Earn
                   </h2>
                   <p className="font-inter text-white/60 text-base md:text-lg mb-10 leading-relaxed max-w-lg">
-                    See how earnings scale with order size at the standard {commissionLabel} commission rate.
+                    Commission is {commissionLabel} of order value, with no cap and no tiering. The figures below
+                    are arithmetic, shown so you can model the programme against your own traffic.
                   </p>
 
                   <div className="grid grid-cols-2 gap-6">
@@ -387,7 +528,7 @@ export default async function AffiliatesPage() {
 
                   <div className="mt-8 pt-8 border-t border-white/10">
                     <h3 className="font-inter text-xs font-bold uppercase tracking-widest text-white/40 mb-6">
-                      Realistic Monthly Earnings <span className="normal-case font-normal">(@ ${avgOrder} avg order)</span>
+                      Commission at Different Referral Volumes <span className="normal-case font-normal">(@ ${avgOrder} avg order)</span>
                     </h3>
                     <div className="space-y-3">
                       {[10, 25, 50].map((referrals) => (
@@ -404,6 +545,12 @@ export default async function AffiliatesPage() {
                         </div>
                       ))}
                     </div>
+                    <p className="font-inter text-white/30 text-[10px] leading-relaxed mt-4">
+                      These figures are arithmetic illustrations at a ${avgOrder} average order value, not a
+                      representation of typical or expected earnings. Actual commission depends on your traffic,
+                      your audience and order values, and many affiliates earn nothing. We make no guarantee of
+                      income.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -419,8 +566,10 @@ export default async function AffiliatesPage() {
                 Content Standards &amp; Compliance
               </h2>
               <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed">
-                We keep our affiliate program aligned with our own research-use-only positioning. Here&apos;s what
-                we require, and what we don&apos;t allow.
+                Every product we sell is labelled for laboratory research use only, and affiliate content has to
+                hold that same line. This is not a formality — content that frames a research compound as
+                something a person takes creates exposure for you and for us, and it is the fastest way for a
+                program in this category to be shut down.
               </p>
             </div>
 
@@ -459,6 +608,13 @@ export default async function AffiliatesPage() {
                 </ul>
               </div>
             </div>
+
+            <p className="about-fade font-inter text-gray-500 text-sm leading-relaxed mt-10 max-w-3xl">
+              We review affiliate content periodically and on report. A first breach brings a written notice and a
+              correction window. Repeated or serious breaches — human-use claims above all — end the partnership,
+              and commissions on affected traffic are withheld. We would rather explain a rule than enforce it, so
+              ask us first if something is borderline.
+            </p>
           </div>
         </section>
 
@@ -467,7 +623,7 @@ export default async function AffiliatesPage() {
           <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto">
             <div className="text-center mb-14">
               <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-gray-900 mb-4">
-                Everything You Need To Scale
+                Your Affiliate Toolkit
               </h2>
               <p className="about-fade font-inter text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
                 A complete affiliate toolkit, from live analytics to ready-to-use marketing assets.
@@ -520,11 +676,12 @@ export default async function AffiliatesPage() {
           <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="about-fade text-2xl md:text-3xl font-michroma font-bold text-white mb-4">
-                Start Earning {commissionLabel} Commission Today
+                Apply to the Program
               </h2>
               <p className="about-fade font-inter text-gray-400 text-sm md:text-base leading-relaxed mb-6">
-                Join a growing network of partners earning recurring commission promoting research-grade peptides
-                backed by verified purity and real testing data.
+                Applications cost nothing and take a few minutes, and we review each one against the content
+                standards above. If your audience has a genuine interest in research-grade compounds and you can
+                work within research-use-only framing, we would like to hear from you.
               </p>
               <div className="about-stagger grid grid-cols-3 gap-4">
                 <div className="about-stagger-item bg-white/[0.02] border border-white/10 rounded-2xl p-5 text-center">
@@ -551,22 +708,22 @@ export default async function AffiliatesPage() {
               {!user && (
                 <div className="text-center">
                   <LogIn className="w-10 h-10 text-indigo-400 mx-auto mb-4" />
-                  <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-3">Log In To Apply</h2>
+                  <h2 className="text-xl font-michroma uppercase tracking-wider text-white mb-3">Apply to the Program</h2>
                   <p className="font-inter text-gray-400 text-sm mb-6">
-                    Create a free account or log in to submit your affiliate application.
+                    Create a free account to submit your affiliate application, or log in if you already have one.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Link
-                      href="/login?callbackUrl=/affiliates"
+                      href="/register?callbackUrl=/affiliates"
                       className="font-inter px-6 py-3 text-sm font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors"
                     >
-                      Log In
+                      Create Account
                     </Link>
                     <Link
-                      href="/register?callbackUrl=/affiliates"
+                      href="/login?callbackUrl=/affiliates"
                       className="font-inter px-6 py-3 text-sm font-bold uppercase tracking-widest text-gray-200 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors"
                     >
-                      Create Account
+                      Log In
                     </Link>
                   </div>
                 </div>
@@ -624,10 +781,11 @@ export default async function AffiliatesPage() {
         <section className="bg-black text-gray-400 py-16 px-6 md:px-12 lg:px-24 border-t border-white/5">
           <div className="max-w-4xl mx-auto text-center">
             <p className="about-fade font-inter text-sm leading-relaxed">
-              <span className="text-red-500 font-bold">Research Use Only:</span> All Primetime Biolabs products are
-              manufactured and sold exclusively for laboratory research purposes. Not for human consumption, medical
-              treatment, or athletic performance enhancement. This affiliate program is for marketing research
-              compounds only. Affiliates must comply with all applicable laws and regulations.
+              <span className="text-red-500 font-bold">Research Use Only:</span> All PrimeTime BioLabs products are
+              manufactured and sold exclusively for laboratory research purposes. They are not for human
+              consumption, medical treatment, or athletic performance enhancement. This affiliate program covers
+              the marketing of research compounds only. Affiliates must comply with all applicable laws and
+              regulations, including FTC disclosure requirements.
             </p>
           </div>
         </section>

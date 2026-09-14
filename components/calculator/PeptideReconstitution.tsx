@@ -81,9 +81,9 @@ export function PeptideReconstitution() {
           </div>
 
           <div className="font-inter text-2xl sm:text-3xl md:text-[2.5rem] font-light text-gray-900 tracking-tight leading-[1.7]">
-            I have a <DynamicInput value={peptideAmount} onChange={setPeptideAmount} /> mg vial of peptide. I will
-            reconstitute it using <DynamicInput value={waterMl} onChange={setWaterMl} /> mL of bacteriostatic water.
-            My desired dose is <DynamicInput value={desiredDose} onChange={setDesiredDose} minWidth={3} />
+            I have a <DynamicInput value={peptideAmount} onChange={setPeptideAmount} /> mg vial of research
+            peptide. I will reconstitute it with <DynamicInput value={waterMl} onChange={setWaterMl} /> mL of
+            bacteriostatic water. I need <DynamicInput value={desiredDose} onChange={setDesiredDose} minWidth={3} />
             <DynamicSelect
               value={doseUnit}
               onChange={(v) => setDoseUnit(v as MassUnit)}
@@ -92,7 +92,7 @@ export function PeptideReconstitution() {
                 { label: "mg", value: "mg" },
               ]}
             />{" "}
-            and I am using a
+            per aliquot, measured on a
             <DynamicSelect
               value={syringeVolume}
               onChange={(v) => setSyringeVolume(parseFloat(v) as SyringeVolume)}
@@ -102,7 +102,7 @@ export function PeptideReconstitution() {
                 { label: "0.3mL", value: 0.3 },
               ]}
             />{" "}
-            syringe.
+            graduated syringe.
           </div>
         </FadeUp>
       </div>
@@ -111,10 +111,16 @@ export function PeptideReconstitution() {
       <div className="w-full lg:w-[450px] shrink-0 flex flex-col gap-6">
         <FadeUp delay={0.2} className="h-full">
           <div className="bg-[#FAFAFA] rounded-2xl border border-black/5 p-8 md:p-10 flex flex-col items-center justify-between text-center h-full shadow-[inset_0_2px_20px_rgba(0,0,0,0.02)] min-h-[400px] relative">
+            <div className="w-full text-center pb-6 border-b border-black/5">
+              <div className="font-inter text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-widest">
+                Working Concentration
+              </div>
+              <div className="font-inter text-2xl font-bold text-gray-900">{concentrationStr}</div>
+            </div>
             <div className="w-full flex-1 flex flex-col md:flex-row items-center justify-center gap-12 my-8">
               <div className="flex flex-col items-center">
                 <h3 className="font-inter font-bold uppercase tracking-[0.2em] text-gray-400 text-[10px] mb-4">
-                  Calculated Draw
+                  Volume to Draw
                 </h3>
                 {errorMsg ? (
                   <div className="font-inter text-red-500 font-bold mb-4 text-sm max-w-[180px]">{errorMsg}</div>
@@ -202,10 +208,10 @@ export function PeptideReconstitution() {
             </div>
 
             <div className="w-full text-center border-t border-black/5 pt-6 mt-auto">
-              <div className="font-inter text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-widest">
-                Resulting Concentration
-              </div>
-              <div className="font-inter text-lg font-bold text-gray-900">{concentrationStr}</div>
+              <p className="font-inter text-[11px] text-gray-400 leading-relaxed">
+                This calculator performs dilution arithmetic only. It returns concentration and volume for
+                laboratory preparation, and makes no recommendation about any use of the compound.
+              </p>
             </div>
           </div>
         </FadeUp>
