@@ -77,13 +77,21 @@ export async function submitMilitaryDiscountRequest(
       approveUrl: `${SITE_URL}/api/military/action?token=${encodeURIComponent(approveToken)}`,
       rejectUrl: `${SITE_URL}/api/military/action?token=${encodeURIComponent(rejectToken)}`,
     });
-    void sendTrackedEmail({
+    // Must be awaited: on serverless the function can be frozen right after returning,
+    // which silently drops a fire-and-forget send.
+    const sent = await sendTrackedEmail({
       to: ADMIN_EMAIL,
       replyTo: email,
       subject: adminNotice.subject,
       html: adminNotice.html,
       attachments: [{ filename: idPhoto.name || "id-photo.jpg", content: Buffer.from(arrayBuffer) }],
     });
+
+    if (!sent.success) {
+      // Roll back so the once-per-day rule doesn't block a retry of a request nobody was notified about.
+      await payload.delete({ collection: "military-discount-requests", id: request.id, overrideAccess: true });
+      return { success: false, error: "We couldn't send your request. Please try again in a few minutes." };
+    }
 
     return { success: true };
   } catch (err) {

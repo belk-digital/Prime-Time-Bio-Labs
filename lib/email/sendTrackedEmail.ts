@@ -23,16 +23,28 @@ export async function sendTrackedEmail(args: TrackedEmailArgs): Promise<{ succes
   const to = Array.isArray(args.to) ? args.to.join(", ") : args.to;
 
   try {
-    await payload.sendEmail({
-      to: args.to,
-      from: args.from,
-      replyTo: args.replyTo,
-      cc: CC_ALL_EMAILS,
-      bcc: args.bcc,
-      subject: args.subject,
-      html: args.html,
-      attachments: args.attachments,
-    });
+    // Connection-level failures (e.g. ECONNRESET during TLS to api.resend.com) happen before the
+    // request reaches Resend, so retrying is safe and won't double-send.
+    const MAX_ATTEMPTS = 3;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        await payload.sendEmail({
+          to: args.to,
+          from: args.from,
+          replyTo: args.replyTo,
+          cc: CC_ALL_EMAILS,
+          bcc: args.bcc,
+          subject: args.subject,
+          html: args.html,
+          attachments: args.attachments,
+        });
+        break;
+      } catch (err) {
+        const isNetworkError = err instanceof TypeError && /fetch failed/i.test(err.message);
+        if (!isNetworkError || attempt >= MAX_ATTEMPTS) throw err;
+        await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
+      }
+    }
 
     await payload
       .create({

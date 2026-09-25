@@ -74,8 +74,14 @@ export async function GET(request: NextRequest) {
     });
 
     const approvedEmail = generateMilitaryApprovedEmail(couponCode);
-    void sendTrackedEmail({ to: doc.email, subject: approvedEmail.subject, html: approvedEmail.html });
+    const sent = await sendTrackedEmail({ to: doc.email, subject: approvedEmail.subject, html: approvedEmail.html });
 
+    if (!sent.success) {
+      return resultPage(
+        "Approved, but email failed",
+        `Coupon ${couponCode} was created for ${doc.email}, but the email could not be sent. Please send it manually.`
+      );
+    }
     return resultPage("Request Approved", `A 30% discount code was generated and emailed to ${doc.email}.`);
   }
 
@@ -87,7 +93,7 @@ export async function GET(request: NextRequest) {
   });
 
   const rejectedEmail = generateMilitaryRejectedEmail();
-  void sendTrackedEmail({ to: doc.email, subject: rejectedEmail.subject, html: rejectedEmail.html });
+  await sendTrackedEmail({ to: doc.email, subject: rejectedEmail.subject, html: rejectedEmail.html });
 
   return resultPage("Request Rejected", `${doc.email} has been notified.`);
 }
