@@ -36,7 +36,7 @@ function estimateWordCount(content: BlogPost["content"]): number {
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.primetimebiolabs.com").replace(/\/+$/, "");
 
 async function getPost(slug: string): Promise<BlogPost | null> {
   try {
@@ -62,9 +62,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = await getPost(slug);
   if (!post) return { title: "Article Not Found | Primetime Biolabs" };
 
+  const cleanSlug = slug.replace(/^\/+/, "");
   const title = `${post.title} | Primetime Biolabs`;
   const description = post.excerpt ?? undefined;
-  const url = `${SITE_URL}/blog/${slug}`;
+  const url = `${SITE_URL}/blog/${cleanSlug}`;
   const imageUrl = resolveBlogMediaUrl(post.featuredImage) ?? undefined;
 
   return {
@@ -94,8 +95,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const post = await getPost(slug);
   if (!post) notFound();
 
+  const cleanSlug = slug.replace(/^\/+/, "");
+  const pageUrl = `${SITE_URL}/blog/${cleanSlug}`;
   const imageUrl = resolveBlogMediaUrl(post.featuredImage);
-  const absoluteImageUrl = imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `${SITE_URL}${imageUrl}`) : undefined;
+  const absoluteImageUrl = imageUrl
+    ? (imageUrl.startsWith("http")
+        ? imageUrl
+        : `${SITE_URL}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`)
+    : undefined;
   const relatedProducts = (post.relatedProducts ?? []).filter(
     (p): p is BlogRelatedProduct => typeof p === "object" && p !== null
   );
@@ -109,13 +116,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `${SITE_URL}/blog/${slug}#article`,
+        "@id": `${pageUrl}#article`,
         headline: post.title,
         description: post.excerpt ?? undefined,
         image: absoluteImageUrl ? { "@type": "ImageObject", url: absoluteImageUrl } : undefined,
         datePublished: post.publishedAt ?? undefined,
         dateModified: post.updatedAt ?? post.publishedAt ?? undefined,
-        author: { "@type": "Person", name: getAuthorDisplayName(post.author) },
+        author: { "@type": "Person", name: getAuthorDisplayName(post.author, "Primetime Admin") },
         publisher: {
           "@type": "Organization",
           "@id": `${SITE_URL}/#organization`,
@@ -124,16 +131,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         },
         articleSection: post.category ?? undefined,
         wordCount: estimateWordCount(post.content) || undefined,
-        mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${slug}` },
+        mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
         isPartOf: { "@id": `${SITE_URL}/#website` },
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/blog/${slug}#breadcrumb`,
+        "@id": `${pageUrl}#breadcrumb`,
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
           { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
-          { "@type": "ListItem", position: 3, name: post.title, item: `${SITE_URL}/blog/${slug}` },
+          { "@type": "ListItem", position: 3, name: post.title, item: pageUrl },
         ],
       },
     ],
@@ -145,7 +152,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       ? {
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          "@id": `${SITE_URL}/blog/${slug}#faq`,
+          "@id": `${pageUrl}#faq`,
           mainEntity: faqs.map((faq) => ({
             "@type": "Question",
             name: faq.question,
@@ -268,7 +275,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </div>
             ))
           ) : (
-            <p className="text-gray-500">This article's content is coming soon.</p>
+            <p className="text-gray-500">This article&apos;s content is coming soon.</p>
           )}
         </article>
 

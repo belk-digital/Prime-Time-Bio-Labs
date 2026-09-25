@@ -25,7 +25,7 @@ export default function TermsAndConditionsPage() {
         <h2>Eligibility</h2>
         <p>
           Our products are sold exclusively for laboratory research purposes to qualified adults, researchers, and institutions. By
-          placing an order, you confirm that you are at least 18 years of age and are purchasing solely for legitimate research use,
+          placing an order, you confirm that you are at least 21 years of age and are purchasing solely for legitimate research use,
           in compliance with all applicable laws in your jurisdiction. See our <a href="/medical-disclaimer">Medical Disclaimer</a>{" "}
           for further details.
         </p>

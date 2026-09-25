@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getPayload } from "payload";
 import config from "@payload-config";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.primetimebiolabs.com").replace(/\/+$/, "");
 
 const STATIC_ROUTES: Array<{ path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }> = [
   { path: "", priority: 1, changeFrequency: "daily" },
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayload({ config });
 
   const entries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
-    url: `${SITE_URL}${route.path}`,
+    url: `${SITE_URL}${route.path ? (route.path.startsWith("/") ? route.path : `/${route.path}`) : ""}`,
     lastModified: new Date(),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
@@ -41,8 +41,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     for (const product of products.docs) {
       if (!product.slug) continue;
+      const cleanSlug = String(product.slug).replace(/^\/+/, "");
       entries.push({
-        url: `${SITE_URL}/product/${product.slug}`,
+        url: `${SITE_URL}/product/${cleanSlug}`,
         lastModified: product.updatedAt ? new Date(product.updatedAt) : new Date(),
         changeFrequency: "weekly",
         priority: 0.8,
@@ -61,8 +62,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     for (const post of posts.docs) {
       if (!post.slug) continue;
+      const cleanSlug = String(post.slug).replace(/^\/+/, "");
       entries.push({
-        url: `${SITE_URL}/blog/${post.slug}`,
+        url: `${SITE_URL}/blog/${cleanSlug}`,
         lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(),
         changeFrequency: "monthly",
         priority: 0.6,

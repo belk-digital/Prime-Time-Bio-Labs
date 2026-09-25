@@ -38,8 +38,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}
+      >
         <Analytics />
         <AdminOverflowFix />
         <SmoothScrollProvider>
