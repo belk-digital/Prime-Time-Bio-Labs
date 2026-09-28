@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Syringe, Scale, ArrowRightLeft, FlaskConical } from "lucide-react";
+import { FlaskConical, Scale, ArrowRightLeft } from "lucide-react";
 import { PeptideReconstitution } from "@/components/calculator/PeptideReconstitution";
 import { BmiBmrCalculator } from "@/components/calculator/BmiBmrCalculator";
 import { UnitConverter } from "@/components/calculator/UnitConverter";
@@ -12,7 +12,7 @@ import { FadeUp } from "@/components/calculator/FadeUp";
 type CalculatorTab = "reconstitution" | "bmi" | "unit" | "creatinine";
 
 const TABS: { id: CalculatorTab; label: string; icon: React.ReactNode }[] = [
-  { id: "reconstitution", label: "Reconstitution", icon: <Syringe className="w-4 h-4" /> },
+  { id: "reconstitution", label: "Reconstitution", icon: <FlaskConical className="w-4 h-4" /> },
   { id: "bmi", label: "BMI & BMR", icon: <Scale className="w-4 h-4" /> },
   { id: "unit", label: "Unit Converter", icon: <ArrowRightLeft className="w-4 h-4" /> },
   { id: "creatinine", label: "Creatinine Clearance", icon: <FlaskConical className="w-4 h-4" /> },

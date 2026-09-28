@@ -1,6 +1,6 @@
 import { escapeHtml } from "./escapeHtml";
+import { siteUrl, SITE_URL } from "@/lib/siteUrl";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const BRAND_NAME = "Prime Time Bio Labs";
 const ACCENT = "#4f46e5"; // indigo-600, matches the site's accent color
 const ADMIN_EMAIL = process.env.SUPPORT_EMAIL || "primetimebiolabs@gmail.com";

@@ -22,12 +22,12 @@ const FALLBACK_IMAGE = "/product-card-image.png";
 
 const CATEGORY_TYPE_LABEL: Record<string, string> = {
   "GLP-1 & Metabolic": "Research Grade Peptide",
-  "Healing & Recovery": "Research Peptide",
+  "Recovery Peptides": "Research Peptide",
   "Growth Hormone Secretagogue": "Growth Hormone Secretagogue",
   "Nasal Sprays": "Nasal Spray",
-  "Longevity & Anti-Aging": "Longevity Peptide",
+  "Longevity Research": "Longevity Peptide",
   "Cognitive & Nootropic": "Cognitive Peptide",
-  "Sexual & Hormonal": "Hormonal Peptide",
+  "Endocrine Research": "Hormonal Peptide",
   "Cosmetic & Skin": "Cosmetic Peptide",
 };
 

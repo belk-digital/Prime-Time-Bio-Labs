@@ -1,8 +1,28 @@
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
+import { siteUrl } from "@/lib/siteUrl";
+
+const TITLE = "Privacy Policy | PrimeTime BioLabs";
+const DESCRIPTION =
+  "How PrimeTime BioLabs collects, uses, and protects your personal information.";
 
 export const metadata = {
-  title: "Privacy Policy | Primetime Biolabs",
-  description: "How Primetime Biolabs collects, uses, and protects your personal information.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${siteUrl}/privacy-policy` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${siteUrl}/privacy-policy`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
+  },
 };
 
 export default function PrivacyPolicyPage() {

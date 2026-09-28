@@ -6,6 +6,7 @@ import { RichText } from "@payloadcms/richtext-lexical/react";
 import { ArrowLeft, BookOpen, Calendar, ExternalLink, FlaskConical, ShoppingCart, User as UserIcon } from "lucide-react";
 import type { BlogPost, BlogRelatedProduct } from "@/lib/types/blog";
 import { formatBlogDate, getAuthorDisplayName, resolveBlogMediaUrl } from "@/lib/types/blog";
+import { toCleanSlug } from "@/lib/shopCardProduct";
 import BlogFaqAccordion from "@/components/blog/BlogFaqAccordion";
 import Footer from "@/components/Footer";
 
@@ -328,7 +329,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 return (
                   <Link
                     key={product.id}
-                    href={`/product/${product.slug ?? product.id}`}
+                    href={`/product/${toCleanSlug(product.slug, product.name)}`}
                     className="group relative bg-white/[0.02] border border-white/10 rounded-2xl p-6 hover:bg-white/[0.04] transition-all duration-500 overflow-hidden flex flex-col justify-between"
                   >
                     <div className="relative h-40 mb-6 flex items-center justify-center">

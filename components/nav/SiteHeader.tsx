@@ -2,6 +2,7 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { getPayloadUser } from "@/lib/auth/getPayloadUser";
 import SiteNav, { type NavCategory } from "@/components/nav/SiteNav";
+import { toShopCardProducts } from "@/lib/shopCardProduct";
 
 export default async function SiteHeader() {
   let categories: NavCategory[] = [];
@@ -30,24 +31,23 @@ export default async function SiteHeader() {
               { isVisible: { equals: true } },
             ],
           },
-          limit: 3,
+          limit: 10,
           depth: 1,
         });
+
+        const dedupedProducts = toShopCardProducts((productsResult.docs ?? []) as any).slice(0, 3);
 
         return {
           id: String(category.id),
           name: category.name,
           slug: category.slug ?? "",
-          products: (productsResult.docs ?? []).map((product) => {
-            // TEMPORARY: local media storage isn't reachable on Vercel yet (R2 not
-            // connected), so serve the shared placeholder instead of the stored URL.
-            void product.images;
+          products: dedupedProducts.map((card) => {
             const imageUrl = "/product-card-image.png";
             return {
-              name: product.name,
-              slug: product.slug ?? "",
+              name: card.name,
+              slug: card.slug,
               image: imageUrl,
-              price: product.price,
+              price: card.price,
             };
           }),
         };

@@ -26,9 +26,9 @@ import AffiliateBenefitsSection from "@/components/affiliates/AffiliateBenefitsS
 import AboutPageAnimator from "@/components/about/AboutPageAnimator";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
+import { siteUrl } from "@/lib/siteUrl";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
-const PAGE_URL = `${SITE_URL}/affiliates`;
+const PAGE_URL = `${siteUrl}/affiliates`;
 const TITLE = "Peptide Affiliate Program | 10% Commission | PrimeTime BioLabs";
 const DESCRIPTION =
   "Earn 10% commission promoting research-grade peptides. 30-day cookie, dual link and code tracking, $50 minimum payout, paid monthly. Apply free in minutes.";
@@ -44,13 +44,13 @@ export const metadata = {
     url: PAGE_URL,
     siteName: "PrimeTime BioLabs",
     type: "website",
-    images: [{ url: `${SITE_URL}/cta-banner.png` }],
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: [`${SITE_URL}/cta-banner.png`],
+    images: [`${siteUrl}/cta-banner.png`],
   },
 };
 
@@ -156,8 +156,8 @@ function buildJsonLd(
         url: PAGE_URL,
         name: TITLE,
         description: DESCRIPTION,
-        isPartOf: { "@id": `${SITE_URL}/#website` },
-        about: { "@id": `${SITE_URL}/#organization` },
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        about: { "@id": `${siteUrl}/#organization` },
         inLanguage: "en-US",
         breadcrumb: { "@id": `${PAGE_URL}#breadcrumb` },
       },
@@ -165,7 +165,7 @@ function buildJsonLd(
         "@type": "BreadcrumbList",
         "@id": `${PAGE_URL}#breadcrumb`,
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
           { "@type": "ListItem", position: 2, name: "Affiliate Program", item: PAGE_URL },
         ],
       },

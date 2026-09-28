@@ -3,13 +3,14 @@ import { Mail, MapPin, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
+import { siteUrl } from "@/lib/siteUrl";
 
 export const metadata: Metadata = {
   title: "Contact Us | Primetime BioLabs",
   description:
     "Get in touch with the Primetime Biolabs team for questions about our research peptides, orders, or partnerships.",
   alternates: {
-    canonical: "https://www.primetimebiolabs.com/contact-us",
+    canonical: `${siteUrl}/contact-us`,
   },
   robots: {
     index: true,
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
     title: "Contact Us | Primetime BioLabs",
     description:
       "Get in touch with the Primetime Biolabs team for questions about our research peptides, orders, or partnerships.",
-    url: "https://www.primetimebiolabs.com/contact-us",
+    url: `${siteUrl}/contact-us`,
     siteName: "Prime Time Bio Labs",
     type: "website",
   },

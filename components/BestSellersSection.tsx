@@ -67,7 +67,7 @@ const FALLBACK_PRODUCTS: ShopMockProduct[] = [
     price: 79.99,
     image: FALLBACK_IMAGE,
     featured: false,
-    category: "Healing & Recovery",
+    category: "Recovery Peptides",
   },
   {
     id: "5",

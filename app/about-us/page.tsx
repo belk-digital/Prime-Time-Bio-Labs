@@ -3,8 +3,8 @@ import { ArrowUpRight, CheckCircle2, FlaskConical, ShieldCheck, Sparkles } from 
 import Footer from "@/components/Footer";
 import AboutValuesSection from "@/components/about/AboutValuesSection";
 import AboutPageAnimator from "@/components/about/AboutPageAnimator";
+import { siteUrl } from "@/lib/siteUrl";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const TITLE = "About PrimeTime BioLabs | USA Peptide Synthesis & Testing";
 const DESCRIPTION =
   "Inside the US facility behind PrimeTime BioLabs: solid-phase synthesis, independent HPLC and MS verification, and a Certificate of Analysis on every batch. RUO.";
@@ -12,21 +12,21 @@ const DESCRIPTION =
 export const metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: `${SITE_URL}/about-us` },
+  alternates: { canonical: `${siteUrl}/about-us` },
   openGraph: {
     title: TITLE,
     description:
       "A US-based synthesis facility, independent HPLC and mass spectrometry verification, and a Certificate of Analysis on every batch. For laboratory research use only.",
-    url: `${SITE_URL}/about-us`,
+    url: `${siteUrl}/about-us`,
     siteName: "PrimeTime BioLabs",
     type: "website",
-    images: [{ url: `${SITE_URL}/cta-banner.png` }],
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: [`${SITE_URL}/cta-banner.png`],
+    images: [`${siteUrl}/cta-banner.png`],
   },
 };
 
@@ -88,13 +88,13 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
+      "@id": `${siteUrl}/#organization`,
       name: "PrimeTime BioLabs",
       alternateName: "Primetime Biolabs",
-      url: SITE_URL,
+      url: siteUrl,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/primtime-biolabs-logo.svg`,
+        url: `${siteUrl}/primtime-biolabs-logo.svg`,
       },
       description:
         "United States supplier of research-grade peptides produced by solid-phase peptide synthesis and verified by independent HPLC and mass spectrometry analysis, with a Certificate of Analysis on every batch. For laboratory research use only.",
@@ -109,25 +109,25 @@ const jsonLd = {
     },
     {
       "@type": "AboutPage",
-      "@id": `${SITE_URL}/about-us#webpage`,
-      url: `${SITE_URL}/about-us`,
+      "@id": `${siteUrl}/about-us#webpage`,
+      url: `${siteUrl}/about-us`,
       name: TITLE,
       description: DESCRIPTION,
-      mainEntity: { "@id": `${SITE_URL}/#organization` },
+      mainEntity: { "@id": `${siteUrl}/#organization` },
       inLanguage: "en-US",
-      breadcrumb: { "@id": `${SITE_URL}/about-us#breadcrumb` },
+      breadcrumb: { "@id": `${siteUrl}/about-us#breadcrumb` },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": `${SITE_URL}/about-us#breadcrumb`,
+      "@id": `${siteUrl}/about-us#breadcrumb`,
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-        { "@type": "ListItem", position: 2, name: "About Us", item: `${SITE_URL}/about-us` },
+        { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
+        { "@type": "ListItem", position: 2, name: "About Us", item: `${siteUrl}/about-us` },
       ],
     },
     {
       "@type": "HowTo",
-      "@id": `${SITE_URL}/about-us#process`,
+      "@id": `${siteUrl}/about-us#process`,
       name: "How PrimeTime BioLabs produces a batch of research peptides",
       description:
         "The four-stage process every PrimeTime BioLabs research peptide batch follows, from documented sequence design through to Certificate of Analysis and fulfilment.",

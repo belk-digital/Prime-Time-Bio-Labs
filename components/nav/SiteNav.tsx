@@ -289,9 +289,9 @@ export default function SiteNav({
                           {category.products.length === 0 ? (
                             <span className="text-xs text-gray-600">No products yet</span>
                           ) : (
-                            category.products.map((product) => (
+                            category.products.map((product, idx) => (
                               <Link
-                                key={product.slug}
+                                key={`${category.id}-${product.slug}-${idx}`}
                                 href={`/product/${product.slug}`}
                                 className="flex items-center gap-3 group"
                               >

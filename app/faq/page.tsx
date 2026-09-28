@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import FaqHubClient from "@/components/faq/FaqHubClient";
 import { ALL_VISIBLE_FAQS } from "@/lib/faqHubData";
+import { siteUrl } from "@/lib/siteUrl";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions | Primetime BioLabs",
   description:
     "Answers on research peptide purity and COAs, shipping and tracking, payments, storage, returns, and legality from PrimeTime BioLabs.",
   alternates: {
-    canonical: "https://www.primetimebiolabs.com/faq",
+    canonical: `${siteUrl}/faq`,
   },
   robots: {
     index: true,
@@ -18,12 +19,12 @@ export const metadata: Metadata = {
     title: "Frequently Asked Questions | Primetime BioLabs",
     description:
       "Answers on research peptide purity and COAs, shipping and tracking, payments, storage, returns, and legality from PrimeTime BioLabs.",
-    url: "https://www.primetimebiolabs.com/faq",
+    url: `${siteUrl}/faq`,
     siteName: "Prime Time Bio Labs",
     type: "website",
     images: [
       {
-        url: "https://www.primetimebiolabs.com/cta-banner.png",
+        url: `${siteUrl}/cta-banner.png`,
         width: 1200,
         height: 630,
         alt: "Frequently Asked Questions | Primetime BioLabs",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     title: "Frequently Asked Questions | Primetime BioLabs",
     description:
       "Answers on research peptide purity and COAs, shipping and tracking, payments, storage, returns, and legality from PrimeTime BioLabs.",
-    images: ["https://www.primetimebiolabs.com/cta-banner.png"],
+    images: [`${siteUrl}/cta-banner.png`],
   },
 };
 

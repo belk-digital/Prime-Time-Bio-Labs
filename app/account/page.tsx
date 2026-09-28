@@ -254,6 +254,7 @@ export default async function AccountOverviewPage() {
                 const firstItem = order.items?.[0];
                 const product = typeof firstItem?.product === "object" ? firstItem.product : null;
                 const imageUrl = getImageUrl(product);
+                const itemTitle = firstItem?.title || product?.name || (order.orderNumber ? `Order #${order.orderNumber}` : "Ordered product");
                 return (
                   <Link
                     href={`/account/orders/${order.orderNumber || order.id}`}
@@ -262,7 +263,7 @@ export default async function AccountOverviewPage() {
                   >
                     <div className="w-11 h-11 rounded-xl bg-gray-50 shrink-0 overflow-hidden relative flex items-center justify-center">
                       {imageUrl ? (
-                        <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+                        <img src={imageUrl} alt={itemTitle} className="w-full h-full object-cover" />
                       ) : (
                         <Package size={16} className="text-gray-300" />
                       )}

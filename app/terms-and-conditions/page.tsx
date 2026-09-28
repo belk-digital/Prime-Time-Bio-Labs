@@ -1,8 +1,28 @@
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
+import { siteUrl } from "@/lib/siteUrl";
+
+const TITLE = "Terms & Conditions | PrimeTime BioLabs";
+const DESCRIPTION =
+  "The terms and conditions governing your use of the PrimeTime BioLabs website and purchase of our research products.";
 
 export const metadata = {
-  title: "Terms & Conditions | Primetime Biolabs",
-  description: "The terms and conditions governing your use of the Primetime Biolabs website and purchase of our research products.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${siteUrl}/terms-and-conditions` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${siteUrl}/terms-and-conditions`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
+  },
 };
 
 export default function TermsAndConditionsPage() {

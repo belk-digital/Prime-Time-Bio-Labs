@@ -1,8 +1,28 @@
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
+import { siteUrl } from "@/lib/siteUrl";
+
+const TITLE = "Refund Policy | PrimeTime BioLabs";
+const DESCRIPTION =
+  "Our policy on refunds, returns, and order cancellations for research chemical products.";
 
 export const metadata = {
-  title: "Refund Policy | Primetime Biolabs",
-  description: "Our policy on refunds, returns, and order cancellations for research chemical products.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${siteUrl}/refund-policy` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${siteUrl}/refund-policy`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
+  },
 };
 
 export default function RefundPolicyPage() {

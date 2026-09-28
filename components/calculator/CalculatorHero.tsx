@@ -18,10 +18,7 @@ export function CalculatorHero() {
               Peptide Reconstitution Calculator
             </h1>
             <p className="font-inter text-gray-500 text-sm md:text-base font-medium max-w-xl">
-              This calculator converts a lyophilised peptide vial into a working solution of known concentration.
-              Enter the vial quantity in milligrams, the volume of bacteriostatic water you are adding, and the
-              quantity you want per aliquot. It returns the resulting concentration and the exact syringe
-              graduation to draw. For laboratory research use only.
+              Peptide reconstitution is the process of dissolving a lyophilized peptide powder in a measured volume of diluent to produce a solution of known strength. This peptide reconstitution calculator takes two numbers, the peptide mass in your vial and the diluent volume you add. It returns the working concentration in mg/mL and mcg/mL.
             </p>
           </motion.div>
         </div>
@@ -44,12 +41,10 @@ export function CalculatorHero() {
           <div className="absolute bottom-4 left-4 right-4 sm:bottom-10 sm:left-10 sm:right-28 z-20 pointer-events-none">
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-6 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2">
               <span className="font-inter bg-white/20 text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2 sm:mb-3 inline-block shadow-sm">
-                Accuracy
+                Scope
               </span>
               <p className="font-inter text-white text-xs sm:text-base md:text-lg font-medium tracking-wide mb-1 leading-relaxed line-clamp-3 sm:line-clamp-none">
-                Whether you&apos;re working with a 2mg, 5mg, or 10mg peptide vial, accurate reconstitution math is
-                non-negotiable. This calculator removes manual measurement errors by converting your vial
-                concentration into precise syringe graduations — no manual math required.
+                The scope here is deliberate: this tool does concentration math, nothing else. Vial mass in milligrams plus diluent volume in milliliters gives you mg/mL and mcg/mL. It produces no dose figures, no administration guidance and no protocol advice, by design.
               </p>
             </div>
           </div>
@@ -87,7 +82,7 @@ export function CalculatorHero() {
             <div className="flex flex-col justify-end h-full">
               <span className="font-michroma text-2xl sm:text-3xl font-bold text-gray-900 tracking-tighter leading-tight">Full Working</span>
               <span className="font-inter text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
-                Shows the Full Working
+                Shows the full working behind every result, so you can check the arithmetic by hand before you record it.
               </span>
             </div>
           </motion.div>

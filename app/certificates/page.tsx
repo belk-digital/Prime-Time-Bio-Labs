@@ -5,12 +5,33 @@ import { FileCheck2, FlaskConical, ShieldCheck, FileDown } from "lucide-react";
 import Footer from "@/components/Footer";
 import { resolveMediaUrl } from "@/lib/types/shop";
 import type { ShopProduct } from "@/lib/types/shop";
+import { toShopCardProduct } from "@/lib/shopCardProduct";
+import { siteUrl } from "@/lib/siteUrl";
 
 export const dynamic = "force-dynamic";
 
+const TITLE = "Certificates of Analysis | PrimeTime BioLabs";
+const DESCRIPTION =
+  "Every batch we produce is independently tested. Browse batch-specific Certificates of Analysis (COA) below or on each product page.";
+
 export const metadata = {
-  title: "Certificates of Analysis | Primetime Biolabs",
-  description: "Every batch we produce is independently tested. Browse batch-specific Certificates of Analysis (COA) below or on each product page.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${siteUrl}/certificates` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${siteUrl}/certificates`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
+  },
 };
 
 const steps = [
@@ -101,6 +122,7 @@ export default async function CertificatesPage() {
           {productsWithCoa.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {productsWithCoa.map((product) => {
+                const card = toShopCardProduct(product as any);
                 const coaUrl = resolveMediaUrl(product.coaFile as any);
                 return (
                   <div
@@ -108,7 +130,7 @@ export default async function CertificatesPage() {
                     className="bg-white border border-black/5 rounded-2xl overflow-hidden shadow-sm flex flex-col"
                   >
                     {coaUrl && (
-                      <Link href={`/product/${product.slug}`} className="block aspect-[4/3] bg-gray-100 overflow-hidden">
+                      <Link href={`/product/${card.slug}`} className="block aspect-[4/3] bg-gray-100 overflow-hidden">
                         {/* COA images are scanned certificate documents, not product photography — a plain img keeps this simple and avoids next/image's remote-domain allowlist. */}
                         <img
                           src={coaUrl}
@@ -119,7 +141,7 @@ export default async function CertificatesPage() {
                     )}
                     <div className="p-5 flex flex-col gap-3 flex-1">
                       <div>
-                        <Link href={`/product/${product.slug}`}>
+                        <Link href={`/product/${card.slug}`}>
                           <h3 className="font-michroma uppercase text-sm text-gray-900 hover:text-indigo-600 transition-colors">
                             {product.name}
                           </h3>

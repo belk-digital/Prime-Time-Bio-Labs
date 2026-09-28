@@ -12,6 +12,7 @@ import {
   getProductPrimaryImageUrl,
   type ShopProduct,
 } from "@/lib/types/shop";
+import { resolveCanonicalProductSlug } from "@/lib/productSlugs";
 
 export default function ProductCard({
   product,
@@ -43,12 +44,13 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     if (!inStock) return;
+    const canonicalSlug = resolveCanonicalProductSlug(product.slug ?? "") ?? product.slug ?? String(product.id);
     addItem(
       {
         id: String(product.id),
         name: product.name,
         imageUrl,
-        slug: product.slug ?? String(product.id),
+        slug: canonicalSlug,
       },
       sku,
       1,
@@ -78,9 +80,11 @@ export default function ProductCard({
     }
   };
 
+  const canonicalProductSlug = resolveCanonicalProductSlug(product.slug ?? "") ?? product.slug ?? "";
+
   return (
     <Link
-      href={`/product/${product.slug ?? ""}`}
+      href={`/product/${canonicalProductSlug}`}
       className="product-card group relative bg-white/[0.02] border border-white/10 rounded-2xl p-6 hover:bg-white/[0.04] transition-all duration-500 overflow-hidden flex flex-col justify-between"
     >
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

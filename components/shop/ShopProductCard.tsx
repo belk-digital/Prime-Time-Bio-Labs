@@ -82,14 +82,14 @@ export default function ShopProductCard({
           {product.description}
         </p>
 
-        {/* Dosage selection */}
+        {/* Size selection */}
         <div className="mt-3">
           <p
             className={`text-[9px] font-bold uppercase tracking-widest mb-1.5 ${
               isLight ? "text-gray-400" : "text-gray-500"
             }`}
           >
-            Dosage
+            Size
           </p>
           <div className="flex flex-wrap gap-1.5">
             {product.dosageOptions.map((dosage) => (
