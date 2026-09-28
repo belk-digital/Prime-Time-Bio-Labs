@@ -20,8 +20,8 @@ export function PeptideReconstitution() {
   if (isValid) {
     const mgMl = vAmt / wMl;
     const mcgMl = (vAmt * 1000) / wMl;
-    concentrationMgMlStr = `${mgMl.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })} mg/mL`;
-    concentrationMcgMlStr = `${mcgMl.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 })} mcg/mL`;
+    concentrationMgMlStr = `${mgMl.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} mg/mL`;
+    concentrationMcgMlStr = `${Math.round(mcgMl).toLocaleString(undefined, { maximumFractionDigits: 0 })} mcg/mL`;
   }
 
   return (

@@ -121,6 +121,12 @@ const jsonLd = {
       name: TITLE,
       description: DESCRIPTION,
       isPartOf: { "@id": `${siteUrl}/#website` },
+      author: {
+        "@type": "Organization",
+        name: "PrimeTime BioLabs",
+        url: `${siteUrl}/about-us`,
+      },
+      dateModified: "2026-09-29",
       mainEntity: { "@id": `${PAGE_URL}#app` },
       inLanguage: "en-US",
       breadcrumb: { "@id": `${PAGE_URL}#breadcrumb` },
@@ -139,7 +145,6 @@ const jsonLd = {
       name: "How to reconstitute peptides in three steps",
       description:
         "The three-step laboratory method for returning a lyophilized research peptide to solution without contamination or mechanical damage to the peptide structure.",
-      totalTime: "PT5M",
       supply: [
         { "@type": "HowToSupply", name: "Lyophilized research peptide vial" },
         { "@type": "HowToSupply", name: "Bacteriostatic water" },

@@ -1,6 +1,5 @@
-"use client";
-
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 
@@ -17,6 +16,13 @@ export function CalculatorHero() {
             <h1 className="font-michroma text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 uppercase tracking-wider leading-[1.05] mb-3 sm:mb-4">
               Peptide Reconstitution Calculator
             </h1>
+            <div className="font-inter text-xs md:text-sm text-gray-500 mb-3 sm:mb-4">
+              By{" "}
+              <Link href="/about-us" className="text-indigo-600 font-semibold hover:underline">
+                PrimeTime BioLabs Research Team
+              </Link>{" "}
+              · Last updated September 2026
+            </div>
             <p className="font-inter text-gray-500 text-sm md:text-base font-medium max-w-xl">
               Peptide reconstitution is the process of dissolving a lyophilized peptide powder in a measured volume of diluent to produce a solution of known strength. This peptide reconstitution calculator takes two numbers, the peptide mass in your vial and the diluent volume you add. It returns the working concentration in mg/mL and mcg/mL.
             </p>

@@ -116,13 +116,6 @@ export default function PeptideCalculatorPage() {
         </div>
       </div>
 
-      {/* Page-level disclaimer, directly beneath the calculator output */}
-      <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto -mt-8 sm:-mt-12 mb-8">
-        <p className="font-inter text-center text-[11px] md:text-xs text-gray-400 leading-relaxed max-w-3xl mx-auto">
-          Enter the peptide mass printed on the vial and the volume of diluent you plan to add. The calculator returns the working concentration of the finished solution in mg/mL and mcg/mL. Volume is an input you choose, not a result. This calculator is for research use only.
-        </p>
-      </div>
-
       <div className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)] mx-auto flex flex-col gap-32 md:gap-48 pb-32">
         {/* 01 — ONE DECIMAL DECIDES EVERY NUMBER THAT FOLLOWS */}
         <section className="relative">
@@ -147,7 +140,7 @@ export default function PeptideCalculatorPage() {
                   <li className="flex gap-4 items-start">
                     <TrendingDown className="w-6 h-6 text-red-500 shrink-0" />
                     <div>
-                      <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight">Decimals Compound</h4>
+                      <h3 className="font-inter font-bold text-gray-900 uppercase tracking-tight">Decimals Compound</h3>
                       <p className="font-inter text-sm text-gray-500 mt-1">
                         A misplaced decimal does not stay in one place. Write 0.5 mL where you meant 5 mL and the concentration is ten times off, silently, for the life of the vial. Each sample you measure out carries that error forward. So does every dilution you prepare from it, and every figure you write in the log.
                       </p>
@@ -156,7 +149,7 @@ export default function PeptideCalculatorPage() {
                   <li className="flex gap-4 items-start">
                     <ShieldCheck className="w-6 h-6 text-indigo-600 shrink-0" />
                     <div>
-                      <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight">Unit Precision</h4>
+                      <h3 className="font-inter font-bold text-gray-900 uppercase tracking-tight">Unit Precision</h3>
                       <p className="font-inter text-sm text-gray-500 mt-1">
                         Mixing up milligrams and micrograms is worse. That mistake is off by a factor of 1,000.
                       </p>
@@ -176,9 +169,9 @@ export default function PeptideCalculatorPage() {
                   />
                   <div className="absolute inset-0 bg-black/10" />
                   <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md p-6 rounded-2xl border border-white/40">
-                    <h3 className="font-michroma font-bold text-xl text-gray-900 uppercase mb-2">Good Practice</h3>
+                    <p className="font-michroma font-bold text-xl text-gray-900 uppercase mb-2">Good Practice</p>
                     <p className="font-inter text-sm text-gray-600">
-                      Good practice here is unglamorous. Read the vial label, not your memory of it. Measure the diluent volume with a calibrated device. Run the calculation, then check it against the label before anything goes on paper.
+                      Good practice here is unglamorous. Read the <Link href="/shop" className="text-indigo-600 font-semibold hover:underline">vial label</Link>, not your memory of it. Measure the diluent volume with a calibrated device. Run the calculation, then check it against the batch <Link href="/certificates" className="text-indigo-600 font-semibold hover:underline">Certificate of Analysis</Link> before anything goes on paper.
                     </p>
                   </div>
                 </div>
@@ -243,27 +236,27 @@ export default function PeptideCalculatorPage() {
 
             <div className="lg:sticky lg:top-32 h-fit order-1 lg:order-2">
               <FadeUp>
-                <h2 className="font-inter text-sm uppercase tracking-[0.2em] text-indigo-600 mb-6 font-bold flex items-center gap-3">
+                <div className="font-inter text-sm uppercase tracking-[0.2em] text-indigo-600 mb-6 font-bold flex items-center gap-3">
                   <span className="w-8 h-px bg-indigo-600" />
                   Reconstitution Guide
-                </h2>
+                </div>
                 <h2 className="font-michroma text-4xl md:text-5xl font-bold text-gray-900 uppercase leading-[1.05] mb-8">
                   How to reconstitute peptides in three steps
                 </h2>
                 
                 <div className="bg-indigo-50/50 p-6 md:p-8 rounded-[2rem] border border-indigo-100 mb-8">
-                  <h4 className="font-inter font-bold uppercase tracking-widest text-xs text-indigo-600 mb-3">
+                  <h3 className="font-inter font-bold uppercase tracking-widest text-xs text-indigo-600 mb-3">
                     TL;DR
-                  </h4>
+                  </h3>
                   <p className="font-inter text-sm md:text-base text-gray-700 leading-relaxed">
-                    Bring the vial and diluent to room temperature. Measure your chosen volume of bacteriostatic water into a sterile syringe or pipette. Transfer it slowly down the inside wall of the vial, letting it run onto the powder rather than jetting into it. Swirl gently, never shake, and leave it to dissolve on its own. Label the vial with the concentration and date, then store it cold.
+                    Bring the vial and diluent to room temperature. Measure your chosen volume of <Link href="/shop" className="text-indigo-600 font-semibold hover:underline">bacteriostatic water</Link> into a sterile syringe or pipette. Transfer it slowly down the inside wall of the vial, letting it run onto the powder rather than jetting into it. Swirl gently, never shake, and leave it to dissolve on its own. Label the vial with the concentration and date, then store it cold.
                   </p>
                 </div>
 
                 <div className="bg-white p-8 rounded-[2rem] border border-black/5 shadow-sm">
-                  <h4 className="font-inter font-bold uppercase tracking-widest text-xs text-gray-400 mb-4">
+                  <h3 className="font-inter font-bold uppercase tracking-widest text-xs text-gray-400 mb-4">
                     Choosing your water volume
-                  </h4>
+                  </h3>
                   <p className="font-inter text-sm text-gray-600 leading-relaxed mb-4">
                     Your diluent volume is a measuring decision. The vial mass is fixed, so volume is the only lever you have over concentration.
                   </p>
@@ -334,9 +327,9 @@ export default function PeptideCalculatorPage() {
                     <Info className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-inter font-bold text-gray-900 uppercase text-sm tracking-wide mb-2">
+                    <h3 className="font-inter font-bold text-gray-900 uppercase text-sm tracking-wide mb-2">
                       The Factor of 1,000
-                    </h4>
+                    </h3>
                     <p className="font-inter text-sm text-gray-700 leading-relaxed">
                       The mg and mcg confusion is the expensive one. Both measure mass, both start with the letter m, and they differ by a factor of 1,000. A number written as 250 is meaningless without its unit attached. Write the unit every time, on every label and in every log line, and the error has nowhere to hide.
                     </p>
@@ -403,9 +396,9 @@ export default function PeptideCalculatorPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div className="bg-white p-8 rounded-[2rem] border border-black/5">
-                  <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight mb-6 flex items-center gap-2">
+                  <h3 className="font-inter font-bold text-gray-900 uppercase tracking-tight mb-6 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-indigo-600" /> Worked example
-                  </h4>
+                  </h3>
                   <p className="font-inter text-sm text-gray-600 mb-4">
                     A 10 mg vial reconstituted with 3 mL of bacteriostatic water:
                   </p>
@@ -416,9 +409,9 @@ export default function PeptideCalculatorPage() {
                 </div>
 
                 <div className="bg-gray-900 p-8 rounded-[2rem] text-white">
-                  <h4 className="font-inter font-bold text-white uppercase tracking-tight mb-6 flex items-center gap-2">
+                  <h3 className="font-inter font-bold text-white uppercase tracking-tight mb-6 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-white" /> The canonical case
-                  </h4>
+                  </h3>
                   <p className="font-inter text-sm text-white/70 mb-4">
                     A 5 mg vial reconstituted with 2 mL:
                   </p>
@@ -429,14 +422,17 @@ export default function PeptideCalculatorPage() {
               </div>
 
               <div className="bg-[#FAFAFA] border border-black/5 rounded-[2rem] p-8 md:p-10">
-                <h4 className="font-inter font-bold text-gray-900 uppercase tracking-tight mb-3 text-sm">
+                <h3 className="font-inter font-bold text-gray-900 uppercase tracking-tight mb-3 text-sm">
                   Verify it yourself
-                </h4>
+                </h3>
                 <p className="font-inter text-gray-600 leading-relaxed mb-4">
                   Both forms are one operation each, so you can check any result the calculator gives you on paper in about ten seconds. Divide the label mass by the volume you added. Multiply by 1,000 for micrograms. If your figure and the tool&apos;s figure disagree, one of the two inputs was entered wrong.
                 </p>
-                <p className="font-inter text-gray-500 text-xs leading-relaxed border-t border-black/5 pt-4">
+                <p className="font-inter text-gray-500 text-xs leading-relaxed border-t border-black/5 pt-4 mb-3">
                   A note on rounding: some divisions do not resolve cleanly, and 10 ÷ 3 is one of them. Values here are rounded to two decimal places for mg/mL and to the nearest whole number for mcg/mL.
+                </p>
+                <p className="font-inter text-gray-500 text-xs leading-relaxed border-t border-black/5 pt-3">
+                  Every concentration figure on this page — all 18 table rows, the worked examples, and the calculator output — is computed from the two formulas above. Milligram values are rounded to two decimals, microgram values to whole numbers. The worked examples are cross-checked against the table.
                 </p>
               </div>
             </FadeUp>
@@ -456,7 +452,7 @@ export default function PeptideCalculatorPage() {
                   Common vial sizes and what each diluent volume gives you
                 </h2>
                 <p className="font-inter text-gray-500 text-lg max-w-3xl mx-auto mb-4">
-                  Use this reconstitution chart to look up the concentration for common vial and diluent combinations.
+                  Use this reconstitution chart to look up the concentration for common <Link href="/shop" className="text-indigo-600 font-semibold hover:underline">vial sizes</Link> and diluent combinations.
                 </p>
                 <p className="font-inter text-sm text-gray-400 max-w-2xl mx-auto">
                   <strong className="text-gray-700">How to read this table:</strong> Find your vial size in the first column, then the diluent volume you plan to add. The third column is the concentration of the finished solution. These are calculated figures for the stated inputs, not recommendations.
@@ -705,9 +701,9 @@ export default function PeptideCalculatorPage() {
 
                 {/* Visual Difference Card */}
                 <div className="bg-[#FAFAFA] p-6 sm:p-8 rounded-[2rem] border border-black/5 text-center relative z-10 mb-10">
-                  <h4 className="font-inter font-bold text-gray-900 uppercase tracking-widest text-sm mb-8">
+                  <h3 className="font-inter font-bold text-gray-900 uppercase tracking-widest text-sm mb-8">
                     Visual Difference
-                  </h4>
+                  </h3>
 
                   {/* Bar 1: 5 mg + 1 mL = 5 mg/mL (100%) */}
                   <div className="font-inter text-left font-bold text-gray-400 text-xs sm:text-sm uppercase tracking-widest mb-2 pl-4">
@@ -844,7 +840,7 @@ export default function PeptideCalculatorPage() {
                         <div className={`w-4 h-4 rounded-full ${point.dot} shadow-[0_0_15px_rgba(255,255,255,0.4)]`} />
                       </div>
                       <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 sm:p-8 rounded-[2rem] text-center w-full h-full shadow-2xl hover:bg-white/10 transition-colors">
-                        <h4 className="font-michroma font-bold text-xl text-white mb-2">{point.title}</h4>
+                        <h3 className="font-michroma font-bold text-xl text-white mb-2">{point.title}</h3>
                         <div className="font-inter font-bold uppercase tracking-widest text-xs mb-3 text-white/50">
                           {point.desc}
                         </div>
@@ -914,9 +910,9 @@ export default function PeptideCalculatorPage() {
                     key={idx}
                     className="bg-white p-8 rounded-[2rem] border border-black/5 hover:-translate-y-2 hover:shadow-xl transition-all duration-500"
                   >
-                    <h4 className="font-inter font-bold text-indigo-600 uppercase tracking-widest text-sm mb-4">
+                    <h3 className="font-inter font-bold text-indigo-600 uppercase tracking-widest text-sm mb-4">
                       {item.term}
-                    </h4>
+                    </h3>
                     <p className="font-inter text-gray-600 font-medium text-xs leading-relaxed">{item.def}</p>
                   </div>
                 ))}
