@@ -1,30 +1,40 @@
 import { cache } from "react";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import ProductClient from "@/components/product/ProductClient";
-import { getMultiVariantConfig, toShopCardProduct, toShopCardProducts } from "@/lib/shopCardProduct";
+import {
+  extractDosageFromName,
+  getMultiVariantConfig,
+  toShopCardProduct,
+  toShopCardProducts,
+} from "@/lib/shopCardProduct";
 import { getProductPrimaryImageUrl, getEffectivePrice } from "@/lib/types/shop";
 import type { ShopProduct } from "@/lib/types/shop";
+import { siteUrl } from "@/lib/siteUrl";
+import {
+  CANONICAL_PRODUCT_SLUGS,
+  PRODUCT_SLUG_REDIRECTS,
+  resolveCanonicalProductSlug,
+} from "@/lib/productSlugs";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
-
-function buildProductJsonLd(product: ShopProduct, imageUrl: string) {
+function buildProductJsonLd(product: ShopProduct, imageUrl: string, canonicalSlug: string) {
+  const card = toShopCardProduct(product);
   const price = getEffectivePrice(product.price, product.salePrice);
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
+    name: card.name,
     description: product.description || product.seoDescription || undefined,
     image: imageUrl,
     sku: product.sku || undefined,
     brand: { "@type": "Brand", name: "Prime Time Bio Labs" },
     offers: {
       "@type": "Offer",
-      url: `${SITE_URL}/product/${product.slug}`,
+      url: `${siteUrl}/product/${canonicalSlug}`,
       priceCurrency: "USD",
       price: price.toFixed(2),
       availability:
@@ -52,7 +62,10 @@ function buildFaqJsonLd(product: ShopProduct) {
 
 const getProductBySlug = cache(async (slug: string) => {
   const payload = await getPayload({ config });
-  const mvConfig = getMultiVariantConfig(slug);
+  const canonicalSlug = resolveCanonicalProductSlug(slug);
+  if (!canonicalSlug) return null;
+
+  const mvConfig = getMultiVariantConfig(canonicalSlug);
 
   if (mvConfig) {
     const keywordConditions = (mvConfig.dbKeywords || [mvConfig.name, mvConfig.slug]).flatMap(
@@ -68,37 +81,45 @@ const getProductBySlug = cache(async (slug: string) => {
       collection: "products",
       where: {
         or: [
-          { slug: { equals: slug } },
+          { slug: { equals: canonicalSlug } },
           { slug: { equals: mvConfig.slug } },
           ...keywordConditions,
         ],
       } as any,
+      sort: "name", // Ascending sort guarantees 10mg precedes 20mg/30mg
       depth: 2,
-      limit: 1,
+      limit: 10,
     });
-    if (result.docs?.[0]) return result.docs[0] as unknown as ShopProduct;
+
+    if (result.docs?.length > 0) {
+      // Deterministically pick the primary (default dosage, e.g. 10mg) document
+      const primaryDoc = result.docs.find((d: any) => {
+        const parsed = extractDosageFromName(d.name || "");
+        return parsed.dosage?.toLowerCase() === mvConfig.defaultDosage.toLowerCase();
+      }) || result.docs[0];
+
+      return primaryDoc as unknown as ShopProduct;
+    }
   }
 
-  // 1. Exact match by slug
+  // 1. Exact match by canonical slug
   let result = await payload.find({
     collection: "products",
-    where: { slug: { equals: slug } },
+    where: { slug: { equals: canonicalSlug } },
     depth: 2,
     limit: 1,
   });
   if (result.docs?.[0]) return result.docs[0] as unknown as ShopProduct;
 
-  // 2. Prefix or contains match (e.g. clean slug "bpc-157" matches "bpc-157-10-mg")
-  const searchName = slug.replace(/-/g, " ");
+  // 2. Exact prefix match with dosage delimiter (e.g. "bpc-157" matches "bpc-157-10-mg")
   result = await payload.find({
     collection: "products",
     where: {
       or: [
-        { slug: { like: `${slug}%` } },
-        { slug: { contains: slug } },
-        { name: { contains: searchName } },
+        { slug: { like: `${canonicalSlug}-%` } },
       ],
     } as any,
+    sort: "name",
     depth: 2,
     limit: 1,
   });
@@ -112,17 +133,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const canonicalSlug = resolveCanonicalProductSlug(slug);
+
+  if (!canonicalSlug) {
+    return { title: "Product Not Found | PrimeTime BioLabs" };
+  }
+
+  const product = await getProductBySlug(canonicalSlug);
 
   if (!product) {
     return { title: "Product Not Found | PrimeTime BioLabs" };
   }
 
-  const title = product.seoTitle || `${product.name} | PrimeTime BioLabs`;
+  const cardProduct = toShopCardProduct(product);
+  const title = product.seoTitle || `${cardProduct.name} | PrimeTime BioLabs`;
   const description =
     product.seoDescription || product.description || "Research peptide for laboratory use.";
   const imageUrl = getProductPrimaryImageUrl(product);
-  const url = `${SITE_URL}/product/${slug}`;
+  const url = `${siteUrl}/product/${canonicalSlug}`;
 
   return {
     title,
@@ -152,8 +180,17 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
 
-  const payload = await getPayload({ config });
+  // If accessed directly via legacy long slug, redirect immediately with 301
+  if (PRODUCT_SLUG_REDIRECTS[slug]) {
+    redirect(`/product/${PRODUCT_SLUG_REDIRECTS[slug]}`);
+  }
 
+  // Non-canonical unknown slugs 404
+  if (!CANONICAL_PRODUCT_SLUGS.has(slug)) {
+    notFound();
+  }
+
+  const payload = await getPayload({ config });
   const product = await getProductBySlug(slug);
 
   if (!product) {
@@ -187,7 +224,7 @@ export default async function ProductPage({
   }
 
   const imageUrl = getProductPrimaryImageUrl(product);
-  const productJsonLd = buildProductJsonLd(product, imageUrl);
+  const productJsonLd = buildProductJsonLd(product, imageUrl, slug);
   const faqJsonLd = buildFaqJsonLd(product);
 
   return (

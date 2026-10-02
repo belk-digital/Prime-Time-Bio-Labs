@@ -3,6 +3,9 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import Fuse from "fuse.js";
 
+import { resolveCanonicalProductSlug } from "@/lib/productSlugs";
+import { toCleanSlug } from "@/lib/shopCardProduct";
+
 export const dynamic = "force-dynamic";
 
 type SearchResult = {
@@ -41,10 +44,11 @@ export async function GET(request: NextRequest) {
       // so serve the shared placeholder instead of the stored URL.
       void product.images;
       const imageUrl = "/product-card-image.png";
+      const canonicalSlug = resolveCanonicalProductSlug(product.slug ?? "") ?? toCleanSlug(product.slug, product.name);
       return {
         id: String(product.id),
         name: product.name,
-        slug: product.slug ?? "",
+        slug: canonicalSlug,
         price: product.price,
         imageUrl,
         description: product.description,

@@ -1,8 +1,28 @@
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
+import { siteUrl } from "@/lib/siteUrl";
+
+const TITLE = "Terms & Conditions | PrimeTime BioLabs";
+const DESCRIPTION =
+  "The terms and conditions governing your use of the PrimeTime BioLabs website and purchase of our research products.";
 
 export const metadata = {
-  title: "Terms & Conditions | Primetime Biolabs",
-  description: "The terms and conditions governing your use of the Primetime Biolabs website and purchase of our research products.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${siteUrl}/terms-and-conditions` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${siteUrl}/terms-and-conditions`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
+  },
 };
 
 export default function TermsAndConditionsPage() {
@@ -25,7 +45,7 @@ export default function TermsAndConditionsPage() {
         <h2>Eligibility</h2>
         <p>
           Our products are sold exclusively for laboratory research purposes to qualified adults, researchers, and institutions. By
-          placing an order, you confirm that you are at least 18 years of age and are purchasing solely for legitimate research use,
+          placing an order, you confirm that you are at least 21 years of age and are purchasing solely for legitimate research use,
           in compliance with all applicable laws in your jurisdiction. See our <a href="/medical-disclaimer">Medical Disclaimer</a>{" "}
           for further details.
         </p>

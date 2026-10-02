@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import MilitaryDiscountSection from "@/components/MilitaryDiscountSection";
 import Footer from "@/components/Footer";
+import { siteUrl } from "@/lib/siteUrl";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const TITLE = "Military & Veteran Discount | Prime Time Bio Labs";
 const DESCRIPTION =
   "Active duty, reserve, and veteran researchers get 30% off with a verified Military ID. Submit your verification to receive a one-time discount code.";
@@ -11,13 +11,20 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: `${SITE_URL}/military-discount` },
+  alternates: { canonical: `${siteUrl}/military-discount` },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
-    url: `${SITE_URL}/military-discount`,
+    url: `${siteUrl}/military-discount`,
     siteName: "Prime Time Bio Labs",
     type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
   },
 };
 

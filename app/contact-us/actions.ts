@@ -17,6 +17,7 @@ export async function submitContactMessage(
 ): Promise<ContactFormState> {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
+  const orderNumber = String(formData.get("orderNumber") ?? "").trim();
   const subject = String(formData.get("subject") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
 
@@ -27,6 +28,18 @@ export async function submitContactMessage(
     return { success: false, error: "Please enter a message." };
   }
 
+  const formattedSubject = subject
+    ? orderNumber
+      ? `${subject} (Order #${orderNumber})`
+      : subject
+    : orderNumber
+    ? `Order #${orderNumber}`
+    : undefined;
+
+  const formattedMessage = orderNumber
+    ? `Order Number: ${orderNumber}\n\n${message}`
+    : message;
+
   try {
     const payload = await getPayload({ config });
     await payload.create({
@@ -34,13 +47,19 @@ export async function submitContactMessage(
       data: {
         name: name || undefined,
         email,
-        subject: subject || undefined,
-        message,
+        subject: formattedSubject,
+        message: formattedMessage,
       },
       overrideAccess: true,
     });
 
-    const adminNotice = generateContactFormEmail({ name, email, subject, message });
+    const adminNotice = generateContactFormEmail({
+      name,
+      email,
+      subject: formattedSubject,
+      message: formattedMessage,
+    });
+
     void sendTrackedEmail({
       to: ADMIN_EMAIL,
       subject: adminNotice.subject,

@@ -8,8 +8,8 @@ import type { BlogPostCardData } from "@/components/BlogSection";
 import { toShopCardProducts, type ShopMockProduct } from "@/lib/shopCardProduct";
 import type { ShopProduct } from "@/lib/types/shop";
 import { DEFAULT_FAQS } from "@/lib/defaultFaqs";
+import { siteUrl } from "@/lib/siteUrl";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const FALLBACK_BLOG_IMAGE = "/blog-1.jpg";
 
 const TITLE = "Research Peptides | ≥99% Purity, COA Verified | PrimeTime BioLabs";
@@ -21,7 +21,7 @@ const OG_DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: SITE_URL },
+  alternates: { canonical: siteUrl },
   robots: {
     index: true,
     follow: true,
@@ -36,29 +36,29 @@ export const metadata: Metadata = {
   openGraph: {
     title: TITLE,
     description: OG_DESCRIPTION,
-    url: SITE_URL,
+    url: siteUrl,
     siteName: "PrimeTime BioLabs",
     type: "website",
-    images: [{ url: `${SITE_URL}/cta-banner.png` }],
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: OG_DESCRIPTION,
-    images: [`${SITE_URL}/cta-banner.png`],
+    images: [`${siteUrl}/cta-banner.png`],
   },
 };
 
 function buildJsonLdGraph(products: ShopMockProduct[]) {
   const organization = {
     "@type": "Organization",
-    "@id": `${SITE_URL}/#organization`,
+    "@id": `${siteUrl}/#organization`,
     name: "PrimeTime BioLabs",
     alternateName: "Primetime Biolabs",
-    url: SITE_URL,
+    url: siteUrl,
     logo: {
       "@type": "ImageObject",
-      url: `${SITE_URL}/primtime-biolabs-logo.svg`,
+      url: `${siteUrl}/primtime-biolabs-logo.svg`,
     },
     description:
       "Supplier of research-grade peptides tested by independent HPLC and mass spectrometry analysis to a minimum of 99% purity, with a Certificate of Analysis on every batch. For laboratory research use only.",
@@ -74,16 +74,16 @@ function buildJsonLdGraph(products: ShopMockProduct[]) {
 
   const website = {
     "@type": "WebSite",
-    "@id": `${SITE_URL}/#website`,
-    url: SITE_URL,
+    "@id": `${siteUrl}/#website`,
+    url: siteUrl,
     name: "PrimeTime BioLabs",
-    publisher: { "@id": `${SITE_URL}/#organization` },
+    publisher: { "@id": `${siteUrl}/#organization` },
     inLanguage: "en-US",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/shop?q={search_term_string}`,
+        urlTemplate: `${siteUrl}/shop?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -91,18 +91,18 @@ function buildJsonLdGraph(products: ShopMockProduct[]) {
 
   const webPage = {
     "@type": "WebPage",
-    "@id": `${SITE_URL}/#webpage`,
-    url: SITE_URL,
+    "@id": `${siteUrl}/#webpage`,
+    url: siteUrl,
     name: TITLE,
     description: DESCRIPTION,
-    isPartOf: { "@id": `${SITE_URL}/#website` },
-    about: { "@id": `${SITE_URL}/#organization` },
+    isPartOf: { "@id": `${siteUrl}/#website` },
+    about: { "@id": `${siteUrl}/#organization` },
     inLanguage: "en-US",
   };
 
   const itemList = {
     "@type": "ItemList",
-    "@id": `${SITE_URL}/#bestsellers`,
+    "@id": `${siteUrl}/#bestsellers`,
     name: "Best-Selling Research Peptides",
     numberOfItems: products.length,
     itemListElement: products.map((p, i) => ({
@@ -111,19 +111,19 @@ function buildJsonLdGraph(products: ShopMockProduct[]) {
       item: {
         "@type": "Product",
         name: `${p.name} Research Peptide`,
-        url: `${SITE_URL}/product/${p.slug}`,
-        image: p.image.startsWith("http") ? p.image : `${SITE_URL}${p.image}`,
+        url: `${siteUrl}/product/${p.slug}`,
+        image: p.image.startsWith("http") ? p.image : `${siteUrl}${p.image}`,
         sku: p.id,
         description: p.description,
         brand: { "@type": "Brand", name: "PrimeTime BioLabs" },
         offers: {
           "@type": "Offer",
-          url: `${SITE_URL}/product/${p.slug}`,
+          url: `${siteUrl}/product/${p.slug}`,
           price: p.price.toFixed(2),
           priceCurrency: "USD",
           availability: "https://schema.org/InStock",
           itemCondition: "https://schema.org/NewCondition",
-          seller: { "@id": `${SITE_URL}/#organization` },
+          seller: { "@id": `${siteUrl}/#organization` },
         },
       },
     })),
@@ -131,7 +131,7 @@ function buildJsonLdGraph(products: ShopMockProduct[]) {
 
   const faqPage = {
     "@type": "FAQPage",
-    "@id": `${SITE_URL}/#faq`,
+    "@id": `${siteUrl}/#faq`,
     mainEntity: DEFAULT_FAQS.map((faq) => ({
       "@type": "Question",
       name: faq.question,

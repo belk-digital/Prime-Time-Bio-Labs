@@ -58,17 +58,31 @@ export default function ContactForm() {
         </div>
       </div>
 
-      <div>
-        <label htmlFor="subject" className="font-inter block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-          Subject
-        </label>
-        <input
-          id="subject"
-          name="subject"
-          type="text"
-          className="font-inter w-full px-4 py-3 bg-gray-50 border border-black rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors"
-          placeholder="How can we help?"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <label htmlFor="orderNumber" className="font-inter block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+            Order Number <span className="font-normal text-gray-400 lowercase">(optional)</span>
+          </label>
+          <input
+            id="orderNumber"
+            name="orderNumber"
+            type="text"
+            className="font-inter w-full px-4 py-3 bg-gray-50 border border-black rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors"
+            placeholder="e.g. PTB-10482"
+          />
+        </div>
+        <div>
+          <label htmlFor="subject" className="font-inter block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+            Subject
+          </label>
+          <input
+            id="subject"
+            name="subject"
+            type="text"
+            className="font-inter w-full px-4 py-3 bg-gray-50 border border-black rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors"
+            placeholder="How can we help?"
+          />
+        </div>
       </div>
 
       <div>

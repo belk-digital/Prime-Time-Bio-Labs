@@ -5,6 +5,7 @@ import { ArrowRight, FlaskConical } from "lucide-react";
 import type { BlogPost } from "@/lib/types/blog";
 import { formatBlogDate, resolveBlogMediaUrl } from "@/lib/types/blog";
 import Footer from "@/components/Footer";
+import { siteUrl } from "@/lib/siteUrl";
 
 const PLACEHOLDER_IMAGES = ["/blog-1.jpg", "/blog-2.jpg", "/blog-3.jpg"];
 
@@ -12,10 +13,28 @@ function placeholderFor(index: number) {
   return PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
 }
 
+const TITLE = "Research Blog | PrimeTime BioLabs";
+const DESCRIPTION =
+  "In-depth articles on peptide synthesis, stability, and research protocols from the PrimeTime BioLabs research team.";
+
 export const metadata = {
-  title: "Research Blog | Primetime Biolabs",
-  description:
-    "In-depth articles on peptide synthesis, stability, and research protocols from the Primetime Biolabs research team.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${siteUrl}/blog` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${siteUrl}/blog`,
+    siteName: "PrimeTime BioLabs",
+    type: "website",
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [`${siteUrl}/cta-banner.png`],
+  },
 };
 
 export const dynamic = "force-dynamic";

@@ -9,6 +9,7 @@ import HeaderVisibility from "@/components/nav/HeaderVisibility";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import Analytics from "@/components/Analytics";
 import AdminOverflowFix from "@/components/admin/AdminOverflowFix";
+import { siteUrl } from "@/lib/siteUrl";
 
 const futuristicFont = Syncopate({
   subsets: ["latin"],
@@ -27,7 +28,9 @@ const interFont = Inter({
   variable: "--font-inter",
 });
 
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "PrimeTime BioLabs",
   description: "Peptide solutions for clarity, precision, and efficiency.",
 };
@@ -38,8 +41,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className={`${futuristicFont.variable} ${michromaFont.variable} ${interFont.variable} font-futuristic antialiased bg-black text-white`}
+      >
         <Analytics />
         <AdminOverflowFix />
         <SmoothScrollProvider>

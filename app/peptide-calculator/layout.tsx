@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { siteUrl } from "@/lib/siteUrl";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const TITLE = "Peptide Reconstitution Calculator | PrimeTime BioLabs";
 const DESCRIPTION =
-  "Free peptide reconstitution calculator. Enter vial size, diluent volume and target quantity to get exact concentration and syringe units. Laboratory use only.";
-const PAGE_URL = `${SITE_URL}/peptide-calculator`;
+  "Calculate concentration in mg/mL and mcg/mL from vial mass and diluent volume. Includes the reconstitution formula and a vial size chart. Research use only.";
+const PAGE_URL = `${siteUrl}/peptide-calculator`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -12,68 +12,83 @@ export const metadata: Metadata = {
   alternates: { canonical: PAGE_URL },
   openGraph: {
     title: "Peptide Reconstitution Calculator",
-    description:
-      "Enter vial size, diluent volume and target quantity to get exact working concentration and syringe graduations, with the full reconstitution method explained. For laboratory research use only.",
+    description: DESCRIPTION,
     url: PAGE_URL,
     siteName: "PrimeTime BioLabs",
     type: "website",
-    images: [{ url: `${SITE_URL}/cta-banner.png` }],
+    images: [{ url: `${siteUrl}/cta-banner.png` }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: [`${SITE_URL}/cta-banner.png`],
+    images: [`${siteUrl}/cta-banner.png`],
   },
 };
 
 const RECONSTITUTION_STEPS = [
   {
-    name: "Prepare both vials",
-    text: "Wipe the rubber stopper on the peptide vial and on the bacteriostatic water with an alcohol swab, then wait thirty seconds for the surface to dry. Alcohol needs contact time to work, and piercing a wet stopper carries residue into the vial.",
+    name: "Prep",
+    text: "Let both the vial and the diluent sit until they reach room temperature. Wipe both stoppers with an alcohol swab and let them dry. Work on a clean, uncluttered surface with the calculation already done and written down. Knowing your target concentration before you open anything removes the guesswork later.",
   },
   {
-    name: "Transfer the diluent",
-    text: "Draw the exact volume of bacteriostatic water the calculator returned and inject it into the peptide vial slowly, aiming the stream at the glass wall rather than directly onto the powder. Directing the stream at the lyophilised cake drives mechanical stress through the peptide chain.",
+    name: "Transfer",
+    text: "Measure your chosen diluent volume accurately, then angle the vial and run the liquid slowly down the inside glass wall. A slow transfer matters, since a fast stream aimed straight at the powder drives shear and starts foaming, and both damage peptide structure. Keep the vial upright once the transfer is complete.",
   },
   {
-    name: "Dissolve without agitation",
-    text: "Do not shake. Swirl the vial gently in a circular motion until the powder dissolves completely and the solution runs clear. Shaking introduces shear force and foaming, and both degrade peptide structure. Full dissolution can take several minutes with a larger vial.",
+    name: "Dissolve",
+    text: "Swirl the vial gently, or roll it between your palms. Then wait for the powder to dissolve on its own. Most lyophilized peptides need only a few minutes, and some need longer. Shaking is the one thing to avoid completely. If the solution stays cloudy or leaves visible particles after it has had time to settle, treat the vial as compromised.",
   },
 ];
 
 const FAQ_ITEMS = [
   {
-    q: "How much bacteriostatic water should I use to reconstitute a peptide?",
-    a: "Two to three millilitres suits most vials. More diluent lowers the concentration and raises the volume you draw, which improves measurement precision. Less diluent concentrates the solution and makes small measurement errors proportionally larger.",
+    q: "What is peptide reconstitution?",
+    a: "Peptide reconstitution is dissolving a lyophilized peptide powder in a measured volume of diluent to make a solution of known concentration. The vial's peptide mass is fixed by the manufacturer. You choose the volume of liquid you add, and those two numbers together determine the strength of the finished solution in mg/mL.",
   },
   {
-    q: "What is the peptide reconstitution formula?",
-    a: "Divide the target quantity in micrograms by the total peptide in the vial in micrograms, then multiply by the diluent volume in millilitres. The result is the volume to draw. For a 5 mg vial in 2 mL, drawing 250 mcg: (250 divided by 5,000) multiplied by 2 equals 0.1 mL.",
+    q: "How do you calculate peptide concentration?",
+    a: "Divide the peptide mass printed on the vial by the diluent volume you added. A 10 mg vial in 2 mL of bacteriostatic water gives 10 ÷ 2, which is 5 mg/mL. To express the same result in micrograms, multiply by 1,000, giving 5,000 mcg/mL. The calculator on this page runs both steps.",
   },
   {
-    q: "What is the difference between bacteriostatic and sterile water?",
-    a: "Bacteriostatic water contains 0.9% benzyl alcohol, which suppresses bacterial growth and allows a vial to be drawn from repeatedly. Sterile water contains no preservative, so it suits single-use preparation only. Using sterile water in a multi-use vial lets contamination grow.",
+    q: "How much bacteriostatic water do I add to a 5 mg vial?",
+    a: "There is no single correct volume, because the volume you choose is what sets the concentration. Adding 1 mL to a 5 mg vial gives 5 mg/mL. Adding 2 mL gives 2.5 mg/mL. Adding 3 mL gives roughly 1.67 mg/mL. Larger volumes produce lower concentrations and physically larger sample volumes to measure.",
   },
   {
-    q: "Why should you never shake a reconstituted peptide vial?",
-    a: "Shaking applies shear force and introduces foaming, and both damage peptide structure. The resulting degradation shows up as reduced purity in any subsequent analysis. Swirl the vial gently instead, and allow several minutes for a larger vial to dissolve fully.",
+    q: "How much bacteriostatic water do I add to a 10 mg vial?",
+    a: "Again, the volume is your decision and it determines the result. One milliliter gives 10 mg/mL, two milliliters give 5 mg/mL, and three milliliters give 3.33 mg/mL. Choose based on the measuring equipment you have. Lower concentrations mean bigger volumes, which most pipettes and graduated devices read more reliably.",
+  },
+  {
+    q: "Does adding more water change the concentration?",
+    a: "Yes, and this catches people out. The peptide mass in the vial never changes, so adding diluent spreads that same mass across more liquid and lowers the concentration. A 5 mg vial at 2 mL sits at 2.5 mg/mL. Add another milliliter and it drops to roughly 1.67 mg/mL, so any earlier calculation is void.",
   },
   {
     q: "How long does a reconstituted peptide last?",
-    a: "Refrigerated at 4 degrees Celsius and kept away from light, reconstituted research peptides typically hold for 20 to 30 days. That range is indicative rather than universal, because stability depends heavily on the sequence, the solvent and how often the vial has been handled.",
+    a: "Around 28 days at 2 °C to 8 °C is the working reference for a peptide reconstituted in bacteriostatic water. Sterile water gives a shorter window, since it has no preservative. Actual stability depends on the peptide sequence, how often the vial is opened, and how consistently it stays cold between uses.",
   },
   {
-    q: "Can you freeze a reconstituted peptide?",
-    a: "No. Freezing forms ice crystals that disrupt peptide structure, and thawing does not reverse the damage. Refrigerate reconstituted solution at 4 degrees Celsius instead. Lyophilised powder, by contrast, freezes at minus 20 degrees Celsius without issue and stores that way for years.",
+    q: "Can you freeze reconstituted peptides?",
+    a: "Generally avoid it for solutions made with bacteriostatic water. Freezing and thawing forms ice crystals that unfold and aggregate peptide, and repeated cycles compound the damage. If a solution must be held beyond its refrigerated window, split it into single-use aliquots first and thaw each one only once.",
   },
   {
-    q: "How many units is 0.1 mL on a U-100 syringe?",
-    a: "Ten. A U-100 scale divides one millilitre into 100 graduations, so 0.1 mL reads as 10, 0.25 mL as 25 and 0.5 mL as 50. A U-40 scale divides the same millilitre into 40 graduations, so the same numbered mark holds 2.5 times as much. Check the scale printed on the barrel.",
+    q: "Bacteriostatic water or sterile water, which should I use?",
+    a: "Bacteriostatic water suits any vial that will be entered more than once. Its 0.9 percent benzyl alcohol suppresses bacterial growth between uses. Sterile water contains no preservative, so it fits single-use preparations and peptides known to react badly with benzyl alcohol. For most multi-day laboratory work, bacteriostatic water is the standard choice.",
   },
   {
-    q: "Are these products intended for human consumption?",
-    a: "No. PrimeTime BioLabs supplies every product strictly for laboratory and in-vitro research by qualified professionals. These compounds are not drugs, dietary supplements or cosmetics. They are not intended for human or animal consumption, and they are not for diagnostic or therapeutic use of any kind. This calculator performs dilution arithmetic for laboratory preparation only.",
+    q: "Why should you not shake peptides?",
+    a: "Shaking forces the solution against the air-water interface and creates foam. Peptides unfold at that interface, then clump together, and aggregated peptide does not return to its original state. Swirl the vial gently or roll it between your palms and leave it to dissolve on its own; patience costs nothing here.",
+  },
+  {
+    q: "What does mg/mL mean?",
+    a: "Milligrams per milliliter states how much peptide mass sits in each milliliter of solution. A vial at 2.5 mg/mL contains 2.5 milligrams of peptide in every milliliter of liquid present. Because it is a ratio describing the whole solution, the figure holds for any portion you measure out of the vial.",
+  },
+  {
+    q: "How do I convert 200 mcg to mg?",
+    a: "Divide by 1,000, so 200 mcg equals 0.2 mg. Going the other direction, multiply milligrams by 1,000 to get micrograms, which makes 0.2 mg equal to 200 mcg. Mixing these two units is a thousand-fold error, so write the unit alongside every number you record.",
+  },
+  {
+    q: "Does this calculator tell me how much to use?",
+    a: "No, and that is intentional: this tool performs concentration math only, converting a vial mass and a diluent volume into mg/mL and mcg/mL. It produces no dose figures, volumes to measure out for any purpose, or usage guidance. All products and calculations here are for laboratory research use only.",
   },
 ];
 
@@ -89,14 +104,13 @@ const jsonLd = {
       operatingSystem: "Any modern web browser",
       browserRequirements: "Requires JavaScript",
       description:
-        "Free calculator that converts a lyophilised peptide vial into a working solution of known concentration. Enter vial quantity, diluent volume and target quantity per aliquot to obtain the resulting concentration and the volume to draw. For laboratory research use only.",
+        "Calculate concentration in mg/mL and mcg/mL from vial mass and diluent volume. Includes the reconstitution formula and a vial size chart. Research use only.",
       isAccessibleForFree: true,
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      publisher: { "@id": `${SITE_URL}/#organization` },
+      publisher: { "@id": `${siteUrl}/#organization` },
       featureList: [
         "Working concentration in mg/mL and mcg/mL",
-        "Volume to draw in millilitres",
-        "Syringe graduation equivalent on a U-100 scale",
+        "Dilution arithmetic breakdown",
         "Supports any vial size and diluent volume",
       ],
     },
@@ -106,7 +120,13 @@ const jsonLd = {
       url: PAGE_URL,
       name: TITLE,
       description: DESCRIPTION,
-      isPartOf: { "@id": `${SITE_URL}/#website` },
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      author: {
+        "@type": "Organization",
+        name: "PrimeTime BioLabs",
+        url: `${siteUrl}/about-us`,
+      },
+      dateModified: "2026-09-29",
       mainEntity: { "@id": `${PAGE_URL}#app` },
       inLanguage: "en-US",
       breadcrumb: { "@id": `${PAGE_URL}#breadcrumb` },
@@ -115,23 +135,22 @@ const jsonLd = {
       "@type": "BreadcrumbList",
       "@id": `${PAGE_URL}#breadcrumb`,
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
         { "@type": "ListItem", position: 2, name: "Peptide Calculator", item: PAGE_URL },
       ],
     },
     {
       "@type": "HowTo",
       "@id": `${PAGE_URL}#howto`,
-      name: "How to reconstitute a research peptide",
+      name: "How to reconstitute peptides in three steps",
       description:
-        "The three-step laboratory method for returning a lyophilised research peptide to solution without contamination or mechanical damage to the peptide chain.",
-      totalTime: "PT5M",
+        "The three-step laboratory method for returning a lyophilized research peptide to solution without contamination or mechanical damage to the peptide structure.",
       supply: [
-        { "@type": "HowToSupply", name: "Lyophilised research peptide vial" },
+        { "@type": "HowToSupply", name: "Lyophilized research peptide vial" },
         { "@type": "HowToSupply", name: "Bacteriostatic water" },
         { "@type": "HowToSupply", name: "Alcohol swabs" },
       ],
-      tool: [{ "@type": "HowToTool", name: "Graduated syringe" }],
+      tool: [{ "@type": "HowToTool", name: "Graduated transfer tool" }],
       step: RECONSTITUTION_STEPS.map((step, i) => ({
         "@type": "HowToStep",
         position: i + 1,

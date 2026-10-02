@@ -4,10 +4,10 @@ import config from "@payload-config";
 import ShopClient from "@/components/shop/ShopClient";
 import { toShopCardProducts } from "@/lib/shopCardProduct";
 import type { ShopProduct } from "@/lib/types/shop";
+import { siteUrl } from "@/lib/siteUrl";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://primetimebiolabs.com";
 const TITLE = "Shop Research Peptides | Prime Time Bio Labs";
 const DESCRIPTION =
   "Browse our full catalog of research-grade peptides — GLP-1, healing, longevity, cosmetic, and more. Every batch is third-party tested with a Certificate of Analysis.";
@@ -15,14 +15,14 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: `${SITE_URL}/shop` },
+  alternates: { canonical: `${siteUrl}/shop` },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
-    url: `${SITE_URL}/shop`,
+    url: `${siteUrl}/shop`,
     siteName: "Prime Time Bio Labs",
     type: "website",
-    images: [{ url: `${SITE_URL}/shop-banner-image.png` }],
+    images: [{ url: `${siteUrl}/shop-banner-image.png` }],
   },
   twitter: {
     card: "summary_large_image",

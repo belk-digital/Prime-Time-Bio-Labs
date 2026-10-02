@@ -210,7 +210,11 @@ export default function ProductClient({
                       isSelectedImg ? "border-indigo-500 ring-2 ring-indigo-500/20" : "border-black/5 hover:border-black/20"
                     }`}
                   >
-                    <img src={imgSrc} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <img
+                      src={imgSrc}
+                      alt={`${cardProduct.name} — image ${idx + 1}`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
                   </button>
                 );
               })}
