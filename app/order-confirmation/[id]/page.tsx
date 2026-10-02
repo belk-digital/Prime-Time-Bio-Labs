@@ -5,6 +5,7 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { CheckCircle2, Clock, Package } from "lucide-react";
 import Footer from "@/components/Footer";
+import { getManualPaymentInfo } from "@/lib/payments/manualPayments";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,8 @@ export default async function OrderConfirmationPage({
   const shippingAddress = order.shippingAddress;
   const isPendingManualPayment =
     MANUAL_PAYMENT_METHODS.has(order.paymentMethod) && order.paymentStatus === "unpaid";
+
+  const paymentInfo = isPendingManualPayment ? getManualPaymentInfo(order.paymentMethod) : null;
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-gray-900">
@@ -78,6 +81,26 @@ export default async function OrderConfirmationPage({
                 {order.paymentMethod === "stripe_link" &&
                   "A secure payment link has been generated for this order. Please check your email to complete payment."}
               </p>
+              {paymentInfo && (
+                <div className="mt-4 flex flex-col items-start gap-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={paymentInfo.qrPath}
+                    alt={`${paymentInfo.label} QR code`}
+                    width={200}
+                    className="rounded-xl border border-amber-200 bg-white p-2"
+                  />
+                  {paymentInfo.recipient && (
+                    <p className="text-xs text-amber-800">
+                      Send to: <strong>{paymentInfo.recipient}</strong>
+                    </p>
+                  )}
+                  <p className="text-xs text-amber-700">
+                    Send <strong>${Number(order.total || 0).toFixed(2)}</strong> and include order{" "}
+                    <strong>#{order.orderNumber || order.id}</strong> in the payment note.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

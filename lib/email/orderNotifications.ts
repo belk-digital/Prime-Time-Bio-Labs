@@ -44,7 +44,7 @@ export async function handleOrderChangeEmails(args: {
   if (operation !== "update" || !previousDoc) return;
 
   // Stripe payment just captured (via client-side confirm or the webhook, whichever lands first).
-  if (previousDoc.paymentStatus !== "captured" && doc.paymentStatus === "captured" && doc.status === "paid") {
+  if (previousDoc.paymentStatus !== "captured" && doc.paymentStatus === "captured") {
     await sendOrderNotice(doc, payload, { kind: "confirmation" }, true);
   }
 

@@ -20,8 +20,9 @@ export const Orders: CollectionConfig = {
   },
   hooks: {
     afterChange: [
-      ({ doc, previousDoc, operation, req }) => {
-        void handleOrderChangeEmails({ doc, previousDoc, operation, payload: req.payload }).catch((err) =>
+      async ({ doc, previousDoc, operation, req }) => {
+        // Awaited so the serverless function isn't frozen before the email is sent.
+        await handleOrderChangeEmails({ doc, previousDoc, operation, payload: req.payload }).catch((err) =>
           console.error('Order email hook failed:', err)
         )
         return doc
