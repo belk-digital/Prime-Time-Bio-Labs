@@ -145,7 +145,7 @@ export function getMultiVariantConfig(nameOrSlug?: string | null): MultiVariantP
 }
 
 export function getProductDisplayDetails(
-  product: { name: string; slug?: string; price: number; image: string },
+  product: { id?: string; name: string; slug?: string; price: number; image: string },
   selectedDosage: string
 ) {
   const cfg = getMultiVariantConfig(product.slug || product.name);
@@ -153,7 +153,7 @@ export function getProductDisplayDetails(
     return {
       price: product.price,
       image: product.image,
-      sku: product.slug || "standard",
+      sku: product.id || product.slug || "standard",
       galleryImages: [product.image],
     };
   }

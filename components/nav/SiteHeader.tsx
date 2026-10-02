@@ -1,14 +1,13 @@
+import { unstable_cache } from "next/cache";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { getPayloadUser } from "@/lib/auth/getPayloadUser";
 import SiteNav, { type NavCategory } from "@/components/nav/SiteNav";
 
-export default async function SiteHeader() {
-  let categories: NavCategory[] = [];
-  let wishlistCount = 0;
-  let wishlistProductIds: string[] = [];
-
-  try {
+// Category/product nav data is identical for every visitor and rarely changes, but it was being
+// re-queried (one query per category) on every page render, adding ~1s+ to routes like /checkout.
+const getNavCategories = unstable_cache(
+  async (): Promise<NavCategory[]> => {
     const payload = await getPayload({ config });
 
     const categoriesResult = await payload.find({
@@ -19,7 +18,7 @@ export default async function SiteHeader() {
       depth: 0,
     });
 
-    categories = await Promise.all(
+    return Promise.all(
       (categoriesResult.docs ?? []).map(async (category) => {
         const productsResult = await payload.find({
           collection: "products",
@@ -53,6 +52,20 @@ export default async function SiteHeader() {
         };
       })
     );
+  },
+  ["site-nav-categories"],
+  { revalidate: 300, tags: ["site-nav"] }
+);
+
+export default async function SiteHeader() {
+  let categories: NavCategory[] = [];
+  let wishlistCount = 0;
+  let wishlistProductIds: string[] = [];
+
+  try {
+    const payload = await getPayload({ config });
+
+    categories = await getNavCategories();
 
     const user = await getPayloadUser();
     if (user) {

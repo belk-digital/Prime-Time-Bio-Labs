@@ -284,7 +284,51 @@ async function getNextOrderNumber(payload: Awaited<ReturnType<typeof getPayload>
   }
 }
 
+// Cart lines carry whatever id the storefront card had: a database id for plain products, but a
+// SKU (e.g. "RETA-10MG") for the multi-dosage cards, whose ids are not database ids. Resolve both.
+async function findProductForCartLine(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  rawId: string | number
+) {
+  const key = String(rawId);
+  if (/^\d+$/.test(key)) {
+    const byId = await payload
+      .findByID({ collection: "products", id: Number(key), overrideAccess: true })
+      .catch(() => null);
+    if (byId) return byId;
+  }
+  for (const field of ["sku", "slug"] as const) {
+    const { docs } = await payload.find({
+      collection: "products",
+      where: { [field]: { equals: key } },
+      limit: 1,
+      overrideAccess: true,
+    });
+    if (docs[0]) return docs[0];
+  }
+  return null;
+}
+
 export async function createPayloadOrder(
+  input: CreateOrderInput
+): Promise<{ orderId: string; orderNumber: string; total: number }> {
+  try {
+    return await createPayloadOrderImpl(input);
+  } catch (err) {
+    // Next masks server-action errors in production; log the real cause so it shows in Vercel logs.
+    console.error("createPayloadOrder failed:", {
+      paymentMethod: input.paymentMethod,
+      itemCount: input.items?.length,
+      productIds: input.items?.map((i) => i.productId),
+      message: err instanceof Error ? err.message : String(err),
+      data: (err as any)?.data,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+    throw err;
+  }
+}
+
+async function createPayloadOrderImpl(
   input: CreateOrderInput
 ): Promise<{ orderId: string; orderNumber: string; total: number }> {
   const payload = await getPayload({ config });
@@ -294,8 +338,7 @@ export async function createPayloadOrder(
   // database and price every line item from that, ignoring `item.priceSnapshot` entirely.
   const verifiedItems = await Promise.all(
     input.items.map(async (item) => {
-      const numericId = /^\d+$/.test(String(item.productId)) ? Number(item.productId) : item.productId;
-      const product = await payload.findByID({ collection: "products", id: numericId, overrideAccess: true }).catch(() => null);
+      const product = await findProductForCartLine(payload, item.productId);
       if (!product) {
         throw new Error(`Product ${item.productId} no longer exists.`);
       }
@@ -309,7 +352,7 @@ export async function createPayloadOrder(
         unitPrice = getEffectivePrice(variant.price, variant.salePrice);
       }
 
-      return { ...item, priceSnapshot: unitPrice, productId: numericId };
+      return { ...item, priceSnapshot: unitPrice, productId: product.id };
     })
   );
 
