@@ -1,4 +1,14 @@
-import { emailLayout, SITE_URL } from "../layout";
+import {
+  emailLayout,
+  emailHeading,
+  emailParagraph,
+  emailCard,
+  emailCallout,
+  emailCodeBox,
+  emailRows,
+  emailButton,
+  SITE_URL,
+} from "../layout";
 import { escapeHtml } from "../escapeHtml";
 
 export function generateMilitaryAdminEmail(args: {
@@ -12,25 +22,17 @@ export function generateMilitaryAdminEmail(args: {
   const html = emailLayout({
     title: subject,
     bodyHtml: `
-      <p style="margin:0 0 12px 0;">
-        <strong>${escapeHtml(args.fullName)}</strong> (${escapeHtml(args.email)}) has requested a military
-        discount as a member of the <strong>${escapeHtml(args.branch)}</strong>.
-      </p>
-      <p style="margin:0 0 20px 0;">
-        Their ID photo is attached for manual verification — it is not stored anywhere else.
-        Click one of the links below to approve or reject this request (valid for 7 days).
-      </p>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 4px 0;">
-        <tr>
-          <td style="border-radius:999px;background-color:#16a34a;padding:0;">
-            <a href="${escapeHtml(args.approveUrl)}" style="display:inline-block;padding:14px 24px;color:#ffffff;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;">Approve</a>
-          </td>
-          <td style="width:12px;"></td>
-          <td style="border-radius:999px;background-color:#dc2626;padding:0;">
-            <a href="${escapeHtml(args.rejectUrl)}" style="display:inline-block;padding:14px 24px;color:#ffffff;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;">Reject</a>
-          </td>
-        </tr>
-      </table>
+      ${emailHeading("Applicant Details")}
+      ${emailParagraph("A new military/first-responder discount verification request has been received. Please review the attached ID photo — it is not stored anywhere else. The links below are valid for 7 days.", { mb: 24 })}
+      ${emailCard(
+        emailRows([
+          ["Name", escapeHtml(args.fullName)],
+          ["Email", escapeHtml(args.email)],
+          ["Service Branch", `<span style="text-transform:capitalize;">${escapeHtml(args.branch)}</span>`],
+        ])
+      )}
+      ${emailButton({ label: "Approve Request", href: args.approveUrl }, { color: "#10b981" })}
+      ${emailButton({ label: "Deny Request", href: args.rejectUrl }, { variant: "outline", color: "#ef4444" })}
     `,
   });
   return { subject, html };
@@ -40,17 +42,15 @@ export function generateMilitaryApprovedEmail(couponCode: string): { subject: st
   const subject = "Military Discount Verified - Here is your code!";
   const html = emailLayout({
     title: subject,
+    heroImage: `${SITE_URL}/email/military-hero.jpg`,
     bodyHtml: `
-      <p style="margin:0 0 16px 0;font-size:20px;font-weight:bold;color:#0a0a0a;">You're verified. Thank you for your service.</p>
-      <p style="margin:0 0 20px 0;">
-        Your military discount request has been approved. Use the code below at checkout for
-        30% off your order.
-      </p>
-      <p style="margin:0;text-align:center;padding:16px;background-color:#f5f5f5;border-radius:8px;font-size:22px;font-weight:bold;letter-spacing:2px;color:#0a0a0a;">
-        ${escapeHtml(couponCode)}
-      </p>
+      ${emailHeading("Thank you for your service!")}
+      ${emailParagraph("Your military ID has been successfully verified by our team. We deeply appreciate your service.")}
+      ${emailParagraph("As a token of our gratitude, here is your unique 30% off discount code:", { mb: 24 })}
+      ${emailCodeBox(escapeHtml(couponCode), true)}
+      <p style="margin:16px 0 32px 0;font-size:13px;color:#8A8A8A;font-style:italic;text-align:center;">Note: This coupon is locked to your email address and cannot be shared.</p>
+      ${emailButton({ label: "Shop Now", href: `${SITE_URL}/shop` })}
     `,
-    button: { label: "Shop Now", href: `${SITE_URL}/shop` },
   });
   return { subject, html };
 }
@@ -60,12 +60,11 @@ export function generateMilitaryRejectedEmail(): { subject: string; html: string
   const html = emailLayout({
     title: subject,
     bodyHtml: `
-      <p style="margin:0 0 16px 0;font-size:18px;font-weight:bold;color:#0a0a0a;">We couldn't verify your request</p>
-      <p style="margin:0;">
-        We weren't able to verify your military discount request with the information provided.
-        If you believe this is an error, please reply to this email or contact us at
-        support@primetimebiolabs.com and we'll take another look.
-      </p>
+      ${emailHeading("Verification Update")}
+      ${emailParagraph("We recently received your request for our military discount program.")}
+      ${emailParagraph("Unfortunately, we were unable to clearly verify the ID document you provided, and your request could not be approved at this time.", { mb: 24 })}
+      ${emailCallout(`<p style="margin:0;font-size:15px;color:#2A2A2A;line-height:1.6;">If you believe this was an error, please try submitting a clearer photo of your ID on our website, or reply directly to this email to speak with our support team.</p>`)}
+      <p style="margin:0;font-size:16px;color:#4A4A4A;line-height:1.6;font-weight:600;">Best regards,<br />The Prime Time Bio Labs Team</p>
     `,
   });
   return { subject, html };

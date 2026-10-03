@@ -1,4 +1,13 @@
-import { emailLayout, SITE_URL } from "../layout";
+import {
+  emailLayout,
+  emailHeading,
+  emailParagraph,
+  emailCard,
+  emailCodeBox,
+  emailRows,
+  SITE_URL,
+  ACCENT,
+} from "../layout";
 import { escapeHtml } from "../escapeHtml";
 
 export function generateAffiliateWelcomeEmail(args: {
@@ -10,20 +19,20 @@ export function generateAffiliateWelcomeEmail(args: {
   const referralLink = `${SITE_URL}/?ref=${encodeURIComponent(args.referralSlug)}`;
   const html = emailLayout({
     title: subject,
+    heroImage: `${SITE_URL}/email/welcome-hero.jpg`,
     bodyHtml: `
-      <p style="margin:0 0 16px 0;font-size:20px;font-weight:bold;color:#0a0a0a;">Welcome aboard, ${escapeHtml(args.displayName)}!</p>
-      <p style="margin:0 0 16px 0;">
-        Your affiliate application has been approved. You now have a personal referral link
-        and coupon code your audience can use for a discount, while you earn commission on
-        every sale.
-      </p>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin-bottom:12px;">
-        <tr><td style="padding:6px 0;color:#8a8a8a;width:130px;">Referral Link</td><td style="padding:6px 0;word-break:break-all;">${escapeHtml(referralLink)}</td></tr>
-        <tr><td style="padding:6px 0;color:#8a8a8a;">Coupon Code</td><td style="padding:6px 0;font-weight:bold;">${escapeHtml(args.couponCode)}</td></tr>
-      </table>
-      <p style="margin:0;">Track clicks, conversions, and payouts anytime from your affiliate dashboard.</p>
+      ${emailHeading(`Hi ${escapeHtml(args.displayName)},`)}
+      ${emailParagraph("Your application has been approved! We're thrilled to have you join Prime Time Bio Labs as an official partner. You now have a personal referral link and coupon code your audience can use for a discount, while you earn commission on every sale.", { mb: 24 })}
+      ${emailCard(`
+        <h3 style="margin:0 0 20px 0;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;color:${ACCENT};font-weight:700;">Your Partner Toolkit</h3>
+        <p style="margin:0 0 8px 0;font-size:14px;font-weight:bold;color:#0A0A0A;">Your Unique Referral Link</p>
+        <div style="margin-bottom:24px;">${emailCodeBox(escapeHtml(referralLink))}</div>
+        <p style="margin:0 0 8px 0;font-size:14px;font-weight:bold;color:#0A0A0A;">Your Custom Discount Code</p>
+        ${emailCodeBox(escapeHtml(args.couponCode))}
+      `)}
+      ${emailParagraph("Share your link or your code with your audience. Track clicks, conversions, and payouts anytime from your affiliate dashboard.")}
     `,
-    button: { label: "Go to Affiliate Dashboard", href: `${SITE_URL}/affiliates/dashboard` },
+    button: { label: "View Your Dashboard", href: `${SITE_URL}/affiliates/dashboard` },
   });
   return { subject, html };
 }
@@ -32,7 +41,10 @@ export function generateAdminAffiliateApplicationEmail(displayName: string): { s
   const subject = `New Affiliate Registered: ${displayName}`;
   const html = emailLayout({
     title: subject,
-    bodyHtml: `<p style="margin:0;"><strong>${escapeHtml(displayName)}</strong>'s affiliate application was just approved and their profile/coupon were auto-created.</p>`,
+    bodyHtml: `
+      ${emailHeading("New Affiliate Registered")}
+      ${emailParagraph(`<strong>${escapeHtml(displayName)}</strong>'s affiliate application was just approved and their profile and coupon were auto-created.`, { mb: 0 })}
+    `,
   });
   return { subject, html };
 }
@@ -47,13 +59,16 @@ export function generateAdminAffiliateConversionEmail(args: {
   const html = emailLayout({
     title: subject,
     bodyHtml: `
-      <p style="margin:0 0 12px 0;">
-        <strong>${escapeHtml(args.affiliateName)}</strong> just referred order
-        <strong>#${escapeHtml(args.orderNumber)}</strong>.
-      </p>
-      <p style="margin:0;">
-        Commission: <strong>${args.voided ? "$0.00 (voided — self-referral)" : `$${args.commissionAmount.toFixed(2)}`}</strong>
-      </p>
+      ${emailHeading("New Affiliate Sale")}
+      ${emailParagraph(`<strong>${escapeHtml(args.affiliateName)}</strong> just referred order <strong>#${escapeHtml(args.orderNumber)}</strong>.`, { mb: 24 })}
+      ${emailCard(
+        emailRows([
+          [
+            "Commission",
+            args.voided ? "$0.00 (voided — self-referral)" : `$${args.commissionAmount.toFixed(2)}`,
+          ],
+        ]).replace(/margin:0 0 16px 0/, "margin:0")
+      , 0)}
     `,
   });
   return { subject, html };
@@ -69,12 +84,15 @@ export function generateAdminPayoutRequestEmail(args: {
   const html = emailLayout({
     title: subject,
     bodyHtml: `
-      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;">
-        <tr><td style="padding:4px 0;color:#8a8a8a;width:130px;">Affiliate</td><td style="padding:4px 0;">${escapeHtml(args.affiliateName)}</td></tr>
-        <tr><td style="padding:4px 0;color:#8a8a8a;">Amount</td><td style="padding:4px 0;font-weight:bold;">$${args.amount.toFixed(2)}</td></tr>
-        <tr><td style="padding:4px 0;color:#8a8a8a;">Method</td><td style="padding:4px 0;">${escapeHtml(args.payoutMethod)}</td></tr>
-        <tr><td style="padding:4px 0;color:#8a8a8a;">Details</td><td style="padding:4px 0;">${escapeHtml(args.payoutDetails)}</td></tr>
-      </table>
+      ${emailHeading("Payout Request")}
+      ${emailCard(
+        emailRows([
+          ["Affiliate", escapeHtml(args.affiliateName)],
+          ["Amount", `$${args.amount.toFixed(2)}`],
+          ["Method", escapeHtml(args.payoutMethod)],
+          ["Details", escapeHtml(args.payoutDetails)],
+        ])
+      , 0)}
     `,
   });
   return { subject, html };

@@ -16,7 +16,7 @@ async function resolveRecipientEmail(doc: any, payload: Payload): Promise<string
 async function sendOrderNotice(doc: any, payload: Payload, notice: OrderEmailNotice, bccAdmin = false) {
   const to = await resolveRecipientEmail(doc, payload);
   if (!to) return;
-  const { subject, html } = generateOrderEmail(doc, notice);
+  const { subject, html } = generateOrderEmail(doc, notice, to);
   await sendTrackedEmail({ to, subject, html, bcc: bccAdmin ? ADMIN_EMAIL : undefined });
 }
 

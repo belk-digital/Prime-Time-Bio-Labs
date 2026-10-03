@@ -1,4 +1,4 @@
-import { emailLayout } from "../layout";
+import { emailLayout, emailHeading, emailCard, emailCallout, emailRows } from "../layout";
 import { escapeHtml } from "../escapeHtml";
 
 export function generateContactFormEmail(args: {
@@ -8,15 +8,14 @@ export function generateContactFormEmail(args: {
   message: string;
 }): { subject: string; html: string } {
   const subject = `[Contact Form] ${args.subject || "New message"}`;
+  const rows: Array<[string, string]> = [["From", `${escapeHtml(args.name || "N/A")} &lt;${escapeHtml(args.email)}&gt;`]];
+  if (args.subject) rows.push(["Subject", escapeHtml(args.subject)]);
   const html = emailLayout({
     title: subject,
     bodyHtml: `
-      <p style="margin:0 0 12px 0;font-size:16px;font-weight:bold;color:#0a0a0a;">New contact form submission</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;margin-bottom:16px;">
-        <tr><td style="padding:4px 0;color:#8a8a8a;width:100px;">From</td><td style="padding:4px 0;">${escapeHtml(args.name || "N/A")} &lt;${escapeHtml(args.email)}&gt;</td></tr>
-        ${args.subject ? `<tr><td style="padding:4px 0;color:#8a8a8a;">Subject</td><td style="padding:4px 0;">${escapeHtml(args.subject)}</td></tr>` : ""}
-      </table>
-      <p style="margin:0;white-space:pre-wrap;border-top:1px solid #ececec;padding-top:12px;">${escapeHtml(args.message)}</p>
+      ${emailHeading("New contact form submission")}
+      ${emailCard(emailRows(rows), 24)}
+      ${emailCallout(`<p style="margin:0;font-size:15px;color:#2A2A2A;line-height:1.6;white-space:pre-wrap;">${escapeHtml(args.message)}</p>`)}
     `,
   });
   return { subject, html };
