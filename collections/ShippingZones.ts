@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const ShippingZones: CollectionConfig = {
   slug: 'shippingzones',
-  admin: {
+  admin: { group: 'Store', useAsTitle: 'name',
     defaultColumns: ['name', 'methods'],
     description: 'Geographic shipping zones with sample shipping methods.',
   },

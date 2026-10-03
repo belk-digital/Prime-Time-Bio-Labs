@@ -2,6 +2,7 @@ import type { GlobalConfig } from 'payload'
 
 export const AffiliateSettings: GlobalConfig = {
   slug: 'affiliate-settings',
+  admin: { group: 'Affiliates', },
   access: {
     read: () => true,
     // These defaults apply to every affiliate site-wide — only admins/staff may change them.

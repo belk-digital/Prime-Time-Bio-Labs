@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const PayoutRequests: CollectionConfig = {
   slug: 'payout-requests',
+  admin: { group: 'Affiliates', defaultColumns: ['affiliate', 'amount', 'payoutMethod', 'status', 'createdAt'], description: 'Payout requests submitted by affiliates from their dashboard.', },
   access: {
     read: async ({ req }) => {
       const { user, payload } = req

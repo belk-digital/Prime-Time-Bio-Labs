@@ -6,7 +6,7 @@ import type { CollectionConfig } from 'payload'
  */
 export const Addresses: CollectionConfig = {
   slug: 'addresses',
-  admin: {
+  admin: { group: 'Customers',
     useAsTitle: 'label',
   },
   fields: [

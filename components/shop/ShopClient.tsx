@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,6 +11,8 @@ import ShopProductCard from "@/components/shop/ShopProductCard";
 import type { ShopMockProduct } from "@/lib/shopCardProduct";
 
 gsap.registerPlugin(ScrollTrigger);
+
+type SortKey = "featured" | "price-asc" | "price-desc" | "name";
 
 const STATS = [
   { value: "99%", label: "Purity Guarantee", icon: ShieldCheck },
@@ -26,19 +28,52 @@ function ShopClientInner({
   categories: string[];
 }) {
   const searchParams = useSearchParams();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Deep-link support for the nav mega menu, which links to /shop?category=<slug>.
+  // Filter state lives in the URL (?category=…&sort=…&q=…), so the back button, reloads and shared
+  // links keep it. The nav mega menu links with a category *slug*, while the pills use the category
+  // *name*, so both are matched on a normalized slug.
+  const slugify = (v: string) => v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const categoryParam = searchParams.get("category");
+  const activeCategory = categoryParam
+    ? categories.find((c) => slugify(c) === slugify(categoryParam)) ?? null
+    : null;
+  const sort = (searchParams.get("sort") as SortKey | null) ?? "featured";
+  const queryParam = searchParams.get("q") ?? "";
+  const [searchText, setSearchText] = useState(queryParam);
+
+  const updateParams = (changes: Record<string, string | null>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+  const setActiveCategory = (category: string | null) => updateParams({ category: category ? slugify(category) : null });
+
+  // Debounce typing into the search box before it hits the URL.
   useEffect(() => {
-    const category = searchParams.get("category");
-    if (category) setActiveCategory(category);
-  }, [searchParams]);
+    if (searchText === queryParam) return;
+    const t = setTimeout(() => updateParams({ q: searchText.trim() || null }), 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
   const filteredProducts = useMemo(() => {
-    if (!activeCategory) return products;
-    return products.filter((p) => p.category === activeCategory);
-  }, [products, activeCategory]);
+    let list = activeCategory ? products.filter((p) => p.category === activeCategory) : products;
+    const q = queryParam.trim().toLowerCase();
+    if (q) list = list.filter((p) => `${p.name} ${p.category} ${p.type}`.toLowerCase().includes(q));
+    const sorted = [...list];
+    if (sort === "price-asc") sorted.sort((a, b) => a.price - b.price);
+    else if (sort === "price-desc") sorted.sort((a, b) => b.price - a.price);
+    else if (sort === "name") sorted.sort((a, b) => a.name.localeCompare(b.name));
+    else sorted.sort((a, b) => Number(b.featured) - Number(a.featured));
+    return sorted;
+  }, [products, activeCategory, queryParam, sort]);
 
   useGSAP(
     () => {
@@ -151,13 +186,38 @@ function ShopClientInner({
           </div>
         </div>
 
+        {/* Search + sort */}
+        <div className="shop-heading flex flex-col sm:flex-row gap-3 mb-8">
+          <input
+            type="search"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search peptides"
+            aria-label="Search peptides"
+            className="font-inter flex-1 bg-white border border-black/10 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50"
+          />
+          <select
+            value={sort}
+            onChange={(e) => updateParams({ sort: e.target.value === "featured" ? null : e.target.value })}
+            aria-label="Sort products"
+            className="font-inter bg-white border border-black/10 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500/50"
+          >
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name">Name: A–Z</option>
+          </select>
+        </div>
+
         {/* Product grid */}
         {filteredProducts.length === 0 ? (
           <div className="shop-heading flex flex-col items-center justify-center text-center py-24 border border-dashed border-gray-200 rounded-2xl bg-white">
             <FlaskConical className="w-10 h-10 text-gray-300 mb-4" strokeWidth={1} />
-            <h3 className="text-xl font-michroma uppercase tracking-wide text-gray-700 mb-2">No Products Yet</h3>
+            <h3 className="text-xl font-michroma uppercase tracking-wide text-gray-700 mb-2">No Products Found</h3>
             <p className="text-gray-400 max-w-sm text-sm">
-              No products found in this category. Try browsing all products instead.
+              {queryParam
+                ? `Nothing matches "${queryParam}". Try a different search or browse all products.`
+                : "No products found in this category. Try browsing all products instead."}
             </p>
           </div>
         ) : (

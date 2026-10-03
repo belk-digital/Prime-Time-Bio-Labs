@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const MilitaryDiscountRequests: CollectionConfig = {
   slug: 'military-discount-requests',
-  admin: {
+  admin: { group: 'Customers',
     useAsTitle: 'email',
     defaultColumns: ['fullName', 'email', 'branch', 'status', 'couponCode'],
     description: 'ID photos are never stored here — they are emailed to support for manual review and are not retained.',

@@ -26,6 +26,7 @@ import CartTriggerButton from "@/components/cart/CartTriggerButton";
 import SearchOverlay from "@/components/nav/SearchOverlay";
 import AnnouncementBar from "@/components/nav/AnnouncementBar";
 import { formatUsd } from "@/lib/types/shop";
+import { useWishlistStore } from "@/lib/wishlist/store";
 
 const NAV_LINKS = [
   { label: "Shop", href: "/shop" },
@@ -73,7 +74,15 @@ interface SiteNavProps {
 export default function SiteNav({
   categories = [],
   wishlistCount = 0,
+  wishlistProductIds = [],
 }: SiteNavProps) {
+  // Share the signed-in customer's wishlist with every heart button on the page.
+  const setWishlistKeys = useWishlistStore((s) => s.setKeys);
+  const wishlistSignature = wishlistProductIds.join(",");
+  useEffect(() => {
+    setWishlistKeys(wishlistSignature ? wishlistSignature.split(",") : []);
+  }, [wishlistSignature, setWishlistKeys]);
+
   const pathname = usePathname();
   const isHome = pathname === "/";
   const { data: session, status } = useSession();

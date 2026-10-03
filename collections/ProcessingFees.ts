@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const ProcessingFees: CollectionConfig = {
   slug: 'processing-fees',
-  admin: {
+  admin: { group: 'Store', defaultColumns: ['name', 'type', 'amount', 'isActive'],
     useAsTitle: 'name',
   },
   access: {

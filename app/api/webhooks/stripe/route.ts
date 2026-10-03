@@ -18,12 +18,22 @@ async function updateOrderFromPaymentIntent(
   const payload = await getPayload({ config });
   const numericId = Number(orderId);
 
-  await payload.update({
-    collection: "orders",
-    id: Number.isNaN(numericId) ? orderId : numericId,
-    data: data as any,
-    overrideAccess: true,
-  });
+  try {
+    await payload.update({
+      collection: "orders",
+      id: Number.isNaN(numericId) ? orderId : numericId,
+      data: data as any,
+      overrideAccess: true,
+    });
+  } catch (err) {
+    // The order is already in a final state (e.g. cancelled, then a late webhook arrives).
+    // Acknowledge instead of failing, otherwise Stripe retries the event for days.
+    if (err instanceof Error && /Invalid (Status|Payment Status) change/.test(err.message)) {
+      console.warn(`Stripe webhook ignored for order ${orderId}: ${err.message}`);
+      return;
+    }
+    throw err;
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -53,7 +63,6 @@ export async function POST(req: NextRequest) {
         await updateOrderFromPaymentIntent(paymentIntent, {
           paymentStatus: "captured",
           status: "paid",
-          isFinalized: true,
         });
         break;
       }

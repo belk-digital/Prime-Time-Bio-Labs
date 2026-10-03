@@ -3,7 +3,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
-  admin: { defaultColumns: ['title', 'author', 'status', 'publishedAt'], useAsTitle: 'title' },
+  admin: { group: 'Content', defaultColumns: ['title', 'author', 'status', 'publishedAt'], useAsTitle: 'title' },
   access: {
     read: ({ req }) => {
       if (req.user?.role === 'admin' || req.user?.role === 'staff') return true

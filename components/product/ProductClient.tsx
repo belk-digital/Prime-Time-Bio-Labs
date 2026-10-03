@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/lib/cart/store";
 import ShopProductCard, { type ShopMockProduct } from "@/components/shop/ShopProductCard";
+import { useWishlistToggle } from "@/components/wishlist/useWishlistToggle";
 import { getProductDisplayDetails, getMultiVariantConfig } from "@/lib/shopCardProduct";
 import Footer from "@/components/Footer";
 import { resolveMediaUrl, type ShopProduct } from "@/lib/types/shop";
@@ -49,10 +50,13 @@ export default function ProductClient({
   product,
   cardProduct,
   relatedProducts,
+  reviewsSlot,
 }: {
   product: ShopProduct;
   cardProduct: ShopMockProduct;
   relatedProducts: ShopMockProduct[];
+  /** Server-rendered reviews section (list + form), shown above related products. */
+  reviewsSlot?: React.ReactNode;
 }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const tabContentRef = useRef<HTMLDivElement>(null);
@@ -60,7 +64,6 @@ export default function ProductClient({
 
   const [selectedDosage, setSelectedDosage] = useState(cardProduct.dosageOptions[0]);
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("details");
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [addedMessage, setAddedMessage] = useState(false);
@@ -148,6 +151,16 @@ export default function ProductClient({
 
   const activePrice = displayDetails.price;
   const activeImage = displayDetails.image;
+  const {
+    isWishlisted,
+    isPending: wishlistPending,
+    toggle: toggleWishlist,
+  } = useWishlistToggle({
+    id: displayDetails.sku,
+    aliases: [displayDetails.sku, cardProduct.id, cardProduct.slug],
+    variantSku: selectedDosage,
+    price: activePrice,
+  });
   const galleryImages = displayDetails.galleryImages;
 
   const handleAddToCart = () => {
@@ -299,8 +312,10 @@ export default function ProductClient({
 
               <button
                 type="button"
-                onClick={() => setIsWishlisted((v) => !v)}
-                className="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl border border-black/10 bg-white hover:bg-gray-50 transition-colors"
+                onClick={toggleWishlist}
+                disabled={wishlistPending}
+                aria-pressed={isWishlisted}
+                className="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl border border-black/10 bg-white hover:bg-gray-50 transition-colors disabled:opacity-60"
                 aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
                 <Heart
@@ -432,6 +447,9 @@ export default function ProductClient({
             ))}
           </div>
         </div>
+
+        {/* Customer reviews */}
+        {reviewsSlot}
 
         {/* Related products */}
         {relatedProducts.length > 0 && (

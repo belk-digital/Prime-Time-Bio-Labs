@@ -4,7 +4,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { buildConfig } from 'payload'
+import { buildConfig, type CollectionConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Users } from './collections/Users'
@@ -34,6 +34,7 @@ import { AffiliateConversions } from './collections/AffiliateConversions'
 import { AffiliatePayouts } from './collections/AffiliatePayouts'
 import { PayoutRequests } from './collections/PayoutRequests'
 import { NewsletterSubscribers } from './collections/NewsletterSubscribers'
+import { Trash } from './collections/Trash'
 
 import { AffiliateSettings } from './globals/AffiliateSettings'
 import { BlogAuthorProfile } from './globals/BlogAuthorProfile'
@@ -48,9 +49,64 @@ if (!process.env.PAYLOAD_SECRET) {
   throw new Error('PAYLOAD_SECRET environment variable is required and must not be empty.')
 }
 
+// Collections whose deletes are copied to the Trash first. Skipped: Users (passwords can't be restored),
+// upload collections (files live in R2), and high-volume / system data.
+const NO_TRASH = new Set([
+  'trash',
+  'users',
+  'media',
+  'blog-media',
+  'documents',
+  'email-logs',
+  'affiliate-clicks',
+  'order_counters',
+  'carts',
+])
+
+const withTrash = (collection: CollectionConfig): CollectionConfig =>
+  NO_TRASH.has(collection.slug)
+    ? collection
+    : {
+        ...collection,
+        hooks: {
+          ...collection.hooks,
+          beforeDelete: [
+            ...(collection.hooks?.beforeDelete ?? []),
+            async ({ req, id }) => {
+              // Never block a delete because the trash copy failed (e.g. its table isn't created yet).
+              try {
+                const doc: any = await req.payload.findByID({
+                  collection: collection.slug as any,
+                  id,
+                  depth: 0,
+                  overrideAccess: true,
+                })
+                await req.payload.create({
+                  collection: 'trash' as any,
+                  data: {
+                    label: `${collection.slug}: ${doc?.orderNumber ?? doc?.name ?? doc?.title ?? doc?.code ?? doc?.email ?? id}`,
+                    originalCollection: collection.slug,
+                    originalId: String(id),
+                    deletedBy: req.user?.email ?? null,
+                    data: doc,
+                  },
+                  overrideAccess: true,
+                })
+              } catch (err) {
+                console.error(`Could not copy ${collection.slug}/${id} to trash:`, err)
+              }
+            },
+          ],
+        },
+      }
+
 export default buildConfig({
   admin: {
     user: Users.slug,
+    components: {
+      // "Needs attention" counters above the sidebar links.
+      beforeNavLinks: ['/components/admin/NavBadges#default'],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -58,35 +114,42 @@ export default buildConfig({
   routes: {
     admin: '/pb-console',
   },
+  // Order here sets the order of the admin sidebar groups (Store → Customers → Affiliates → Content → System).
   collections: [
-    Users,
-    Media,
-    BlogMedia,
-    Documents,
-    Addresses,
-    Categories,
-    Products,
-    Carts,
-    Wishlists,
-    Coupons,
+    // Store
     Orders,
-    OrderCounters,
+    Products,
+    Categories,
+    Coupons,
     Reviews,
     ShippingZones,
     ProcessingFees,
-    BlogPosts,
-    Pages,
-    ContactMessages,
-    EmailLogs,
+    Carts,
+    Wishlists,
+    // Customers
+    Users,
+    Addresses,
     MilitaryDiscountRequests,
-    AffiliateApplications,
+    NewsletterSubscribers,
+    ContactMessages,
+    // Affiliates
     Affiliates,
-    AffiliateClicks,
+    AffiliateApplications,
     AffiliateConversions,
     AffiliatePayouts,
     PayoutRequests,
-    NewsletterSubscribers,
-  ],
+    AffiliateClicks,
+    // Content
+    BlogPosts,
+    Pages,
+    Media,
+    BlogMedia,
+    Documents,
+    // System
+    EmailLogs,
+    Trash,
+    OrderCounters,
+  ].map(withTrash),
   globals: [AffiliateSettings, BlogAuthorProfile],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET,

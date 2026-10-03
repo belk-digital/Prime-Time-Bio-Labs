@@ -1,11 +1,12 @@
 import type { CollectionConfig, Where } from 'payload'
+import { sql } from '@payloadcms/db-postgres/drizzle'
 import { generateForgotPasswordEmail } from '../lib/email/templates/forgotPassword'
 
 const staffOnly = ({ req: { user } }: any) => !!user && ['admin', 'staff'].includes(user.role)
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  admin: {
+  admin: { group: 'Customers', defaultColumns: ['email', 'firstName', 'lastName', 'role', 'createdAt'],
     useAsTitle: 'email',
   },
   auth: {
@@ -182,15 +183,20 @@ export const Users: CollectionConfig = {
     },
     {
       name: 'hbPoints',
-      label: 'HB Points',
+      label: 'PB Points',
       type: 'number',
       defaultValue: 0,
       admin: {
-        description: 'HB Points ($1 per point). Can be used by users at checkout.',
+        description: 'PB Points ($1 per point). Can be used by users at checkout.',
       },
       // Only server-side code (checkout, refund hooks) using overrideAccess may change this —
       // never a customer's own PATCH request, or they could mint free store credit for themselves.
       access: { create: staffOnly, update: staffOnly },
+    },
+    {
+      name: 'orderHistory',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/UserOrderHistory#default' } },
     },
   ],
   hooks: {
@@ -200,6 +206,21 @@ export const Users: CollectionConfig = {
           data.email = String(data.email).toLowerCase()
         }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        // Link earlier guest orders (placed with this email before the account existed) to the new
+        // account, so they show up in the customer's order history. Single UPDATE, no nested hooks.
+        if (operation !== 'create' || !doc?.email) return doc
+        try {
+          await (req.payload.db as any).drizzle.execute(
+            sql`UPDATE orders SET owner_id = ${doc.id} WHERE owner_id IS NULL AND lower(guest_email) = ${String(doc.email).toLowerCase()}`
+          )
+        } catch (err) {
+          console.error('Failed to link guest orders to new user:', err)
+        }
+        return doc
       },
     ],
   },

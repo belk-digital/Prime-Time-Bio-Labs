@@ -77,10 +77,17 @@ export default async function SiteHeader() {
       });
       const wishlistDoc = wishlistResult.docs?.[0];
       wishlistCount = wishlistDoc?.items?.length ?? 0;
-      wishlistProductIds = (wishlistDoc?.items ?? [])
-        .map((item) => (typeof item.product === "object" ? item.product?.id : item.product))
-        .filter((id): id is number => id !== null && id !== undefined)
-        .map((id) => String(id));
+      // Every id a card might use for a wishlisted product (database id, SKU, slug), so hearts on
+      // multi-dosage cards (which are keyed by SKU) show as filled too.
+      wishlistProductIds = Array.from(
+        new Set(
+          (wishlistDoc?.items ?? []).flatMap((item) => {
+            const p: any = item.product;
+            if (p === null || p === undefined) return [];
+            return typeof p === "object" ? [String(p.id), p.sku, p.slug].filter(Boolean) : [String(p)];
+          })
+        )
+      ) as string[];
     }
   } catch (err) {
     console.error("Failed to load nav data:", err);

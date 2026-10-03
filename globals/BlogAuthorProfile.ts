@@ -3,7 +3,7 @@ import type { GlobalConfig } from 'payload'
 export const BlogAuthorProfile: GlobalConfig = {
   slug: 'blog-author-profile',
   label: 'Blog Author Profile',
-  admin: {
+  admin: { group: 'Content',
     description: 'The single byline used across every blog post.',
   },
   access: {

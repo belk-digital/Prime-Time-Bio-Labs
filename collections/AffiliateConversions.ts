@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const AffiliateConversions: CollectionConfig = {
   slug: 'affiliate-conversions',
+  admin: { group: 'Affiliates', defaultColumns: ['affiliate', 'order', 'commissionAmount', 'status', 'flaggedForReview', 'createdAt'], description: 'One row per referred order. Commissions are approved after the pending window.', },
   access: {
     read: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
     create: () => false, // Only created by server

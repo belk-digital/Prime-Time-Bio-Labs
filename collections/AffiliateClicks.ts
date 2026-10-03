@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const AffiliateClicks: CollectionConfig = {
   slug: 'affiliate-clicks',
+  admin: { group: 'Affiliates', defaultColumns: ['affiliate', 'source', 'deviceType', 'convertedToOrder', 'isSuspicious', 'clickedAt'], description: 'Raw referral link clicks (read-only history).', },
   access: {
     read: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
     create: () => true, // Created by API

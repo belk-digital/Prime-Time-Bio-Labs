@@ -7,6 +7,7 @@ const dirname = path.dirname(filename)
 
 export const Documents: CollectionConfig = {
   slug: 'documents',
+  admin: { group: 'Content', useAsTitle: 'title', defaultColumns: ['title', 'filename', 'createdAt'], },
   access: {
     read: () => true,
     create: ({ req: { user } }) => {

@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const ContactMessages: CollectionConfig = {
   slug: 'contact-messages',
-  admin: { defaultColumns: ['name', 'email', 'subject', 'createdAt'], useAsTitle: 'subject' },
+  admin: { group: 'Customers', defaultColumns: ['name', 'email', 'subject', 'createdAt'], useAsTitle: 'subject' },
   access: {
     create: () => true,
     read: ({ req }) => req.user?.role === 'admin',

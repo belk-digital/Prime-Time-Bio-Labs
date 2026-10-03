@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const Carts: CollectionConfig = {
   slug: 'carts',
-  admin: {
+  admin: { group: 'Store',
     defaultColumns: ['user', 'items'],
     useAsTitle: 'user',
   },

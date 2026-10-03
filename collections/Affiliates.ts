@@ -4,7 +4,7 @@ const staffOnly = ({ req: { user } }: any) => !!user && ['admin', 'staff'].inclu
 
 export const Affiliates: CollectionConfig = {
   slug: 'affiliates',
-  admin: {
+  admin: { group: 'Affiliates',
     useAsTitle: 'referralSlug',
   },
   access: {

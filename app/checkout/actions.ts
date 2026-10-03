@@ -4,7 +4,10 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import Stripe from "stripe";
 import { FREE_SHIPPING_THRESHOLD, DEFAULT_COUNTRY } from "@/lib/shipping/constants";
-import { trackAffiliateConversion } from "@/lib/affiliate/trackConversion";
+import { getNextOrderNumber } from "@/lib/orders/counter";
+import { findProductByAnyId } from "@/lib/orders/findProduct";
+import { reserveStock, releaseStock, type StockLine } from "@/lib/orders/inventory";
+import { reserveCouponUsage, releaseCouponUsage } from "@/lib/orders/coupons";
 import { getEffectivePrice } from "@/lib/types/shop";
 
 // ---------------------------------------------------------------------------
@@ -251,64 +254,6 @@ export async function verifyCoupon(code: string, subtotal: number): Promise<Coup
 // Order creation
 // ---------------------------------------------------------------------------
 
-async function getNextOrderNumber(payload: Awaited<ReturnType<typeof getPayload>>): Promise<string> {
-  const COUNTER_ID = 1;
-
-  try {
-    const existing: any = await payload.findByID({
-      collection: "order_counters",
-      id: COUNTER_ID,
-      overrideAccess: true,
-    });
-    const next = (Number(existing?.counter) || 0) + 1;
-    await payload.update({
-      collection: "order_counters",
-      id: COUNTER_ID,
-      data: { counter: next },
-      overrideAccess: true,
-    });
-    return String(7000 + next);
-  } catch {
-    // No counter doc yet — best-effort create. Not fully race-safe, acceptable
-    // for this simplified implementation.
-    try {
-      await payload.create({
-        collection: "order_counters",
-        data: { id: COUNTER_ID, counter: 1 },
-        overrideAccess: true,
-      });
-    } catch {
-      // Ignore — another concurrent request may have created it first.
-    }
-    return String(7000 + 1);
-  }
-}
-
-// Cart lines carry whatever id the storefront card had: a database id for plain products, but a
-// SKU (e.g. "RETA-10MG") for the multi-dosage cards, whose ids are not database ids. Resolve both.
-async function findProductForCartLine(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-  rawId: string | number
-) {
-  const key = String(rawId);
-  if (/^\d+$/.test(key)) {
-    const byId = await payload
-      .findByID({ collection: "products", id: Number(key), overrideAccess: true })
-      .catch(() => null);
-    if (byId) return byId;
-  }
-  for (const field of ["sku", "slug"] as const) {
-    const { docs } = await payload.find({
-      collection: "products",
-      where: { [field]: { equals: key } },
-      limit: 1,
-      overrideAccess: true,
-    });
-    if (docs[0]) return docs[0];
-  }
-  return null;
-}
-
 export async function createPayloadOrder(
   input: CreateOrderInput
 ): Promise<{ orderId: string; orderNumber: string; total: number }> {
@@ -338,7 +283,7 @@ async function createPayloadOrderImpl(
   // database and price every line item from that, ignoring `item.priceSnapshot` entirely.
   const verifiedItems = await Promise.all(
     input.items.map(async (item) => {
-      const product = await findProductForCartLine(payload, item.productId);
+      const product = await findProductByAnyId(payload, item.productId);
       if (!product) {
         throw new Error(`Product ${item.productId} no longer exists.`);
       }
@@ -363,12 +308,15 @@ async function createPayloadOrderImpl(
 
   let discountTotal = 0;
   let freeShipping = false;
+  // Only a coupon that actually verified is recorded/counted; an invalid code is silently ignored.
+  let appliedCouponCode: string | null = null;
 
   if (input.couponCode) {
     const verification = await verifyCoupon(input.couponCode, subtotal);
     if (verification.valid) {
       discountTotal = verification.discount;
       freeShipping = verification.freeShipping;
+      appliedCouponCode = verification.code;
     }
   }
 
@@ -402,6 +350,40 @@ async function createPayloadOrderImpl(
   const taxTotal = 0;
   const total = Math.max(0, subtotalAfterDiscount + shippingTotal + feeTotal + taxTotal);
 
+  // Hold the stock and the coupon use *before* creating the order. Both are atomic, so concurrent
+  // checkouts can't oversell or exceed a coupon's usage limit; they're rolled back if anything
+  // below fails, and released again if the order is later cancelled or refunded.
+  const stockLines: StockLine[] = verifiedItems.map((item) => ({
+    productId: item.productId as number | string,
+    variantSku: item.variantSku ?? null,
+    quantity: Number(item.quantity) || 1,
+  }));
+  await reserveStock(
+    payload,
+    stockLines,
+    Object.fromEntries(verifiedItems.map((i) => [String(i.productId), (i.productSnapshot as any)?.name || ""]))
+  );
+
+  let couponReserved = false;
+  if (appliedCouponCode) {
+    couponReserved = await reserveCouponUsage(payload, appliedCouponCode, discountTotal);
+    if (!couponReserved) {
+      await releaseStock(payload, stockLines).catch(() => {});
+      throw new Error("This coupon has reached its usage limit.");
+    }
+  }
+
+  try {
+    return await insertOrder();
+  } catch (err) {
+    await releaseStock(payload, stockLines).catch((e) => console.error("Failed to release stock:", e));
+    if (couponReserved && appliedCouponCode) {
+      await releaseCouponUsage(payload, appliedCouponCode, discountTotal).catch(() => {});
+    }
+    throw err;
+  }
+
+  async function insertOrder() {
   const orderNumber = await getNextOrderNumber(payload);
 
   const orderItems = verifiedItems.map((item) => ({
@@ -439,24 +421,15 @@ async function createPayloadOrderImpl(
       appliedFees,
       shippingMethod: input.shippingMethod?.method,
       paymentMethod: input.paymentMethod,
-      couponCode: input.couponCode || undefined,
+      couponCode: appliedCouponCode || undefined,
       orderSource: "web",
       isFinalized: false,
     } as any,
     overrideAccess: true,
   });
 
-  void trackAffiliateConversion({
-    payload,
-    orderId: order.id,
-    orderSubtotal: subtotal,
-    orderDiscount: discountTotal,
-    couponCode: input.couponCode,
-    customerEmail: input.guestEmail,
-    customerUserId: input.userId,
-  }).catch((err) => console.error("Affiliate conversion tracking failed:", err));
-
   return { orderId: String(order.id), orderNumber, total };
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -506,17 +479,37 @@ export async function syncPaymentStatus(
   const stripe = getStripeClient();
 
   const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
-  if (paymentIntent.status === "succeeded") {
-    const payload = await getPayload({ config });
-    await payload.update({
-      collection: "orders",
-      id: (isNaN(Number(orderId)) ? orderId : Number(orderId)) as any,
-      data: { paymentStatus: "captured", status: "paid", isFinalized: true } as any,
-      overrideAccess: true,
-    });
-    return { success: true, status: paymentIntent.status };
+  if (paymentIntent.status !== "succeeded") {
+    return { success: false, status: paymentIntent.status };
   }
 
-  return { success: false, status: paymentIntent.status };
+  // This is a public server action, so never trust the caller's pairing of intent and order:
+  // the payment must have been created for this exact order and must cover its full total.
+  // (Otherwise someone could pay for a cheap order and mark an expensive one as paid.)
+  if (String(paymentIntent.metadata?.orderId ?? "") !== String(orderId)) {
+    console.error(`syncPaymentStatus: intent ${paymentIntentId} does not belong to order ${orderId}`);
+    return { success: false, status: "order_mismatch" };
+  }
+
+  const payload = await getPayload({ config });
+  const id = (isNaN(Number(orderId)) ? orderId : Number(orderId)) as any;
+  const order: any = await payload.findByID({ collection: "orders", id, overrideAccess: true }).catch(() => null);
+  if (!order) return { success: false, status: "order_not_found" };
+
+  const expectedCents = Math.max(50, Math.round(Number(order.total) * 100));
+  if ((paymentIntent.amount_received ?? 0) < expectedCents) {
+    console.error(`syncPaymentStatus: intent ${paymentIntentId} received less than order ${orderId} total`);
+    return { success: false, status: "amount_mismatch" };
+  }
+
+  if (order.paymentStatus !== "captured") {
+    // Order lifecycle hooks (Orders afterChange) finalize the order once it is marked captured.
+    await payload.update({
+      collection: "orders",
+      id,
+      data: { paymentStatus: "captured", status: "paid" } as any,
+      overrideAccess: true,
+    });
+  }
+  return { success: true, status: paymentIntent.status };
 }

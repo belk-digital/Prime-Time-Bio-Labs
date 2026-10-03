@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
-  admin: { useAsTitle: 'name' },
+  admin: { group: 'Store', defaultColumns: ['name', 'slug', 'isVisible', 'sortOrder'], useAsTitle: 'name' },
   access: {
     read: () => true,
     create: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),

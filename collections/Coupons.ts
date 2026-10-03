@@ -2,26 +2,30 @@ import type { CollectionConfig } from 'payload'
 
 export const Coupons: CollectionConfig = {
   slug: 'coupons',
-  admin: {
+  admin: { group: 'Store',
     defaultColumns: ['code', 'type', 'value', 'freeShipping', 'usageCount'],
     useAsTitle: 'code',
   },
   access: {
-    read: ({ req }) => {
-      if (req.user?.role === 'admin' || req.user?.role === 'staff') return true
-      return { isActive: { equals: true } }
-    },
+    // Staff only: a public read would let anyone list every active coupon code through the API.
+    // The storefront validates codes server-side (verifyCoupon) with overrideAccess.
+    read: ({ req }) => req.user?.role === 'admin' || req.user?.role === 'staff',
     create: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
     update: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
     delete: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
   },
   hooks: {
-    // TODO: port full coupon validation/usage-tracking logic (stacking rules, usage limits,
-    // per-email locks, store-credit balance decrement) in the checkout-implementation phase.
+    // Usage counting and store-credit draw-down happen at checkout (lib/orders/coupons.ts).
     beforeChange: [
       ({ data }) => {
         if (data?.code) {
           data.code = String(data.code).toUpperCase().trim()
+        }
+        if (data?.type === 'percentage' && data.value != null && (Number(data.value) <= 0 || Number(data.value) > 100)) {
+          throw new Error('A percentage coupon must be between 1 and 100.')
+        }
+        if ((data?.type === 'fixed_amount' || data?.type === 'store_credit') && data.value != null && Number(data.value) < 0) {
+          throw new Error('Coupon value cannot be negative.')
         }
         return data
       },

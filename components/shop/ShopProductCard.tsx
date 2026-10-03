@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
+import { useWishlistToggle } from "@/components/wishlist/useWishlistToggle";
 import { useCartStore } from "@/lib/cart/store";
 import { getProductDisplayDetails, type ShopMockProduct } from "@/lib/shopCardProduct";
 
@@ -16,13 +17,22 @@ export default function ShopProductCard({
   variant?: "dark" | "light";
 }) {
   const [selectedDosage, setSelectedDosage] = useState(product.dosageOptions[0]);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
   const isLight = variant === "light";
   const displayDetails = getProductDisplayDetails(product, selectedDosage);
   const displayPrice = displayDetails.price;
   const displayImage = displayDetails.image;
+  const {
+    isWishlisted,
+    isPending: wishlistPending,
+    toggle: toggleWishlist,
+  } = useWishlistToggle({
+    id: displayDetails.sku,
+    aliases: [displayDetails.sku, product.id, product.slug],
+    variantSku: selectedDosage,
+    price: displayPrice,
+  });
 
   return (
     <div
@@ -49,10 +59,12 @@ export default function ShopProductCard({
       {/* Wishlist toggle */}
       <button
         type="button"
+        disabled={wishlistPending}
         onClick={(e) => {
           e.preventDefault();
-          setIsWishlisted((v) => !v);
+          toggleWishlist();
         }}
+        aria-pressed={isWishlisted}
         aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         className="absolute top-6 right-6 w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black transition-colors"
       >

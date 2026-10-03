@@ -67,33 +67,34 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
-    media: Media;
-    'blog-media': BlogMedia;
-    documents: Document;
-    addresses: Address;
-    categories: Category;
-    products: Product;
-    carts: Cart;
-    wishlists: Wishlist;
-    coupons: Coupon;
     orders: Order;
-    order_counters: OrderCounter;
+    products: Product;
+    categories: Category;
+    coupons: Coupon;
     reviews: Review;
     shippingzones: Shippingzone;
     'processing-fees': ProcessingFee;
-    'blog-posts': BlogPost;
-    pages: Page;
-    'contact-messages': ContactMessage;
-    'email-logs': EmailLog;
+    carts: Cart;
+    wishlists: Wishlist;
+    users: User;
+    addresses: Address;
     'military-discount-requests': MilitaryDiscountRequest;
-    'affiliate-applications': AffiliateApplication;
+    'newsletter-subscribers': NewsletterSubscriber;
+    'contact-messages': ContactMessage;
     affiliates: Affiliate;
-    'affiliate-clicks': AffiliateClick;
+    'affiliate-applications': AffiliateApplication;
     'affiliate-conversions': AffiliateConversion;
     'affiliate-payouts': AffiliatePayout;
     'payout-requests': PayoutRequest;
-    'newsletter-subscribers': NewsletterSubscriber;
+    'affiliate-clicks': AffiliateClick;
+    'blog-posts': BlogPost;
+    pages: Page;
+    media: Media;
+    'blog-media': BlogMedia;
+    documents: Document;
+    'email-logs': EmailLog;
+    trash: Trash;
+    order_counters: OrderCounter;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -101,33 +102,34 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    'blog-media': BlogMediaSelect<false> | BlogMediaSelect<true>;
-    documents: DocumentsSelect<false> | DocumentsSelect<true>;
-    addresses: AddressesSelect<false> | AddressesSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    products: ProductsSelect<false> | ProductsSelect<true>;
-    carts: CartsSelect<false> | CartsSelect<true>;
-    wishlists: WishlistsSelect<false> | WishlistsSelect<true>;
-    coupons: CouponsSelect<false> | CouponsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
-    order_counters: OrderCountersSelect<false> | OrderCountersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    coupons: CouponsSelect<false> | CouponsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     shippingzones: ShippingzonesSelect<false> | ShippingzonesSelect<true>;
     'processing-fees': ProcessingFeesSelect<false> | ProcessingFeesSelect<true>;
-    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
-    'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
-    'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
+    carts: CartsSelect<false> | CartsSelect<true>;
+    wishlists: WishlistsSelect<false> | WishlistsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    addresses: AddressesSelect<false> | AddressesSelect<true>;
     'military-discount-requests': MilitaryDiscountRequestsSelect<false> | MilitaryDiscountRequestsSelect<true>;
-    'affiliate-applications': AffiliateApplicationsSelect<false> | AffiliateApplicationsSelect<true>;
+    'newsletter-subscribers': NewsletterSubscribersSelect<false> | NewsletterSubscribersSelect<true>;
+    'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     affiliates: AffiliatesSelect<false> | AffiliatesSelect<true>;
-    'affiliate-clicks': AffiliateClicksSelect<false> | AffiliateClicksSelect<true>;
+    'affiliate-applications': AffiliateApplicationsSelect<false> | AffiliateApplicationsSelect<true>;
     'affiliate-conversions': AffiliateConversionsSelect<false> | AffiliateConversionsSelect<true>;
     'affiliate-payouts': AffiliatePayoutsSelect<false> | AffiliatePayoutsSelect<true>;
     'payout-requests': PayoutRequestsSelect<false> | PayoutRequestsSelect<true>;
-    'newsletter-subscribers': NewsletterSubscribersSelect<false> | NewsletterSubscribersSelect<true>;
+    'affiliate-clicks': AffiliateClicksSelect<false> | AffiliateClicksSelect<true>;
+    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    'blog-media': BlogMediaSelect<false> | BlogMediaSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
+    'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
+    trash: TrashSelect<false> | TrashSelect<true>;
+    order_counters: OrderCountersSelect<false> | OrderCountersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -174,6 +176,157 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Customer orders (created by the checkout). To confirm a Zelle / Venmo / Cash App payment, click "Mark as paid" — the customer is emailed automatically.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * Overall order stage. Setting "Paid" also marks the payment as captured; "Refunded" and "Cancelled" are final and return the stock.
+   */
+  status: 'pending' | 'paid' | 'fulfilled' | 'shipped' | 'completed' | 'refunded' | 'cancelled';
+  /**
+   * "Captured" = money received (this sends the customer their order-confirmed email). Prefer the "Mark as paid" button.
+   */
+  paymentStatus: 'unpaid' | 'authorized' | 'captured' | 'refunded';
+  /**
+   * Shipping progress only. Leave as Unfulfilled until the package is actually dispatched.
+   */
+  fulfillmentStatus: 'unfulfilled' | 'partial' | 'fulfilled';
+  /**
+   * Zelle / Venmo / Cash App / Amex / payment-link orders stay unpaid until you confirm the money arrived.
+   */
+  paymentMethod?: ('stripe' | 'zelle' | 'venmo' | 'cashapp' | 'amex' | 'circoflows' | 'stripe_link') | null;
+  subtotal?: number | null;
+  discountTotal?: number | null;
+  /**
+   * PB Points used ($1/point)
+   */
+  redeemedPoints?: number | null;
+  shippingTotal?: number | null;
+  taxTotal: number;
+  feeTotal: number;
+  total: number;
+  /**
+   * Coupon that was applied (already counted against its usage limit).
+   */
+  couponCode?: string | null;
+  affiliateId?: string | null;
+  clickId?: string | null;
+  orderSource?: string | null;
+  /**
+   * Set automatically the first time payment is confirmed (affiliate commission is recorded then).
+   */
+  isFinalized?: boolean | null;
+  circoflowsTransactionId?: string | null;
+  /**
+   * Auto-generated order identifier (e.g., 7000).
+   */
+  orderNumber?: string | null;
+  /**
+   * User who placed the order (empty for guest checkout).
+   */
+  owner?: (number | null) | User;
+  /**
+   * Email for guest orders — confirmation emails go here.
+   */
+  guestEmail?: string | null;
+  customerFirstName?: string | null;
+  customerLastName?: string | null;
+  customerPhone?: string | null;
+  /**
+   * Prices were verified against the catalog when the order was placed.
+   */
+  items?:
+    | {
+        product?: (number | null) | Product;
+        variantTitle?: string | null;
+        variant?: string | null;
+        price?: number | null;
+        quantity: number;
+        productSnapshot?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  shippingAddress?: {
+    line1?: string | null;
+    line2?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+  };
+  billingAddress?: {
+    line1?: string | null;
+    line2?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+  };
+  shippingMethod?: string | null;
+  /**
+   * URL to track the package.
+   */
+  trackingLink?: string | null;
+  /**
+   * Tick and save to email the tracking link to the customer (sent once).
+   */
+  sendTrackingEmail?: boolean | null;
+  /**
+   * Processing fees charged on this order (snapshot at checkout).
+   */
+  appliedFees?:
+    | {
+        feeId?: (number | null) | ProcessingFee;
+        feeName?: string | null;
+        amount?: number | null;
+        feeType?: ('percentage' | 'fixed_amount') | null;
+        percentage?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Record-keeping only — this does not move money. Refund in your payment app first, then set Status to "Refunded".
+   */
+  refunds?:
+    | {
+        amount?: number | null;
+        reason?: string | null;
+        createdAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Note the customer left at checkout.
+   */
+  customerNote?: string | null;
+  /**
+   * Internal notes, or messages emailed straight to the customer.
+   */
+  notes?:
+    | {
+        type: 'internal' | 'customer';
+        note: string;
+        date?: string | null;
+        isEmailed?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -206,7 +359,7 @@ export interface User {
     | boolean
     | null;
   /**
-   * HB Points ($1 per point). Can be used by users at checkout.
+   * PB Points ($1 per point). Can be used by users at checkout.
    */
   hbPoints?: number | null;
   updatedAt: string;
@@ -248,102 +401,6 @@ export interface Address {
   phone: string;
   isDefaultShipping?: boolean | null;
   isDefaultBilling?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  caption?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-media".
- */
-export interface BlogMedia {
-  id: number;
-  alt: string;
-  caption?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface Document {
-  id: number;
-  title: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number;
-  name: string;
-  description?: string | null;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  slug?: string | null;
-  parent?: (number | null) | Category;
-  isVisible?: boolean | null;
-  sortOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -495,46 +552,93 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "carts".
+ * via the `definition` "media".
  */
-export interface Cart {
+export interface Media {
   id: number;
-  user: number | User;
-  items?:
-    | {
-        product?: (number | null) | Product;
-        variantSku: string;
-        variantTitle?: string | null;
-        quantity: number;
-        addedAt: string;
-        priceSnapshot: number;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Records when the abandoned cart email was sent to prevent spamming.
-   */
-  abandonedEmailSentAt?: string | null;
+  alt: string;
+  caption?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  name: string;
+  description?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  slug?: string | null;
+  parent?: (number | null) | Category;
+  isVisible?: boolean | null;
+  sortOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "wishlists".
+ * via the `definition` "documents".
  */
-export interface Wishlist {
+export interface Document {
   id: number;
-  user: number | User;
-  items?:
-    | {
-        product?: (number | null) | Product;
-        variantSku: string;
-        quantity: number;
-        addedAt: string;
-        priceSnapshot: number;
-        id?: string | null;
-      }[]
-    | null;
+  title: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "processing-fees".
+ */
+export interface ProcessingFee {
+  id: number;
+  /**
+   * The name of the fee displayed to customers (e.g., "Rush Processing", "Insurance")
+   */
+  name: string;
+  /**
+   * Amount in dollars (e.g., 2.50) OR percentage (e.g., 3 = 3%) depending on type
+   */
+  amount: number;
+  type: 'fixed_amount' | 'percentage';
+  /**
+   * If disabled, this fee will not be applied or shown.
+   */
+  isActive?: boolean | null;
+  /**
+   * If true, customers must actively check a box to apply this fee. If false, it is mandatory for all orders.
+   */
+  isOptional?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -622,151 +726,6 @@ export interface Coupon {
   createdAt: string;
 }
 /**
- * Customer orders – generated server-side only.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: number;
-  /**
-   * Auto-generated order identifier (e.g., 7000).
-   */
-  orderNumber?: string | null;
-  /**
-   * User who placed the order (null for guests).
-   */
-  owner?: (number | null) | User;
-  customerFirstName?: string | null;
-  customerLastName?: string | null;
-  customerPhone?: string | null;
-  items?:
-    | {
-        product?: (number | null) | Product;
-        variantTitle?: string | null;
-        variant?: string | null;
-        price?: number | null;
-        quantity: number;
-        productSnapshot?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  shippingAddress?: {
-    line1?: string | null;
-    line2?: string | null;
-    city?: string | null;
-    state?: string | null;
-    postalCode?: string | null;
-    country?: string | null;
-  };
-  billingAddress?: {
-    line1?: string | null;
-    line2?: string | null;
-    city?: string | null;
-    state?: string | null;
-    postalCode?: string | null;
-    country?: string | null;
-  };
-  status: 'pending' | 'paid' | 'fulfilled' | 'shipped' | 'completed' | 'refunded' | 'cancelled';
-  paymentStatus: 'unpaid' | 'authorized' | 'captured' | 'refunded';
-  fulfillmentStatus: 'unfulfilled' | 'partial' | 'fulfilled';
-  refunds?:
-    | {
-        amount?: number | null;
-        reason?: string | null;
-        createdAt?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  subtotal?: number | null;
-  discountTotal?: number | null;
-  /**
-   * HB Points used ($1/point)
-   */
-  redeemedPoints?: number | null;
-  shippingTotal?: number | null;
-  taxTotal: number;
-  feeTotal: number;
-  total: number;
-  appliedFees?:
-    | {
-        feeId?: (number | null) | ProcessingFee;
-        feeName?: string | null;
-        amount?: number | null;
-        feeType?: ('percentage' | 'fixed_amount') | null;
-        percentage?: number | null;
-        id?: string | null;
-      }[]
-    | null;
-  shippingMethod?: string | null;
-  trackingLink?: string | null;
-  sendTrackingEmail?: boolean | null;
-  paymentMethod?: ('stripe' | 'zelle' | 'venmo' | 'cashapp' | 'amex' | 'circoflows' | 'stripe_link') | null;
-  circoflowsTransactionId?: string | null;
-  couponCode?: string | null;
-  affiliateId?: string | null;
-  clickId?: string | null;
-  orderSource?: string | null;
-  customerNote?: string | null;
-  guestEmail?: string | null;
-  isFinalized?: boolean | null;
-  notes?:
-    | {
-        type: 'internal' | 'customer';
-        note: string;
-        date?: string | null;
-        isEmailed?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "processing-fees".
- */
-export interface ProcessingFee {
-  id: number;
-  /**
-   * The name of the fee displayed to customers (e.g., "Rush Processing", "Insurance")
-   */
-  name: string;
-  /**
-   * Amount in dollars (e.g., 2.50) OR percentage (e.g., 3 = 3%) depending on type
-   */
-  amount: number;
-  type: 'fixed_amount' | 'percentage';
-  /**
-   * If disabled, this fee will not be applied or shown.
-   */
-  isActive?: boolean | null;
-  /**
-   * If true, customers must actively check a box to apply this fee. If false, it is mandatory for all orders.
-   */
-  isOptional?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "order_counters".
- */
-export interface OrderCounter {
-  id: number;
-  counter: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Customer reviews – verification ties to delivered orders.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -780,7 +739,7 @@ export interface Review {
   rating: number;
   comment?: string | null;
   /**
-   * Auto-set to true when linked order is delivered
+   * Set automatically: true when the reviewer has a paid order containing this product.
    */
   verifiedPurchase?: boolean | null;
   status?: ('pending' | 'approved' | 'rejected') | null;
@@ -823,153 +782,46 @@ export interface Shippingzone {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
+ * via the `definition` "carts".
  */
-export interface BlogPost {
+export interface Cart {
   id: number;
-  title: string;
-  slug?: string | null;
-  author: number | User;
-  featuredImage?: (number | null) | BlogMedia;
-  /**
-   * Short summary shown on blog listing cards and used as the default SEO/social description.
-   */
-  excerpt?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Images interleaved through the article body (roughly evenly spaced between paragraphs). Add 1-3.
-   */
-  inlineImages?:
+  user: number | User;
+  items?:
     | {
-        image: number | BlogMedia;
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  publishedAt?: string | null;
-  status?: ('draft' | 'published') | null;
-  category?: ('Metabolic research' | 'Recovery protocols' | 'Growth research' | 'Muscle studies') | null;
-  relatedProducts?: (number | Product)[] | null;
-  /**
-   * e.g. '12 min read'. Leave blank to auto-calculate from content length when rendered.
-   */
-  readTime?: string | null;
-  /**
-   * Short factual bullet points summarizing the post.
-   */
-  keyTakeaways?:
-    | {
-        text: string;
+        product?: (number | null) | Product;
+        variantSku: string;
+        variantTitle?: string | null;
+        quantity: number;
+        addedAt: string;
+        priceSnapshot: number;
         id?: string | null;
       }[]
     | null;
   /**
-   * Populates FAQPage schema.org markup and on-page FAQ accordion.
+   * Records when the abandoned cart email was sent to prevent spamming.
    */
-  faqs?:
-    | {
-        question: string;
-        answer: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Peer-reviewed sources cited in this post.
-   */
-  references?:
-    | {
-        /**
-         * e.g. "Smith et al., 2023, Journal of Peptide Science"
-         */
-        citationText: string;
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Primary target keyword/phrase for this post (editorial SEO guidance).
-   */
-  focusKeyphrase?: string | null;
-  /**
-   * Comma-separated secondary keywords for meta keywords / internal search relevance.
-   */
-  keywords?: string | null;
+  abandonedEmailSentAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
+ * via the `definition` "wishlists".
  */
-export interface Page {
+export interface Wishlist {
   id: number;
-  title: string;
-  slug?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  status?: ('draft' | 'published') | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "contact-messages".
- */
-export interface ContactMessage {
-  id: number;
-  name?: string | null;
-  email: string;
-  subject?: string | null;
-  message: string;
-  createdAt: string;
-  updatedAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "email-logs".
- */
-export interface EmailLog {
-  id: number;
-  to?: string | null;
-  subject: string;
-  body:
+  user: number | User;
+  items?:
     | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
+        product?: (number | null) | Product;
+        variantSku: string;
+        quantity: number;
+        addedAt: string;
+        priceSnapshot: number;
+        id?: string | null;
+      }[]
     | null;
-  sentAt: string;
-  status?: ('sent' | 'failed') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -995,32 +847,26 @@ export interface MilitaryDiscountRequest {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "affiliate-applications".
+ * via the `definition` "newsletter-subscribers".
  */
-export interface AffiliateApplication {
+export interface NewsletterSubscriber {
   id: number;
-  user: number | User;
-  status?: ('pending' | 'approved' | 'rejected') | null;
-  displayName: string;
-  websiteUrl?: string | null;
-  socialLinks?:
-    | {
-        platform?: ('instagram' | 'youtube' | 'tiktok' | 'twitter' | 'reddit') | null;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  promotionMethods: string;
-  estimatedMonthlyReach?: ('<1k' | '1k-10k' | '10k-100k' | '100k+') | null;
-  niche?: string | null;
-  whyJoin?: string | null;
-  agreedToTerms: boolean;
-  reviewedBy?: (number | null) | User;
-  reviewedAt?: string | null;
-  reviewNotes?: string | null;
-  linkedAffiliate?: (number | null) | Affiliate;
+  email: string;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages".
+ */
+export interface ContactMessage {
+  id: number;
+  name?: string | null;
+  email: string;
+  subject?: string | null;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1136,32 +982,36 @@ export interface Affiliate {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "affiliate-clicks".
+ * via the `definition` "affiliate-applications".
  */
-export interface AffiliateClick {
+export interface AffiliateApplication {
   id: number;
-  affiliate: number | Affiliate;
-  source?: ('referral_link' | 'coupon_code_attempt') | null;
-  ipHash?: string | null;
-  ipCountry?: string | null;
-  userAgent?: string | null;
-  deviceType?: ('desktop' | 'mobile' | 'tablet') | null;
-  referrer?: string | null;
-  landingPage?: string | null;
-  sessionId?: string | null;
-  convertedToOrder?: boolean | null;
-  conversion?: (number | null) | AffiliateConversion;
-  /**
-   * In dollars
-   */
-  conversionValue?: number | null;
-  isSuspicious?: boolean | null;
-  suspicionReason?: string | null;
-  clickedAt: string;
+  user: number | User;
+  status?: ('pending' | 'approved' | 'rejected') | null;
+  displayName: string;
+  websiteUrl?: string | null;
+  socialLinks?:
+    | {
+        platform?: ('instagram' | 'youtube' | 'tiktok' | 'twitter' | 'reddit') | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  promotionMethods: string;
+  estimatedMonthlyReach?: ('<1k' | '1k-10k' | '10k-100k' | '100k+') | null;
+  niche?: string | null;
+  whyJoin?: string | null;
+  agreedToTerms: boolean;
+  reviewedBy?: (number | null) | User;
+  reviewedAt?: string | null;
+  reviewNotes?: string | null;
+  linkedAffiliate?: (number | null) | Affiliate;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * One row per referred order. Commissions are approved after the pending window.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "affiliate-conversions".
  */
@@ -1196,6 +1046,35 @@ export interface AffiliateConversion {
   fraudScore?: number | null;
   flaggedForReview?: boolean | null;
   fraudNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Raw referral link clicks (read-only history).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "affiliate-clicks".
+ */
+export interface AffiliateClick {
+  id: number;
+  affiliate: number | Affiliate;
+  source?: ('referral_link' | 'coupon_code_attempt') | null;
+  ipHash?: string | null;
+  ipCountry?: string | null;
+  userAgent?: string | null;
+  deviceType?: ('desktop' | 'mobile' | 'tablet') | null;
+  referrer?: string | null;
+  landingPage?: string | null;
+  sessionId?: string | null;
+  convertedToOrder?: boolean | null;
+  conversion?: (number | null) | AffiliateConversion;
+  /**
+   * In dollars
+   */
+  conversionValue?: number | null;
+  isSuspicious?: boolean | null;
+  suspicionReason?: string | null;
+  clickedAt: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -1248,6 +1127,8 @@ export interface AffiliatePayout {
   createdAt: string;
 }
 /**
+ * Payout requests submitted by affiliates from their dashboard.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payout-requests".
  */
@@ -1273,11 +1154,209 @@ export interface PayoutRequest {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "newsletter-subscribers".
+ * via the `definition` "blog-posts".
  */
-export interface NewsletterSubscriber {
+export interface BlogPost {
   id: number;
-  email: string;
+  title: string;
+  slug?: string | null;
+  author: number | User;
+  featuredImage?: (number | null) | BlogMedia;
+  /**
+   * Short summary shown on blog listing cards and used as the default SEO/social description.
+   */
+  excerpt?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Images interleaved through the article body (roughly evenly spaced between paragraphs). Add 1-3.
+   */
+  inlineImages?:
+    | {
+        image: number | BlogMedia;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  publishedAt?: string | null;
+  status?: ('draft' | 'published') | null;
+  category?: ('Metabolic research' | 'Recovery protocols' | 'Growth research' | 'Muscle studies') | null;
+  relatedProducts?: (number | Product)[] | null;
+  /**
+   * e.g. '12 min read'. Leave blank to auto-calculate from content length when rendered.
+   */
+  readTime?: string | null;
+  /**
+   * Short factual bullet points summarizing the post.
+   */
+  keyTakeaways?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Populates FAQPage schema.org markup and on-page FAQ accordion.
+   */
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Peer-reviewed sources cited in this post.
+   */
+  references?:
+    | {
+        /**
+         * e.g. "Smith et al., 2023, Journal of Peptide Science"
+         */
+        citationText: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Primary target keyword/phrase for this post (editorial SEO guidance).
+   */
+  focusKeyphrase?: string | null;
+  /**
+   * Comma-separated secondary keywords for meta keywords / internal search relevance.
+   */
+  keywords?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-media".
+ */
+export interface BlogMedia {
+  id: number;
+  alt: string;
+  caption?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  slug?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  status?: ('draft' | 'published') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Audit log of every outbound email.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-logs".
+ */
+export interface EmailLog {
+  id: number;
+  to?: string | null;
+  subject: string;
+  body:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sentAt: string;
+  status?: ('sent' | 'failed') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Deleted records. Open one and click "Restore" to bring it back.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trash".
+ */
+export interface Trash {
+  id: number;
+  label?: string | null;
+  originalCollection: string;
+  originalId?: string | null;
+  deletedBy?: string | null;
+  /**
+   * Full copy of the record as it was deleted.
+   */
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "order_counters".
+ */
+export interface OrderCounter {
+  id: number;
+  counter: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -1306,52 +1385,20 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'blog-media';
-        value: number | BlogMedia;
-      } | null)
-    | ({
-        relationTo: 'documents';
-        value: number | Document;
-      } | null)
-    | ({
-        relationTo: 'addresses';
-        value: number | Address;
-      } | null)
-    | ({
-        relationTo: 'categories';
-        value: number | Category;
+        relationTo: 'orders';
+        value: number | Order;
       } | null)
     | ({
         relationTo: 'products';
         value: number | Product;
       } | null)
     | ({
-        relationTo: 'carts';
-        value: number | Cart;
-      } | null)
-    | ({
-        relationTo: 'wishlists';
-        value: number | Wishlist;
+        relationTo: 'categories';
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'coupons';
         value: number | Coupon;
-      } | null)
-    | ({
-        relationTo: 'orders';
-        value: number | Order;
-      } | null)
-    | ({
-        relationTo: 'order_counters';
-        value: number | OrderCounter;
       } | null)
     | ({
         relationTo: 'reviews';
@@ -1366,36 +1413,40 @@ export interface PayloadLockedDocument {
         value: number | ProcessingFee;
       } | null)
     | ({
-        relationTo: 'blog-posts';
-        value: number | BlogPost;
+        relationTo: 'carts';
+        value: number | Cart;
       } | null)
     | ({
-        relationTo: 'pages';
-        value: number | Page;
+        relationTo: 'wishlists';
+        value: number | Wishlist;
       } | null)
     | ({
-        relationTo: 'contact-messages';
-        value: number | ContactMessage;
+        relationTo: 'users';
+        value: number | User;
       } | null)
     | ({
-        relationTo: 'email-logs';
-        value: number | EmailLog;
+        relationTo: 'addresses';
+        value: number | Address;
       } | null)
     | ({
         relationTo: 'military-discount-requests';
         value: number | MilitaryDiscountRequest;
       } | null)
     | ({
-        relationTo: 'affiliate-applications';
-        value: number | AffiliateApplication;
+        relationTo: 'newsletter-subscribers';
+        value: number | NewsletterSubscriber;
+      } | null)
+    | ({
+        relationTo: 'contact-messages';
+        value: number | ContactMessage;
       } | null)
     | ({
         relationTo: 'affiliates';
         value: number | Affiliate;
       } | null)
     | ({
-        relationTo: 'affiliate-clicks';
-        value: number | AffiliateClick;
+        relationTo: 'affiliate-applications';
+        value: number | AffiliateApplication;
       } | null)
     | ({
         relationTo: 'affiliate-conversions';
@@ -1410,8 +1461,40 @@ export interface PayloadLockedDocument {
         value: number | PayoutRequest;
       } | null)
     | ({
-        relationTo: 'newsletter-subscribers';
-        value: number | NewsletterSubscriber;
+        relationTo: 'affiliate-clicks';
+        value: number | AffiliateClick;
+      } | null)
+    | ({
+        relationTo: 'blog-posts';
+        value: number | BlogPost;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'blog-media';
+        value: number | BlogMedia;
+      } | null)
+    | ({
+        relationTo: 'documents';
+        value: number | Document;
+      } | null)
+    | ({
+        relationTo: 'email-logs';
+        value: number | EmailLog;
+      } | null)
+    | ({
+        relationTo: 'trash';
+        value: number | Trash;
+      } | null)
+    | ({
+        relationTo: 'order_counters';
+        value: number | OrderCounter;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1457,161 +1540,94 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "orders_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  firstName?: T;
-  lastName?: T;
-  googleId?: T;
-  authProvider?: T;
-  phone?: T;
-  role?: T;
-  emailVerified?: T;
-  acceptsMarketing?: T;
-  orderSmsUpdates?: T;
-  dateOfBirth?: T;
-  stripeCustomerId?: T;
-  defaultShippingAddress?: T;
-  defaultBillingAddress?: T;
-  lastLoginAt?: T;
-  metadata?: T;
-  hbPoints?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface OrdersSelect<T extends boolean = true> {
+  status?: T;
+  paymentStatus?: T;
+  fulfillmentStatus?: T;
+  paymentMethod?: T;
+  subtotal?: T;
+  discountTotal?: T;
+  redeemedPoints?: T;
+  shippingTotal?: T;
+  taxTotal?: T;
+  feeTotal?: T;
+  total?: T;
+  couponCode?: T;
+  affiliateId?: T;
+  clickId?: T;
+  orderSource?: T;
+  isFinalized?: T;
+  circoflowsTransactionId?: T;
+  orderNumber?: T;
+  owner?: T;
+  guestEmail?: T;
+  customerFirstName?: T;
+  customerLastName?: T;
+  customerPhone?: T;
+  items?:
     | T
     | {
+        product?: T;
+        variantTitle?: T;
+        variant?: T;
+        price?: T;
+        quantity?: T;
+        productSnapshot?: T;
         id?: T;
+      };
+  shippingAddress?:
+    | T
+    | {
+        line1?: T;
+        line2?: T;
+        city?: T;
+        state?: T;
+        postalCode?: T;
+        country?: T;
+      };
+  billingAddress?:
+    | T
+    | {
+        line1?: T;
+        line2?: T;
+        city?: T;
+        state?: T;
+        postalCode?: T;
+        country?: T;
+      };
+  shippingMethod?: T;
+  trackingLink?: T;
+  sendTrackingEmail?: T;
+  appliedFees?:
+    | T
+    | {
+        feeId?: T;
+        feeName?: T;
+        amount?: T;
+        feeType?: T;
+        percentage?: T;
+        id?: T;
+      };
+  refunds?:
+    | T
+    | {
+        amount?: T;
+        reason?: T;
         createdAt?: T;
-        expiresAt?: T;
+        id?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  caption?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
+  customerNote?: T;
+  notes?:
     | T
     | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
+        type?: T;
+        note?: T;
+        date?: T;
+        isEmailed?: T;
+        id?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-media_select".
- */
-export interface BlogMediaSelect<T extends boolean = true> {
-  alt?: T;
-  caption?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents_select".
- */
-export interface DocumentsSelect<T extends boolean = true> {
-  title?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "addresses_select".
- */
-export interface AddressesSelect<T extends boolean = true> {
-  user?: T;
-  label?: T;
-  firstName?: T;
-  lastName?: T;
-  company?: T;
-  line1?: T;
-  line2?: T;
-  city?: T;
-  state?: T;
-  postalCode?: T;
-  country?: T;
-  phone?: T;
-  isDefaultShipping?: T;
-  isDefaultBilling?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
-export interface CategoriesSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  seoTitle?: T;
-  seoDescription?: T;
-  slug?: T;
-  parent?: T;
-  isVisible?: T;
-  sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1716,41 +1732,17 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "carts_select".
+ * via the `definition` "categories_select".
  */
-export interface CartsSelect<T extends boolean = true> {
-  user?: T;
-  items?:
-    | T
-    | {
-        product?: T;
-        variantSku?: T;
-        variantTitle?: T;
-        quantity?: T;
-        addedAt?: T;
-        priceSnapshot?: T;
-        id?: T;
-      };
-  abandonedEmailSentAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "wishlists_select".
- */
-export interface WishlistsSelect<T extends boolean = true> {
-  user?: T;
-  items?:
-    | T
-    | {
-        product?: T;
-        variantSku?: T;
-        quantity?: T;
-        addedAt?: T;
-        priceSnapshot?: T;
-        id?: T;
-      };
+export interface CategoriesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  slug?: T;
+  parent?: T;
+  isVisible?: T;
+  sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1794,109 +1786,6 @@ export interface CouponsSelect<T extends boolean = true> {
         category?: T;
         id?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders_select".
- */
-export interface OrdersSelect<T extends boolean = true> {
-  orderNumber?: T;
-  owner?: T;
-  customerFirstName?: T;
-  customerLastName?: T;
-  customerPhone?: T;
-  items?:
-    | T
-    | {
-        product?: T;
-        variantTitle?: T;
-        variant?: T;
-        price?: T;
-        quantity?: T;
-        productSnapshot?: T;
-        id?: T;
-      };
-  shippingAddress?:
-    | T
-    | {
-        line1?: T;
-        line2?: T;
-        city?: T;
-        state?: T;
-        postalCode?: T;
-        country?: T;
-      };
-  billingAddress?:
-    | T
-    | {
-        line1?: T;
-        line2?: T;
-        city?: T;
-        state?: T;
-        postalCode?: T;
-        country?: T;
-      };
-  status?: T;
-  paymentStatus?: T;
-  fulfillmentStatus?: T;
-  refunds?:
-    | T
-    | {
-        amount?: T;
-        reason?: T;
-        createdAt?: T;
-        id?: T;
-      };
-  subtotal?: T;
-  discountTotal?: T;
-  redeemedPoints?: T;
-  shippingTotal?: T;
-  taxTotal?: T;
-  feeTotal?: T;
-  total?: T;
-  appliedFees?:
-    | T
-    | {
-        feeId?: T;
-        feeName?: T;
-        amount?: T;
-        feeType?: T;
-        percentage?: T;
-        id?: T;
-      };
-  shippingMethod?: T;
-  trackingLink?: T;
-  sendTrackingEmail?: T;
-  paymentMethod?: T;
-  circoflowsTransactionId?: T;
-  couponCode?: T;
-  affiliateId?: T;
-  clickId?: T;
-  orderSource?: T;
-  customerNote?: T;
-  guestEmail?: T;
-  isFinalized?: T;
-  notes?:
-    | T
-    | {
-        type?: T;
-        note?: T;
-        date?: T;
-        isEmailed?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "order_counters_select".
- */
-export interface OrderCountersSelect<T extends boolean = true> {
-  id?: T;
-  counter?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1949,86 +1838,101 @@ export interface ProcessingFeesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts_select".
+ * via the `definition` "carts_select".
  */
-export interface BlogPostsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  author?: T;
-  featuredImage?: T;
-  excerpt?: T;
-  content?: T;
-  inlineImages?:
+export interface CartsSelect<T extends boolean = true> {
+  user?: T;
+  items?:
     | T
     | {
-        image?: T;
-        caption?: T;
+        product?: T;
+        variantSku?: T;
+        variantTitle?: T;
+        quantity?: T;
+        addedAt?: T;
+        priceSnapshot?: T;
         id?: T;
       };
-  publishedAt?: T;
-  status?: T;
-  category?: T;
-  relatedProducts?: T;
-  readTime?: T;
-  keyTakeaways?:
-    | T
-    | {
-        text?: T;
-        id?: T;
-      };
-  faqs?:
-    | T
-    | {
-        question?: T;
-        answer?: T;
-        id?: T;
-      };
-  references?:
-    | T
-    | {
-        citationText?: T;
-        url?: T;
-        id?: T;
-      };
-  focusKeyphrase?: T;
-  keywords?: T;
+  abandonedEmailSentAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
+ * via the `definition` "wishlists_select".
  */
-export interface PagesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  content?: T;
-  status?: T;
+export interface WishlistsSelect<T extends boolean = true> {
+  user?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        variantSku?: T;
+        quantity?: T;
+        addedAt?: T;
+        priceSnapshot?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "contact-messages_select".
+ * via the `definition` "users_select".
  */
-export interface ContactMessagesSelect<T extends boolean = true> {
-  name?: T;
+export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  googleId?: T;
+  authProvider?: T;
+  phone?: T;
+  role?: T;
+  emailVerified?: T;
+  acceptsMarketing?: T;
+  orderSmsUpdates?: T;
+  dateOfBirth?: T;
+  stripeCustomerId?: T;
+  defaultShippingAddress?: T;
+  defaultBillingAddress?: T;
+  lastLoginAt?: T;
+  metadata?: T;
+  hbPoints?: T;
+  updatedAt?: T;
+  createdAt?: T;
   email?: T;
-  subject?: T;
-  message?: T;
-  createdAt?: T;
-  updatedAt?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "email-logs_select".
+ * via the `definition` "addresses_select".
  */
-export interface EmailLogsSelect<T extends boolean = true> {
-  to?: T;
-  subject?: T;
-  body?: T;
-  sentAt?: T;
-  status?: T;
+export interface AddressesSelect<T extends boolean = true> {
+  user?: T;
+  label?: T;
+  firstName?: T;
+  lastName?: T;
+  company?: T;
+  line1?: T;
+  line2?: T;
+  city?: T;
+  state?: T;
+  postalCode?: T;
+  country?: T;
+  phone?: T;
+  isDefaultShipping?: T;
+  isDefaultBilling?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2048,31 +1952,24 @@ export interface MilitaryDiscountRequestsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "affiliate-applications_select".
+ * via the `definition` "newsletter-subscribers_select".
  */
-export interface AffiliateApplicationsSelect<T extends boolean = true> {
-  user?: T;
-  status?: T;
-  displayName?: T;
-  websiteUrl?: T;
-  socialLinks?:
-    | T
-    | {
-        platform?: T;
-        url?: T;
-        id?: T;
-      };
-  promotionMethods?: T;
-  estimatedMonthlyReach?: T;
-  niche?: T;
-  whyJoin?: T;
-  agreedToTerms?: T;
-  reviewedBy?: T;
-  reviewedAt?: T;
-  reviewNotes?: T;
-  linkedAffiliate?: T;
+export interface NewsletterSubscribersSelect<T extends boolean = true> {
+  email?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages_select".
+ */
+export interface ContactMessagesSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  subject?: T;
+  message?: T;
+  createdAt?: T;
+  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2137,24 +2034,29 @@ export interface AffiliatesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "affiliate-clicks_select".
+ * via the `definition` "affiliate-applications_select".
  */
-export interface AffiliateClicksSelect<T extends boolean = true> {
-  affiliate?: T;
-  source?: T;
-  ipHash?: T;
-  ipCountry?: T;
-  userAgent?: T;
-  deviceType?: T;
-  referrer?: T;
-  landingPage?: T;
-  sessionId?: T;
-  convertedToOrder?: T;
-  conversion?: T;
-  conversionValue?: T;
-  isSuspicious?: T;
-  suspicionReason?: T;
-  clickedAt?: T;
+export interface AffiliateApplicationsSelect<T extends boolean = true> {
+  user?: T;
+  status?: T;
+  displayName?: T;
+  websiteUrl?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  promotionMethods?: T;
+  estimatedMonthlyReach?: T;
+  niche?: T;
+  whyJoin?: T;
+  agreedToTerms?: T;
+  reviewedBy?: T;
+  reviewedAt?: T;
+  reviewNotes?: T;
+  linkedAffiliate?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2239,10 +2141,204 @@ export interface PayoutRequestsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "newsletter-subscribers_select".
+ * via the `definition` "affiliate-clicks_select".
  */
-export interface NewsletterSubscribersSelect<T extends boolean = true> {
-  email?: T;
+export interface AffiliateClicksSelect<T extends boolean = true> {
+  affiliate?: T;
+  source?: T;
+  ipHash?: T;
+  ipCountry?: T;
+  userAgent?: T;
+  deviceType?: T;
+  referrer?: T;
+  landingPage?: T;
+  sessionId?: T;
+  convertedToOrder?: T;
+  conversion?: T;
+  conversionValue?: T;
+  isSuspicious?: T;
+  suspicionReason?: T;
+  clickedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts_select".
+ */
+export interface BlogPostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  author?: T;
+  featuredImage?: T;
+  excerpt?: T;
+  content?: T;
+  inlineImages?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  publishedAt?: T;
+  status?: T;
+  category?: T;
+  relatedProducts?: T;
+  readTime?: T;
+  keyTakeaways?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  references?:
+    | T
+    | {
+        citationText?: T;
+        url?: T;
+        id?: T;
+      };
+  focusKeyphrase?: T;
+  keywords?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-media_select".
+ */
+export interface BlogMediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  title?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-logs_select".
+ */
+export interface EmailLogsSelect<T extends boolean = true> {
+  to?: T;
+  subject?: T;
+  body?: T;
+  sentAt?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trash_select".
+ */
+export interface TrashSelect<T extends boolean = true> {
+  label?: T;
+  originalCollection?: T;
+  originalId?: T;
+  deletedBy?: T;
+  data?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "order_counters_select".
+ */
+export interface OrderCountersSelect<T extends boolean = true> {
+  id?: T;
+  counter?: T;
   updatedAt?: T;
   createdAt?: T;
 }

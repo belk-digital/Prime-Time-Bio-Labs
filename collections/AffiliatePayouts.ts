@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const AffiliatePayouts: CollectionConfig = {
   slug: 'affiliate-payouts',
+  admin: { group: 'Affiliates', defaultColumns: ['affiliate', 'totalAmountCents', 'paymentMethod', 'status', 'paidAt'], },
   access: {
     read: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),
     create: ({ req: { user } }) => !!user?.role && ['admin', 'staff'].includes(user.role as string),

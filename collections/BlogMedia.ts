@@ -7,6 +7,7 @@ const dirname = path.dirname(filename)
 
 export const BlogMedia: CollectionConfig = {
   slug: 'blog-media',
+  admin: { group: 'Content', useAsTitle: 'filename', defaultColumns: ['filename', 'createdAt'], },
   labels: { singular: 'Blog Media', plural: 'Blog Media' },
   access: {
     read: () => true,

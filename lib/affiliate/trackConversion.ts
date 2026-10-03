@@ -1,4 +1,5 @@
 import type { Payload } from "payload";
+import { sql } from "@payloadcms/db-postgres/drizzle";
 import { sendTrackedEmail } from "@/lib/email/sendTrackedEmail";
 import { generateAdminAffiliateConversionEmail } from "@/lib/email/templates/affiliate";
 import { ADMIN_EMAIL } from "@/lib/email/layout";
@@ -36,9 +37,25 @@ export async function trackAffiliateConversion(args: {
   const selfReferral =
     !!args.customerUserId && String(affiliate.user) === String(args.customerUserId);
 
+  // Idempotent: never record a second conversion for the same order.
+  const existing = await payload.find({
+    collection: "affiliate-conversions",
+    where: { order: { equals: orderId } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  });
+  if (existing.docs.length > 0) return;
+
   const eligibleSubtotal = Math.max(0, orderSubtotal - orderDiscount);
   const rate = typeof affiliate.commissionRate === "number" ? affiliate.commissionRate : 10;
   const commissionAmount = selfReferral ? 0 : Math.round(eligibleSubtotal * (rate / 100) * 100) / 100;
+
+  // Commissions stay "pending" for a hold period (protects against refunds), then the daily
+  // cron (app/api/cron/process-commissions) approves them.
+  const settings: any = await payload.findGlobal({ slug: "affiliate-settings" }).catch(() => null);
+  const holdDays = Number(settings?.defaultPendingPeriodDays) > 0 ? Number(settings.defaultPendingPeriodDays) : 14;
+  const pendingUntil = new Date(Date.now() + holdDays * 24 * 60 * 60 * 1000).toISOString();
 
   await payload.create({
     collection: "affiliate-conversions",
@@ -55,23 +72,21 @@ export async function trackAffiliateConversion(args: {
       commissionRate: rate,
       commissionAmount,
       status: selfReferral ? "voided" : "pending",
+      pendingUntil,
       selfReferralDetected: selfReferral,
     } as any,
     overrideAccess: true,
   });
 
-  await payload
-    .update({
-      collection: "affiliates",
-      id: affiliate.id,
-      data: {
-        totalConversions: (affiliate.totalConversions || 0) + 1,
-        totalRevenue: (affiliate.totalRevenue || 0) + (selfReferral ? 0 : eligibleSubtotal),
-        totalCommissionPending: (affiliate.totalCommissionPending || 0) + commissionAmount,
-      },
-      overrideAccess: true,
-    })
-    .catch((err) => console.error("Failed to update affiliate stats:", err));
+  // Atomic increments — read-then-write here would lose updates when two sales land together.
+  await (payload.db as any).drizzle
+    .execute(sql`
+      UPDATE affiliates SET
+        total_conversions = COALESCE(total_conversions, 0) + 1,
+        total_revenue = COALESCE(total_revenue, 0) + ${selfReferral ? 0 : eligibleSubtotal},
+        total_commission_pending = COALESCE(total_commission_pending, 0) + ${commissionAmount}
+      WHERE id = ${affiliate.id}`)
+    .catch((err: unknown) => console.error("Failed to update affiliate stats:", err));
 
   const orderDoc = await payload.findByID({ collection: "orders", id: orderId, overrideAccess: true }).catch(() => null);
   const adminNotice = generateAdminAffiliateConversionEmail({
@@ -80,5 +95,5 @@ export async function trackAffiliateConversion(args: {
     commissionAmount,
     voided: selfReferral,
   });
-  void sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminNotice.subject, html: adminNotice.html });
+  await sendTrackedEmail({ to: ADMIN_EMAIL, subject: adminNotice.subject, html: adminNotice.html });
 }

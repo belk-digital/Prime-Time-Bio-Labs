@@ -2,7 +2,7 @@ import type { CollectionConfig, Where } from 'payload'
 
 export const Products: CollectionConfig = {
   slug: 'products',
-  admin: {
+  admin: { group: 'Store',
     defaultColumns: ['name', 'price', 'hasVariants', 'status', 'isBestSeller'],
     useAsTitle: 'name',
   },

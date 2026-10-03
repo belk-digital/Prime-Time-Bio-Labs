@@ -4,6 +4,9 @@ import config from "@payload-config";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import ProductClient from "@/components/product/ProductClient";
+import ProductReviews, { type PublicReview } from "@/components/product/ProductReviews";
+import { getPayloadUser } from "@/lib/auth/getPayloadUser";
+import { getReviewEligibility } from "@/lib/reviews/eligibility";
 import {
   extractDosageFromName,
   getMultiVariantConfig,
@@ -223,8 +226,67 @@ export default async function ProductPage({
     }
   }
 
+  // Multi-dosage products are separate docs (e.g. 10mg / 30mg) shown as one page, so reviews and
+  // the "can I review this?" check cover the whole family.
+  const familyProductIds: Array<number | string> = [product.id];
+  const mvConfig = getMultiVariantConfig(slug);
+  if (mvConfig) {
+    try {
+      const keywordConditions = (mvConfig.dbKeywords || [mvConfig.name, mvConfig.slug]).flatMap((kw) => [
+        { slug: { like: `${kw}%` } },
+        { name: { like: `${kw}%` } },
+      ]);
+      const family = await payload.find({
+        collection: "products",
+        where: { or: [{ slug: { equals: mvConfig.slug } }, ...keywordConditions] } as any,
+        limit: 10,
+        depth: 0,
+      });
+      for (const doc of family.docs) if (!familyProductIds.includes(doc.id)) familyProductIds.push(doc.id);
+    } catch (err) {
+      console.error("Failed to load product family for reviews:", err);
+    }
+  }
+
+  let publicReviews: PublicReview[] = [];
+  let eligibility: Awaited<ReturnType<typeof getReviewEligibility>>["status"] = "login_required";
+  try {
+    const reviewResult = await payload.find({
+      collection: "reviews",
+      where: { and: [{ product: { in: familyProductIds } }, { status: { equals: "approved" } }] },
+      sort: "-createdAt",
+      limit: 50,
+      depth: 1,
+      overrideAccess: true,
+    });
+    publicReviews = reviewResult.docs.map((r: any) => {
+      const u = typeof r.user === "object" && r.user ? r.user : null;
+      const first = (u?.firstName as string | undefined)?.trim();
+      const lastInitial = (u?.lastName as string | undefined)?.trim()?.[0];
+      return {
+        id: r.id,
+        rating: Number(r.rating) || 0,
+        comment: r.comment,
+        verifiedPurchase: !!r.verifiedPurchase,
+        author: first ? `${first}${lastInitial ? ` ${lastInitial}.` : ""}` : "Verified customer",
+        createdAt: r.createdAt,
+      };
+    });
+    const viewer = await getPayloadUser();
+    eligibility = (await getReviewEligibility(payload, viewer?.id, familyProductIds)).status;
+  } catch (err) {
+    console.error("Failed to load reviews:", err);
+  }
+
   const imageUrl = getProductPrimaryImageUrl(product);
-  const productJsonLd = buildProductJsonLd(product, imageUrl, slug);
+  const productJsonLd: Record<string, unknown> = buildProductJsonLd(product, imageUrl, slug);
+  if (publicReviews.length > 0) {
+    productJsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: (publicReviews.reduce((s, r) => s + r.rating, 0) / publicReviews.length).toFixed(1),
+      reviewCount: publicReviews.length,
+    };
+  }
   const faqJsonLd = buildFaqJsonLd(product);
 
   return (
@@ -243,6 +305,9 @@ export default async function ProductPage({
         product={product}
         cardProduct={toShopCardProduct(product)}
         relatedProducts={toShopCardProducts(relatedProducts)}
+        reviewsSlot={
+          <ProductReviews reviews={publicReviews} familyProductIds={familyProductIds} eligibility={eligibility} />
+        }
       />
     </>
   );
