@@ -4,13 +4,20 @@ import React, { useActionState, useRef, useState } from "react";
 import { CheckCircle2, Lock, Upload, ShieldCheck } from "lucide-react";
 import { submitMilitaryDiscountRequest, type MilitaryDiscountFormState } from "@/app/military-discount/actions";
 
+import { compressImage } from "@/lib/client/compressImage";
+
 const BRANCHES = ["Army", "Navy", "Air Force", "Marines", "Coast Guard", "Space Force", "Other"];
+
+// Must stay below the Server Action body limit in next.config.mjs (4mb) and Vercel's ~4.5 MB
+// request cap, once the other form fields are added.
+const MAX_UPLOAD_BYTES = 3.5 * 1024 * 1024;
 
 const initialState: MilitaryDiscountFormState = { success: false };
 
 export default function MilitaryDiscountSection() {
   const [state, formAction, isPending] = useActionState(submitMilitaryDiscountRequest, initialState);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -164,7 +171,7 @@ export default function MilitaryDiscountSection() {
                         {selectedFile ? (
                           <span className="text-gray-900 font-medium">{selectedFile.name}</span>
                         ) : (
-                          "Max 8MB (Secure)"
+                          "Photo of your ID (Secure)"
                         )}
                       </span>
                       <input
@@ -172,10 +179,18 @@ export default function MilitaryDiscountSection() {
                         accept="image/*"
                         className="hidden"
                         ref={fileInputRef}
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files.length > 0) {
-                            setSelectedFile(e.target.files[0]);
+                        onChange={async (e) => {
+                          const picked = e.target.files?.[0];
+                          if (!picked) return;
+                          setFileError(null);
+                          // Shrink big phone photos first: the host rejects request bodies over ~4.5 MB.
+                          const prepared = await compressImage(picked);
+                          if (prepared.size > MAX_UPLOAD_BYTES) {
+                            setSelectedFile(null);
+                            setFileError("That photo is too large. Please take a new photo or choose a smaller file (max 3.5MB).");
+                            return;
                           }
+                          setSelectedFile(prepared);
                         }}
                       />
                       <button
@@ -187,6 +202,7 @@ export default function MilitaryDiscountSection() {
                         Upload
                       </button>
                     </div>
+                    {fileError && <p className="font-inter text-xs text-red-500 pl-1">{fileError}</p>}
                   </div>
 
                   <button

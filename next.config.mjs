@@ -2,6 +2,11 @@ import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // Server Actions reject bodies over 1MB by default, which blocked the military-discount ID photo
+    // upload. 4mb stays under Vercel's ~4.5 MB request limit.
+    serverActions: { bodySizeLimit: '4mb' },
+  },
   async headers() {
     return [
       {

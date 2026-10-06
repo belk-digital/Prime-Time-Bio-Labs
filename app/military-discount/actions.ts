@@ -12,7 +12,9 @@ export interface MilitaryDiscountFormState {
   error?: string;
 }
 
-const MAX_PHOTO_BYTES = 8 * 1024 * 1024; // 8MB
+// Server Action bodies are capped at 4mb (next.config.mjs) and Vercel rejects request bodies over
+// ~4.5 MB, so anything bigger can't arrive anyway. The form shrinks photos before upload.
+const MAX_PHOTO_BYTES = 3.5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
 
 export async function submitMilitaryDiscountRequest(
@@ -33,7 +35,7 @@ export async function submitMilitaryDiscountRequest(
     return { success: false, error: "Please upload a photo of your military ID." };
   }
   if (idPhoto.size > MAX_PHOTO_BYTES) {
-    return { success: false, error: "Your ID photo is too large (max 8MB)." };
+    return { success: false, error: "Your ID photo is too large (max 3.5MB)." };
   }
   if (idPhoto.type && !ALLOWED_TYPES.includes(idPhoto.type)) {
     return { success: false, error: "ID photo must be a JPEG, PNG, WEBP, or HEIC image." };
