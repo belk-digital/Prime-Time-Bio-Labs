@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
 import { Lock, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-import Footer from "@/components/Footer";
+import AuthShell from "@/components/auth/AuthShell";
+
+const inputClass =
+  "font-inter w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -51,108 +53,82 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4 py-24">
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-md">
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-block mb-8">
-            <img
-              src="/primtime-biolabs-logo.svg"
-              alt="Primetime Biolabs"
-              className="h-12 w-auto mx-auto"
-            />
-          </Link>
-          <h1 className="text-2xl md:text-3xl font-michroma uppercase font-bold tracking-wider mb-2">
-            New <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Password</span>
-          </h1>
-          <p className="text-gray-400 text-sm font-light">
-            Choose a new password for your account.
-          </p>
+    <AuthShell
+      eyebrow="Account recovery"
+      title="Choose a new password"
+      subtitle="Choose a new password for your account."
+      footerText="Changed your mind?"
+      footerLinkText="Back to sign in"
+      footerLinkHref="/login"
+    >
+      {message ? (
+        <div className="font-inter flex items-start gap-3 px-4 py-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
+          <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
+          <span>{message}</span>
         </div>
-
-        <div className="bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-md p-8 shadow-2xl">
-          {message ? (
-            <div className="flex items-start gap-3 px-4 py-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
-              <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
-              <span>{message}</span>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && (
+            <div className="font-inter flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="password" className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-                  New Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <input
-                    id="password"
-                    type="password"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    required
-                    minLength={8}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-colors"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 mt-2 text-sm font-bold uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl transition-colors"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Resetting
-                  </>
-                ) : (
-                  "Reset Password"
-                )}
-              </button>
-            </form>
           )}
-        </div>
 
-        <p className="text-center text-sm text-gray-400 mt-8">
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-            Back to sign in
-          </Link>
-        </p>
-      </div>
+          <div>
+            <label htmlFor="password" className="font-inter block text-sm font-medium text-gray-700 mb-2">
+              New password
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                id="password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={inputClass}
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
 
-      <Footer />
-    </main>
+          <div>
+            <label htmlFor="confirmPassword" className="font-inter block text-sm font-medium text-gray-700 mb-2">
+              Confirm password
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                id="confirmPassword"
+                type="password"
+                required
+                minLength={8}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={inputClass}
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 mt-2 text-sm font-bold uppercase tracking-widest text-white bg-black hover:bg-gray-800 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl transition-colors"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Resetting
+              </>
+            ) : (
+              "Reset Password"
+            )}
+          </button>
+        </form>
+      )}
+    </AuthShell>
   );
 }
